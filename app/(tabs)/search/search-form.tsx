@@ -12,7 +12,9 @@ import { useEffect, useState } from 'react';
 import SearchLabelInput from '@/src/features/search/components/search-label-input';
 import SearchCategoryPicker from '@/src/features/search/components/search-category-picker';
 import { db } from '@/src/hooks/use-initialize-database';
-import { searchCategoryLabels } from '@/src/features/search/constants/search-category-constants';
+import {
+  searchCategories,
+} from '@/src/features/search/constants/search-category-constants';
 import { SearchCategoryLabel } from '@/src/features/search/db/search-db-types';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -38,7 +40,7 @@ const SearchForm = () => {
   // dropdown 상태
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<SearchCategoryLabel[]>(
-    Object.values(searchCategoryLabels).map((label) => ({ label, value: label })),
+    searchCategories.map((category) => ({ label: category.label, value: category.label })),
   );
 
   const initializeForm = async () => {
