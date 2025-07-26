@@ -1,4 +1,4 @@
-import { Search } from 'lucide-react-native';
+import { Search, X } from 'lucide-react-native';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { TextInput, TouchableOpacity, View } from 'react-native';
 
@@ -10,16 +10,6 @@ type SearchInputType = {
 };
 
 const SearchInput = ({ value, onChange, onSubmitEditing, placeholder }: SearchInputType) => {
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      onSubmitEditing;
-    }, 500);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value]);
-
   return (
     <View className="w-full flex-row items-center rounded-full bg-white px-4 shadow-dropShadow">
       <TextInput
@@ -30,6 +20,11 @@ const SearchInput = ({ value, onChange, onSubmitEditing, placeholder }: SearchIn
         onSubmitEditing={onSubmitEditing}
         placeholder={placeholder}
       />
+      {value.length > 0 && (
+        <TouchableOpacity onPress={() => onChange('')} className="mr-2">
+          <X size={18} color="red" />
+        </TouchableOpacity>
+      )}
       <TouchableOpacity onPress={onSubmitEditing}>
         <Search />
       </TouchableOpacity>
