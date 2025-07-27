@@ -56,6 +56,11 @@ const HomeScreen = () => {
 
   const { icon: Icon } = getCategoryData(selectCategory);
 
+  const resetSearch = () => {
+    setInput('');
+    setSearch('');
+  };
+
   return (
     //홈화면
     <View className="flex-1 items-center justify-center bg-turquoise p-4">
@@ -80,7 +85,10 @@ const HomeScreen = () => {
             >
               <SearchCategoryButton
                 label={category.label}
-                onPress={() => setSelectCategory(category.label)}
+                onPress={() => {
+                  setSelectCategory(category.label);
+                  resetSearch();
+                }}
                 isSelected={isSelected}
               />
               <Text className="text-black">{category.label}</Text>
