@@ -1,15 +1,9 @@
-import { Coffee, Key, Laptop, Tablet } from 'lucide-react-native';
-
-export const searchCategoryLabels = {
-  personal: '개인용품',
-  mobile: '모바일',
-  electronics: '전자제품',
-  kitchen: '주방용품',
-};
+import { Coffee, Key, Laptop, Package, Tablet } from 'lucide-react-native';
 
 export const searchCategories = [
-  { icon: <Key />, label: searchCategoryLabels.personal, color: 'foggyBlue' },
-  { icon: <Tablet />, label: searchCategoryLabels.mobile, color: 'paleYellow' },
-  { icon: <Laptop />, label: searchCategoryLabels.electronics, color: 'pink' },
-  { icon: <Coffee />, label: searchCategoryLabels.kitchen, color: 'teal' },
+  { icon: Package, label: '전체', color: 'paleCobalt' },
+  { icon: Key, label: '개인용품', color: 'foggyBlue' },
+  { icon: Tablet, label: '모바일', color: 'paleYellow' },
+  { icon: Laptop, label: '전자제품', color: 'pink' },
+  { icon: Coffee, label: '주방용품', color: 'teal' },
 ];
