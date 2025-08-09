@@ -35,8 +35,8 @@ const RoutineListCard = ({
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.8}
-      className={`mb-3 flex-row rounded-xl bg-white shadow-dropShadow ${className}`}
-      style={{ width: 358, height: 96, position: 'relative' }}
+      className={`mb-3 w-full flex-row rounded-xl bg-white shadow-dropShadow ${className}`}
+      style={{ height: 96, position: 'relative' }}
     >
       <View className="w-2 rounded-l-xl bg-paleCobalt" />
       <View style={{ position: 'absolute', top: 16, right: 20, flexDirection: 'row', zIndex: 2 }}>

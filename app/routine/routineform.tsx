@@ -52,8 +52,6 @@ const RoutineForm = () => {
       const newChecks = [...subTaskChecks];
       newChecks[index] = checked;
       setSubTaskChecks(newChecks);
-      // 루틴 데이터 새로고침
-      refetch();
     }
   };
 

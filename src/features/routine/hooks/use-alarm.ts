@@ -68,8 +68,31 @@ export const useAlarm = () => {
 
       // 알람 시간 파싱
       const [hours, minutes] = routine.alarmTime.split(':').map(Number);
+      // targetDate를 KST 기준으로 보정
       const alarmDate = new Date(targetDate);
       alarmDate.setHours(hours, minutes, 0, 0);
+
+      // 현재 시각과 alarmDate의 차이(밀리초)
+      const now = new Date();
+      const diff = alarmDate.getTime() - now.getTime();
+
+      // 2초 이하(=즉시 울릴 위험)면 무조건 다음날로 이동
+      if (diff <= 2000) {
+        alarmDate.setDate(alarmDate.getDate() + 1);
+      }
+
+      // 예약 직전 로그
+      console.log(
+        '[알람 예약] now:',
+        now.toLocaleString(),
+        'alarmDate:',
+        alarmDate.toLocaleString(),
+        'diff(ms):',
+        alarmDate.getTime() - now.getTime(),
+      );
+
+      // 예약까지 남은 초 계산
+      const seconds = Math.max(1, Math.floor((alarmDate.getTime() - now.getTime()) / 1000));
 
       // 과거 시간이면 다음 날로 설정
       if (alarmDate <= new Date()) {
@@ -91,7 +114,7 @@ export const useAlarm = () => {
             type: 'routine_alarm',
           },
         },
-        trigger: alarmDate,
+        trigger: { seconds } as any,
       });
 
       console.log(`알람 설정 완료: ${routine.name} - ${alarmDate.toLocaleString()}`);
@@ -163,9 +186,7 @@ export const useAlarm = () => {
                   type: 'routine_alarm',
                 },
               },
-              trigger: {
-                date: alarmDate,
-              },
+              trigger: { date: alarmDate } as any,
             });
             successCount++;
           }
