@@ -4,7 +4,7 @@ import { Contact } from '@/src/features/address-book/types/address-book-type';
 import { db } from '@/src/hooks/use-initialize-database';
 
 //연락처 추가
-export const createContact = async (contactData: Omit<Contact, 'id'>): Promise<Contact> => {
+export const fetchCreateContact = async (contactData: Omit<Contact, 'id'>): Promise<Contact> => {
   try {
     const result = await db.runAsync(
       `INSERT INTO contact (name, phone_number, profile_image, memo, is_me, created_at) 
@@ -28,7 +28,7 @@ export const createContact = async (contactData: Omit<Contact, 'id'>): Promise<C
 };
 
 // 연락처 수정
-export const updateContact = async (
+export const fetchUpdateContact = async (
   id: string,
   contactData: Partial<Contact>,
 ): Promise<Contact> => {
@@ -77,7 +77,7 @@ export const updateContact = async (
 };
 
 // 연락처 삭제 (CASCADE로 관련 데이터도 자동 삭제됨)
-export const deleteContact = async (id: string): Promise<boolean> => {
+export const fetchDeleteContact = async (id: string): Promise<boolean> => {
   try {
     const result = await db.runAsync('DELETE FROM contact WHERE id = ? AND is_me = 0', [id]);
     return result.changes > 0; // 삭제된 행이 있으면 true

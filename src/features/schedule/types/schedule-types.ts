@@ -1,4 +1,4 @@
-export interface Schedule {
+export interface ScheduleType {
   id: number;
   title: string;
   contents?: string;
@@ -11,7 +11,7 @@ export interface Schedule {
   created_at: string;
 }
 
-export interface Alarm {
+export interface AlarmType {
   id: number;
   schedule_id: number;
   date: string; // ISO date string
@@ -19,7 +19,7 @@ export interface Alarm {
   created_at: string;
 }
 
-export interface CreateScheduleData {
+export interface CreateScheduleDataType {
   title: string;
   contents?: string;
   time: string;
@@ -29,6 +29,6 @@ export interface CreateScheduleData {
   image_id?: string;
 }
 
-export interface UpdateScheduleData extends Partial<CreateScheduleData> {
+export interface UpdateScheduleDataType extends Partial<CreateScheduleDataType> {
   is_completed?: number;
 }

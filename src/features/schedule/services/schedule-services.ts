@@ -1,10 +1,10 @@
 import { db } from '../../../hooks/use-initialize-database';
-import type { Schedule, CreateScheduleData, UpdateScheduleData } from '../types/schedule-types';
+import type { ScheduleType, CreateScheduleDataType, UpdateScheduleDataType } from '../types/schedule-types';
 
 // 일정 목록 조회
-export const getSchedules = async (): Promise<Schedule[]> => {
+export const fetchGetSchedules = async (): Promise<ScheduleType[]> => {
   try {
-    const result = await db.getAllAsync<Schedule>('SELECT * FROM schedules ORDER BY time ASC');
+    const result = await db.getAllAsync<ScheduleType>('SELECT * FROM schedules ORDER BY time ASC');
     return result;
   } catch (error) {
     console.error('Failed to get schedules:', error);
@@ -13,14 +13,14 @@ export const getSchedules = async (): Promise<Schedule[]> => {
 };
 
 // 특정 날짜의 일정 조회
-export const getSchedulesByDate = async (date: string): Promise<Schedule[]> => {
+export const fetchGetSchedulesByDate = async (date: string): Promise<ScheduleType[]> => {
   try {
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
-    const result = await db.getAllAsync<Schedule>(
+    const result = await db.getAllAsync<ScheduleType>(
       'SELECT * FROM schedules WHERE time BETWEEN ? AND ? ORDER BY time ASC',
       [startOfDay.toISOString(), endOfDay.toISOString()],
     );
@@ -32,7 +32,7 @@ export const getSchedulesByDate = async (date: string): Promise<Schedule[]> => {
 };
 
 // 일정 생성
-export const createSchedule = async (data: CreateScheduleData): Promise<number | null> => {
+export const fetchCreateSchedule = async (data: CreateScheduleDataType): Promise<number | null> => {
   try {
     const result = await db.runAsync(
       `INSERT INTO schedules (title, contents, time, location, companion, alarm_id, image_id) 
@@ -55,7 +55,7 @@ export const createSchedule = async (data: CreateScheduleData): Promise<number |
 };
 
 // 일정 업데이트
-export const updateSchedule = async (id: number, data: UpdateScheduleData): Promise<boolean> => {
+export const fetchUpdateSchedule = async (id: number, data: UpdateScheduleDataType): Promise<boolean> => {
   try {
     const updates: string[] = [];
     const values: any[] = [];
@@ -97,7 +97,7 @@ export const updateSchedule = async (id: number, data: UpdateScheduleData): Prom
 };
 
 // 일정 삭제
-export const deleteSchedule = async (id: number): Promise<boolean> => {
+export const fetchDeleteSchedule = async (id: number): Promise<boolean> => {
   try {
     await db.runAsync('DELETE FROM schedules WHERE id = ?', [id]);
     return true;
@@ -110,7 +110,7 @@ export const deleteSchedule = async (id: number): Promise<boolean> => {
 // 일정 완료/미완료 토글
 export const toggleScheduleCompletion = async (id: number): Promise<boolean> => {
   try {
-    const schedule = await db.getFirstAsync<Schedule>(
+    const schedule = await db.getFirstAsync<ScheduleType>(
       'SELECT is_completed FROM schedules WHERE id = ?',
       [id],
     );
@@ -126,7 +126,7 @@ export const toggleScheduleCompletion = async (id: number): Promise<boolean> => 
 };
 
 // 특정 일정 조회
-export const getScheduleById = async (id: number): Promise<Schedule | null> => {
+export const fetchGetScheduleById = async (id: number): Promise<ScheduleType | null> => {
   try {
     const result = await db.getFirstAsync<Schedule>('SELECT * FROM schedules WHERE id = ?', [id]);
     return result || null;

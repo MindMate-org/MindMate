@@ -5,7 +5,7 @@ import { Text } from 'react-native';
 
 import { MODE } from '../constants/address-book-constants';
 import { useContactEditState } from '../hooks/use-contact-edit-state';
-import { createContact, updateContact } from '../services/mutation-contact-data';
+import { fetchCreateContact, fetchUpdateContact } from '../services/mutation-contact-data';
 
 import FormInput from '@/src/components/ui/form-input';
 import MediaPicker, { MediaItem } from '@/src/components/ui/media-picker';
@@ -111,11 +111,11 @@ const FormEditContact = ({ id }: { id: string }) => {
   const handleSave = async () => {
     const crate_at = new Date().toISOString();
     if (mode === MODE.EDIT) {
-      await updateContact(id, { name, phone_number: phoneNumber, memo });
+      await fetchUpdateContact(id, { name, phone_number: phoneNumber, memo });
       refetch();
     }
     if (mode === MODE.NEW) {
-      createContact({
+      fetchCreateContact({
         name,
         phone_number: phoneNumber,
         memo,

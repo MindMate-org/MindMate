@@ -7,8 +7,8 @@ import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Alert } from 'r
 import FormInput from '../../src/components/ui/form-input';
 import MediaPicker, { MediaItem } from '../../src/components/ui/media-picker';
 import { useScheduleAlarm } from '../../src/features/schedule/hooks/use-schedule-alarm';
-import { createSchedule } from '../../src/features/schedule/services/schedule-services';
-import type { CreateScheduleData } from '../../src/features/schedule/types/schedule-types';
+import { fetchCreateSchedule } from '../../src/features/schedule/services/schedule-services';
+import type { CreateScheduleDataType } from '../../src/features/schedule/types/schedule-types';
 import { pickMedia } from '../../src/lib/media-services';
 import { MediaType } from '../../src/types/common-db-types';
 
@@ -40,7 +40,7 @@ const CreateSchedulePage = () => {
       return;
     }
 
-    const scheduleData: CreateScheduleData = {
+    const scheduleData: CreateScheduleDataType = {
       title: title.trim(),
       contents: contents.trim() || undefined,
       time: selectedDate.toISOString(),
@@ -49,7 +49,7 @@ const CreateSchedulePage = () => {
     };
 
     try {
-      const newScheduleId = await createSchedule(scheduleData);
+      const newScheduleId = await fetchCreateSchedule(scheduleData);
       if (newScheduleId) {
         // 알림 설정이 활성화되어 있으면 알림 예약
         if (enableNotification) {

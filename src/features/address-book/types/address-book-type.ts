@@ -1,5 +1,5 @@
 // 기본 테이블 타입들
-export type Contact = {
+export type ContactType = {
   id: number;
   name: string;
   phone_number: string;
@@ -9,25 +9,25 @@ export type Contact = {
   created_at: string;
 };
 
-export type Tag = {
+export type TagType = {
   id: number;
   name: string;
   color: string;
 };
 
-export type ContactTag = {
+export type ContactTagType = {
   id: number;
   contact_id: number;
   tag_id: number;
 };
 
-export type NoteGroup = {
+export type NoteGroupType = {
   group_id: number;
   contact_id: number;
   title: string;
 };
 
-export type NoteItem = {
+export type NoteItemType = {
   item_id: number;
   group_id: number;
   title: string;
@@ -35,15 +35,15 @@ export type NoteItem = {
 };
 
 // 조인된 데이터 타입들 (실제 사용시 유용)
-export type ContactWithTags = Contact & {
-  tags?: Tag[];
+export type ContactWithTagsType = ContactType & {
+  tags?: TagType[];
 };
 
-export type NoteGroupWithItems = NoteGroup & {
-  items?: NoteItem[];
+export type NoteGroupWithItemsType = NoteGroupType & {
+  items?: NoteItemType[];
 };
 
-export type ContactWithDetails = Contact & {
-  tags?: Tag[];
-  noteGroups?: NoteGroupWithItems[];
+export type ContactWithDetailsType = ContactType & {
+  tags?: TagType[];
+  noteGroups?: NoteGroupWithItemsType[];
 };

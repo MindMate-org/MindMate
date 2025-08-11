@@ -13,7 +13,7 @@ import EditAddressBookTagButton from './edit-address-book-tag-button';
 import MessageButton from './message-button';
 import { useAsyncDataGet } from '../../../hooks/use-async-data-get';
 import { getAllTags, getContactTags } from '../services/get-tag-data';
-import { deleteContact } from '../services/mutation-contact-data';
+import { fetchDeleteContact } from '../services/mutation-contact-data';
 import { Contact } from '../types/address-book-type';
 
 const AddressBookItem = ({ contact, refetch }: { contact: Contact; refetch: () => void }) => {
@@ -38,7 +38,7 @@ const AddressBookItem = ({ contact, refetch }: { contact: Contact; refetch: () =
   };
 
   const handleDelete = () => {
-    deleteContact(contact.id.toString());
+    fetchDeleteContact(contact.id.toString());
     setIsActionMenuVisible(false);
     refetch();
   };
