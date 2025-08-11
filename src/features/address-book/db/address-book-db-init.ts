@@ -11,10 +11,7 @@ export const addressBookDbInit = async () => {
       phone_number TEXT,
       profile_image TEXT,
       memo TEXT,
-      is_me INTEGER,
-      created_at TEXT,
-      updated_at TEXT,
-      deleted_at TEXT
+      is_me INTEGER
     );
 
     -- tag
@@ -49,10 +46,42 @@ export const addressBookDbInit = async () => {
       content TEXT,
       FOREIGN KEY (group_id) REFERENCES note_group(group_id) ON DELETE CASCADE
     );
-    `);
+  `);
+
+  // Add missing columns to existing tables
+  await addMissingColumns();
 
   await insertAddressBookMockData();
   // console.log('✅ SQLite DB initialized (expo-sqlite/next)');
+};
+
+const addMissingColumns = async () => {
+  try {
+    // Check if created_at column exists and add if missing
+    try {
+      await db.execAsync('ALTER TABLE contact ADD COLUMN created_at TEXT');
+    } catch (error) {
+      // Column already exists, ignore error
+    }
+
+    // Check if updated_at column exists and add if missing
+    try {
+      await db.execAsync('ALTER TABLE contact ADD COLUMN updated_at TEXT');
+    } catch (error) {
+      // Column already exists, ignore error
+    }
+
+    // Check if deleted_at column exists and add if missing
+    try {
+      await db.execAsync('ALTER TABLE contact ADD COLUMN deleted_at TEXT');
+    } catch (error) {
+      // Column already exists, ignore error
+    }
+
+    console.log('✅ Missing columns added to contact table');
+  } catch (error) {
+    console.error('❌ Failed to add missing columns:', error);
+  }
 };
 
 const insertAddressBookMockData = async () => {

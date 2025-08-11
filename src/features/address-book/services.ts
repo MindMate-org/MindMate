@@ -174,7 +174,7 @@ export class AddressBookService {
    */
   static async fetchGetTags(): Promise<TagType[]> {
     try {
-      const result = await db.getAllAsync<TagType>(`SELECT * FROM tags ORDER BY name ASC`);
+      const result = await db.getAllAsync<TagType>(`SELECT * FROM tag ORDER BY name ASC`);
       return result || [];
     } catch (error) {
       console.error('태그 목록 조회 실패:', error);
@@ -189,7 +189,7 @@ export class AddressBookService {
    */
   static async fetchCreateTag(tagData: Omit<TagType, 'id'>): Promise<number> {
     try {
-      const result = await db.runAsync(`INSERT INTO tags (name, color) VALUES (?, ?)`, [
+      const result = await db.runAsync(`INSERT INTO tag (name, color) VALUES (?, ?)`, [
         tagData.name,
         tagData.color || '#576BCD',
       ]);
@@ -222,7 +222,7 @@ export class AddressBookService {
 
       values.push(id);
 
-      await db.runAsync(`UPDATE tags SET ${fields.join(', ')} WHERE id = ?`, values);
+      await db.runAsync(`UPDATE tag SET ${fields.join(', ')} WHERE id = ?`, values);
     } catch (error) {
       console.error('태그 수정 실패:', error);
       throw error;
@@ -236,7 +236,7 @@ export class AddressBookService {
    */
   static async fetchDeleteTag(id: number): Promise<void> {
     try {
-      await db.runAsync(`DELETE FROM tags WHERE id = ?`, [id]);
+      await db.runAsync(`DELETE FROM tag WHERE id = ?`, [id]);
     } catch (error) {
       console.error('태그 삭제 실패:', error);
       throw error;
