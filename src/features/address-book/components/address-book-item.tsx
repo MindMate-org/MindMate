@@ -12,14 +12,13 @@ import CallButton from './call-button';
 import EditAddressBookTagButton from './edit-address-book-tag-button';
 import MessageButton from './message-button';
 import { useAsyncDataGet } from '../../../hooks/use-async-data-get';
-import { getAllTags, getContactTags } from '../services/get-tag-data';
-import { fetchDeleteContact } from '../services/mutation-contact-data';
+import { AddressBookService } from '../services';
 import { ContactType } from '../types/address-book-type';
 
 const AddressBookItem = ({ contact, refetch }: { contact: ContactType; refetch: () => void }) => {
   const router = useRouter();
   const [isActionMenuVisible, setIsActionMenuVisible] = useState(false);
-  const getContactTagsUseCallBack = useCallback(() => getContactTags(contact.id), [contact.id]);
+  const getContactTagsUseCallBack = useCallback(() => AddressBookService.fetchGetContactTags(contact.id), [contact.id]);
   const { data: tags, refetch: refetchTags } = useAsyncDataGet(getContactTagsUseCallBack);
 
   const refetchForEditTags = useCallback(() => {
@@ -28,7 +27,7 @@ const AddressBookItem = ({ contact, refetch }: { contact: ContactType; refetch: 
   }, [refetchTags, refetch]);
 
   useEffect(() => {
-    getAllTags().then((tags) => {
+    AddressBookService.fetchGetTags().then((tags) => {
       console.log(tags);
     });
   }, [tags]);
@@ -37,10 +36,14 @@ const AddressBookItem = ({ contact, refetch }: { contact: ContactType; refetch: 
     router.push(`/address-book/edit/${contact.id}`);
   };
 
-  const handleDelete = () => {
-    fetchDeleteContact(contact.id.toString());
-    setIsActionMenuVisible(false);
-    refetch();
+  const handleDelete = async () => {
+    try {
+      await AddressBookService.fetchDeleteContact(contact.id);
+      setIsActionMenuVisible(false);
+      refetch();
+    } catch (error) {
+      console.error('연락처 삭제 실패:', error);
+    }
   };
 
   return (

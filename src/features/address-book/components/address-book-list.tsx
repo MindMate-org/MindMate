@@ -4,7 +4,7 @@ import { ScrollView, View, Text } from 'react-native';
 
 import AddressBookItem from './address-book-item';
 import { useAsyncDataGet } from '../../../hooks/use-async-data-get';
-import { getOthersContacts } from '../services/get-contact-data';
+import { AddressBookService } from '../services';
 import { ContactType } from '../types/address-book-type';
 
 import { useFocusPage } from '@/src/hooks/use-focus-page';
@@ -14,7 +14,7 @@ interface AddressBookListProps {
 }
 
 const AddressBookList = ({ searchText }: AddressBookListProps) => {
-  const getOthersContactsUseCallBack = useCallback(getOthersContacts, []);
+  const getOthersContactsUseCallBack = useCallback(() => AddressBookService.fetchGetOthersContacts(), []);
   const { data, refetch } = useAsyncDataGet<ContactType[]>(getOthersContactsUseCallBack);
   useFocusPage(refetch);
 

@@ -5,7 +5,7 @@ import { Text } from 'react-native';
 
 import { MODE } from '../constants/address-book-constants';
 import { useContactEditState } from '../hooks/use-contact-edit-state';
-import { fetchCreateContact, fetchUpdateContact } from '../services/mutation-contact-data';
+import { AddressBookService } from '../services';
 
 import FormInput from '@/src/components/ui/form-input';
 import MediaPicker, { MediaItem } from '@/src/components/ui/media-picker';
@@ -109,20 +109,32 @@ const FormEditContact = ({ id }: { id: string }) => {
   };
 
   const handleSave = async () => {
-    const crate_at = new Date().toISOString();
-    if (mode === MODE.EDIT) {
-      await fetchUpdateContact(id, { name, phone_number: phoneNumber, memo });
-      refetch();
-    }
-    if (mode === MODE.NEW) {
-      fetchCreateContact({
-        name,
-        phone_number: phoneNumber,
-        memo,
-        profile_image: image,
-        is_me: 0,
-        created_at: crate_at,
-      });
+    try {
+      if (mode === MODE.EDIT) {
+        await AddressBookService.fetchUpdateContact(parseInt(id, 10), {
+          name,
+          phone_number: phoneNumber,
+          memo,
+          profile_image: image,
+        });
+        refetch();
+        Alert.alert('성공', '연락처가 수정되었습니다.');
+      } else if (mode === MODE.NEW) {
+        await AddressBookService.fetchCreateContact({
+          name,
+          phone_number: phoneNumber,
+          memo,
+          profile_image: image,
+          is_me: 0,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          deleted_at: null,
+        });
+        Alert.alert('성공', '연락처가 생성되었습니다.');
+      }
+    } catch (error) {
+      console.error('연락처 저장 실패:', error);
+      Alert.alert('오류', '연락처 저장 중 오류가 발생했습니다.');
     }
   };
 

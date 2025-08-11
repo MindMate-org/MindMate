@@ -4,8 +4,7 @@ import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import ActionMenu from './action-menu';
 import { formTextStyle } from '../constants/style-class-constants';
-import { getAllTags, getContactTags } from '../services/get-tag-data';
-import { addTagToContact, removeTagFromContact, updateTag } from '../services/mutation-tag-data';
+import { AddressBookService } from '../services';
 import { ContactType, TagType } from '../types/address-book-type';
 
 import BottomModal from '@/src/components/ui/bottom-modal';
@@ -62,10 +61,10 @@ const SelectAddressBookTagModal = ({
   const [tagState, setTagState] = useState<TagType | null>(null);
   const [isEditTag, setIsEditTag] = useState(false);
 
-  const getAllTagsUseCallback = useCallback(getAllTags, []);
+  const getAllTagsUseCallback = useCallback(() => AddressBookService.fetchGetTags(), []);
   const { data: allTags, refetch: refetchAllTags } = useAsyncDataGet(getAllTagsUseCallback);
 
-  const getContactTagsUseCallback = useCallback(() => getContactTags(contact.id), [contact.id]);
+  const getContactTagsUseCallback = useCallback(() => AddressBookService.fetchGetContactTags(contact.id), [contact.id]);
   const { data: contactTags, refetch: refetchContactTags } =
     useAsyncDataGet(getContactTagsUseCallback);
 
@@ -87,10 +86,10 @@ const SelectAddressBookTagModal = ({
       const isHasTag = contactTags?.some((t) => t.id === tag.id);
       console.log('Contact has tag:', isHasTag, 'Tag:', tag.name);
       if (!isHasTag) {
-        await addTagToContact(contact.id, tag.id);
+        await AddressBookService.fetchAddTagToContact(contact.id, tag.id);
       }
       if (isHasTag) {
-        await removeTagFromContact(contact.id, tag.id);
+        await AddressBookService.fetchRemoveTagFromContact(contact.id, tag.id);
       }
       refetch();
     }
@@ -161,7 +160,7 @@ const EditAddressBookTagModal = ({
   const [text, setText] = useState(tag.name || '');
 
   const handleEditTag = async () => {
-    await updateTag(tag.id, { name: text });
+    await AddressBookService.fetchUpdateTag(tag.id, { name: text });
     setIsModalVisible(false);
     refetch();
   };

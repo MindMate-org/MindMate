@@ -7,6 +7,8 @@ export type ContactType = {
   memo: string;
   is_me: 0 | 1;
   created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
 };
 
 export type TagType = {

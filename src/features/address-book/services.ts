@@ -243,6 +243,62 @@ export class AddressBookService {
     }
   }
 
+  /**
+   * 특정 연락처의 태그들을 조회합니다
+   * @param contactId 연락처 ID
+   * @returns Promise<TagType[]> 태그 목록
+   */
+  static async fetchGetContactTags(contactId: number): Promise<TagType[]> {
+    try {
+      const result = await db.getAllAsync<TagType>(
+        `SELECT t.* FROM tag t 
+         JOIN contact_tag ct ON t.id = ct.tag_id 
+         WHERE ct.contact_id = ?`,
+        [contactId]
+      );
+      return result || [];
+    } catch (error) {
+      console.error('연락처 태그 조회 실패:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 연락처에 태그를 추가합니다
+   * @param contactId 연락처 ID
+   * @param tagId 태그 ID
+   * @returns Promise<void>
+   */
+  static async fetchAddTagToContact(contactId: number, tagId: number): Promise<void> {
+    try {
+      await db.runAsync(
+        `INSERT INTO contact_tag (contact_id, tag_id) VALUES (?, ?)`,
+        [contactId, tagId]
+      );
+    } catch (error) {
+      console.error('연락처에 태그 추가 실패:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 연락처에서 태그를 제거합니다
+   * @param contactId 연락처 ID
+   * @param tagId 태그 ID
+   * @returns Promise<void>
+   */
+  static async fetchRemoveTagFromContact(contactId: number, tagId: number): Promise<void> {
+    try {
+      await db.runAsync(
+        `DELETE FROM contact_tag WHERE contact_id = ? AND tag_id = ?`,
+        [contactId, tagId]
+      );
+    } catch (error) {
+      console.error('연락처에서 태그 제거 실패:', error);
+      throw error;
+    }
+  }
+
   // ===== Note Group API =====
 
   /**

@@ -12,7 +12,9 @@ export const addressBookDbInit = async () => {
       profile_image TEXT,
       memo TEXT,
       is_me INTEGER,
-      created_at TEXT
+      created_at TEXT,
+      updated_at TEXT,
+      deleted_at TEXT
     );
 
     -- tag
@@ -64,12 +66,12 @@ const insertAddressBookMockData = async () => {
       DELETE FROM contact;
 
       -- 연락처 데이터 삽입
-      INSERT INTO contact (name, phone_number, profile_image, memo, is_me, created_at) VALUES
-        ('김철수', '010-1234-5678', null, '대학교 동기', 0, '2024-01-15T10:30:00Z'),
-        ('이영희', '010-2345-6789', null, '회사 동료, 마케팅팀', 0, '2024-01-16T14:20:00Z'),
-        ('박민수', '010-3456-7890', null, '헬스장에서 만난 친구', 0, '2024-01-17T09:15:00Z'),
-        ('최지은', '010-4567-8901', null, '고등학교 친구, 카페 사장', 0, '2024-01-18T16:45:00Z'),
-        ('나', '010-9999-0000', null, '내 연락처', 1, '2024-01-01T00:00:00Z');
+      INSERT INTO contact (name, phone_number, profile_image, memo, is_me, created_at, updated_at, deleted_at) VALUES
+        ('김철수', '010-1234-5678', null, '대학교 동기', 0, '2024-01-15T10:30:00Z', '2024-01-15T10:30:00Z', null),
+        ('이영희', '010-2345-6789', null, '회사 동료, 마케팅팀', 0, '2024-01-16T14:20:00Z', '2024-01-16T14:20:00Z', null),
+        ('박민수', '010-3456-7890', null, '헬스장에서 만난 친구', 0, '2024-01-17T09:15:00Z', '2024-01-17T09:15:00Z', null),
+        ('최지은', '010-4567-8901', null, '고등학교 친구, 카페 사장', 0, '2024-01-18T16:45:00Z', '2024-01-18T16:45:00Z', null),
+        ('나', '010-9999-0000', null, '내 연락처', 1, '2024-01-01T00:00:00Z', '2024-01-01T00:00:00Z', null);
 
       -- 태그 데이터 삽입
       INSERT INTO tag (name, color) VALUES

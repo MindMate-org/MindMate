@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { getContactById } from '../services/get-contact-data';
+import { AddressBookService } from '../services';
 import { ContactType } from '../types/address-book-type';
 
 import { useAsyncDataGet } from '@/src/hooks/use-async-data-get';
@@ -11,10 +11,11 @@ export const useContactEditState = (id: string) => {
   const [memo, setMemo] = useState('');
   const [image, setImage] = useState('');
   const getContactByIdCallback = useCallback(async () => {
-    const contact = await getContactById(id);
+    if (id === 'new') return null;
+    const contact = await AddressBookService.fetchGetContact(parseInt(id, 10));
     return contact;
   }, [id]);
-  const { data, refetch } = useAsyncDataGet<ContactType>(getContactByIdCallback);
+  const { data, refetch } = useAsyncDataGet<ContactType | null>(getContactByIdCallback);
   useEffect(() => {
     if (data) {
       setName(data.name);
