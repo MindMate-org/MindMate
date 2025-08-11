@@ -1,14 +1,15 @@
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import SearchInput from '@/src/components/ui/search-input';
-import SearchCategoryButton from '@/src/features/search/components/search-category-button';
-import SearchItemCard from '@/src/features/search/components/search-item-card';
-import { searchCategories } from '@/src/features/search/constants/search-category-constants';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState, useEffect, useMemo } from 'react';
-import { db } from '@/src/hooks/use-initialize-database';
-import { SearchData } from '@/src/features/search/db/search-db-types';
-import Button from '@/src/components/ui/button';
-import { getCategoryData } from '@/src/features/search/utils/getCategoryData';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+
+import Button from '../../../src/components/ui/button';
+import SearchInput from '../../../src/components/ui/search-input';
+import SearchCategoryButton from '../../../src/features/search/components/search-category-button';
+import SearchItemCard from '../../../src/features/search/components/search-item-card';
+import { searchCategories } from '../../../src/features/search/constants/search-category-constants';
+import { SearchData } from '../../../src/features/search/db/search-db-types';
+import { getCategoryData } from '../../../src/features/search/utils/getCategoryData';
+import { db } from '../../../src/hooks/use-initialize-database';
 
 const HomeScreen = () => {
   const [items, setItems] = useState<SearchData[]>([]); // 전체
@@ -18,7 +19,7 @@ const HomeScreen = () => {
   const router = useRouter();
 
   const handleCreateItem = () => {
-    router.push('/(tabs)/search/search-form');
+    router.push('/search/search-form');
   };
 
   // search 테이블 데이터 가져오기
@@ -44,7 +45,7 @@ const HomeScreen = () => {
     const normalizedSearch = search.trim().toLowerCase();
 
     return items.filter((item) => {
-      // 전체(‘전체’)인 경우 항상 통과, 특정 카테고리인 경우 일치 여부 검사
+      // 전체('전체')인 경우 항상 통과, 특정 카테고리인 경우 일치 여부 검사
       const matchesCategory = selectCategory === '전체' || item.category === selectCategory;
 
       // search가 빈 문자열이면 항상 통과, 아니면 포함 여부 검사
@@ -122,10 +123,11 @@ const HomeScreen = () => {
       </ScrollView>
 
       <TouchableOpacity
-        className="absolute bottom-8 right-6 h-16 w-16 items-center justify-center rounded-full bg-paleCobalt"
+        className="absolute bottom-20 right-8 h-16 w-16 items-center justify-center rounded-full bg-paleCobalt shadow-lg sm:bottom-24 sm:right-12 sm:h-20 sm:w-20"
         onPress={() => handleCreateItem()}
+        activeOpacity={0.8}
       >
-        <Text className="text-5xl font-light text-white">+</Text>
+        <Text className="text-3xl font-light text-white sm:text-5xl">+</Text>
       </TouchableOpacity>
     </View>
   );

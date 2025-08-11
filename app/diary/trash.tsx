@@ -1,11 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, Alert, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, RotateCcw, Trash2 } from 'lucide-react-native';
-import { DiaryService } from '../../src/features/diary/services';
-import { DiaryListItem } from '../../src/features/diary/components/diary-list-item';
-import { formatDateTimeString } from '../../src/lib/date-utils';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  SafeAreaView,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
+
 import { Colors } from '../../src/constants/colors';
+import { DiaryListItem } from '../../src/features/diary/components/diary-list-item';
+import { DiaryService } from '../../src/features/diary/services';
+import { formatDateTimeString } from '../../src/lib/date-utils';
 
 type DeletedDiary = {
   id: number;
@@ -106,7 +115,9 @@ const TrashPage = () => {
         {loading ? (
           <View className="flex-1 items-center justify-center" style={{ marginTop: 100 }}>
             <ActivityIndicator size="large" color="#576bcd" />
-            <Text className="mt-4 text-center text-base text-paleCobalt">휴지통을 불러오는 중...</Text>
+            <Text className="mt-4 text-center text-base text-paleCobalt">
+              휴지통을 불러오는 중...
+            </Text>
           </View>
         ) : deletedDiaries.length === 0 ? (
           <View className="flex-1 items-center justify-center">
@@ -125,7 +136,7 @@ const TrashPage = () => {
                 ...diary,
                 thumbnailUri: diary.media_uri,
               };
-              
+
               return (
                 <View key={diary.id} className="mb-4">
                   <DiaryListItem
@@ -133,7 +144,7 @@ const TrashPage = () => {
                     onPress={() => {}} // 휴지통에서는 상세보기 비활성화
                     formatDateTime={formatDateTimeString}
                   />
-                  
+
                   {/* 휴지통 전용 버튼들 */}
                   <View className="mx-4 -mt-2 mb-2 flex-row items-center justify-between">
                     <Text className="text-xs text-gray">

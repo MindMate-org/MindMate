@@ -1,6 +1,7 @@
+import { Image as ImageIcon, Video, Mic } from 'lucide-react-native';
 import React from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
-import { Image as ImageIcon, Video, Mic } from 'lucide-react-native';
+
 import { Colors } from '../../../constants/colors';
 import { RecordingStateType } from '../types';
 

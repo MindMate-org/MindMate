@@ -1,6 +1,6 @@
+import { hasContactTag, getTagById } from './get-tag-data';
 import { db } from '../../../hooks/use-initialize-database';
 import { Tag, ContactTag } from '../types/address-book-type';
-import { hasContactTag, getTagById } from './get-tag-data';
 
 // 연락처에 태그 추가
 export const addTagToContact = async (contactId: number, tagId: number): Promise<ContactTag> => {

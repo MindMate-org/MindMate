@@ -3,7 +3,7 @@ import DropDownPicker, { DropDownPickerProps } from 'react-native-dropdown-picke
 const SearchCategoryPicker = (props: DropDownPickerProps<any>) => {
   return (
     <DropDownPicker
-      listMode="SCROLLVIEW"
+      listMode="MODAL"
       placeholder="카테고리를 선택해 주세요"
       placeholderStyle={{
         color: '#c5c5c5',

@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
-import { Platform, Alert } from 'react-native';
+import { useState } from 'react';
+import { Alert } from 'react-native';
+
 import { RoutineType } from '../types';
 
 // 알람 설정 타입
@@ -66,43 +67,28 @@ export const useAlarm = () => {
 
       if (!routine.alarmTime) return true;
 
-      // 알람 시간 파싱
+      // 알람 시간 파싱 - 로컬 시간대 사용
       const [hours, minutes] = routine.alarmTime.split(':').map(Number);
-      // targetDate를 KST 기준으로 보정
+
+      // targetDate를 사용하여 정확한 알람 시간 설정
       const alarmDate = new Date(targetDate);
-      alarmDate.setHours(hours, minutes, 0, 0);
 
-      // 현재 시각과 alarmDate의 차이(밀리초)
-      const now = new Date();
-      const diff = alarmDate.getTime() - now.getTime();
+      console.log('[DEBUG] 전달받은 targetDate:', targetDate.toLocaleString('ko-KR'));
+      console.log('[DEBUG] 최종 알람 시간 설정:', alarmDate.toLocaleString('ko-KR'));
 
-      // 2초 이하(=즉시 울릴 위험)면 무조건 다음날로 이동
-      if (diff <= 2000) {
-        alarmDate.setDate(alarmDate.getDate() + 1);
-      }
-
-      // 예약 직전 로그
       console.log(
-        '[알람 예약] now:',
-        now.toLocaleString(),
-        'alarmDate:',
-        alarmDate.toLocaleString(),
-        'diff(ms):',
-        alarmDate.getTime() - now.getTime(),
+        '[루틴 알람 예약] 설정 시간:',
+        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`,
+        '예약된 알람:',
+        alarmDate.toLocaleString('ko-KR'),
+        '정확한 시간:',
+        `${alarmDate.getHours()}:${alarmDate.getMinutes()}:${alarmDate.getSeconds()}`,
       );
 
-      // 예약까지 남은 초 계산
-      const seconds = Math.max(1, Math.floor((alarmDate.getTime() - now.getTime()) / 1000));
+      // 알람 ID를 고유하게 생성 (타임스탬프 추가)
+      const alarmId = `routine_${routine.id}_${Date.now()}`;
 
-      // 과거 시간이면 다음 날로 설정
-      if (alarmDate <= new Date()) {
-        alarmDate.setDate(alarmDate.getDate() + 1);
-      }
-
-      // 알람 ID 생성
-      const alarmId = `routine_${routine.id}_${targetDate.toISOString().split('T')[0]}`;
-
-      // 알람 스케줄링
+      // 정확한 시간으로 알람 스케줄링 (date 트리거 사용)
       await Notifications.scheduleNotificationAsync({
         identifier: alarmId,
         content: {
@@ -114,7 +100,7 @@ export const useAlarm = () => {
             type: 'routine_alarm',
           },
         },
-        trigger: { seconds } as any,
+        trigger: { date: alarmDate } as any,
       });
 
       console.log(`알람 설정 완료: ${routine.name} - ${alarmDate.toLocaleString()}`);
@@ -145,7 +131,7 @@ export const useAlarm = () => {
     }
   };
 
-  // 반복 알람 설정
+  // 반복 알람 설정 (하루에 1개씩만)
   const scheduleRecurringAlarm = async (routine: RoutineType, startDate: Date, endDate?: Date) => {
     if (!isInitialized) {
       const initialized = await initializeAlarms();
@@ -158,10 +144,9 @@ export const useAlarm = () => {
       const [hours, minutes] = routine.alarmTime.split(':').map(Number);
       const currentDate = new Date(startDate);
       const end = endDate ? new Date(endDate) : new Date();
-      end.setDate(end.getDate() + 30); // 최대 30일 후까지
+      end.setDate(end.getDate() + 7); // 최대 7일 후까지만 (과도한 알림 방지)
 
       let successCount = 0;
-      let failCount = 0;
 
       while (currentDate <= end) {
         // 해당 날짜에 루틴이 실행되어야 하는지 확인
@@ -173,7 +158,7 @@ export const useAlarm = () => {
 
           // 과거 시간이면 건너뛰기
           if (alarmDate > new Date()) {
-            const alarmId = `routine_${routine.id}_${currentDate.toISOString().split('T')[0]}`;
+            const alarmId = `routine_${routine.id}_${currentDate.toISOString().split('T')[0]}_${Date.now()}`;
 
             await Notifications.scheduleNotificationAsync({
               identifier: alarmId,
@@ -184,6 +169,7 @@ export const useAlarm = () => {
                   routineId: routine.id,
                   routineName: routine.name,
                   type: 'routine_alarm',
+                  date: currentDate.toISOString().split('T')[0], // 날짜 정보 추가
                 },
               },
               trigger: { date: alarmDate } as any,
@@ -195,9 +181,7 @@ export const useAlarm = () => {
         currentDate.setDate(currentDate.getDate() + 1);
       }
 
-      console.log(
-        `반복 알람 설정 완료: ${routine.name} - ${successCount}개 성공, ${failCount}개 실패`,
-      );
+      console.log(`반복 알람 설정 완료: ${routine.name} - ${successCount}개 설정`);
       return true;
     } catch (error) {
       console.error('반복 알람 설정 실패:', error);

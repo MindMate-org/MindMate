@@ -1,15 +1,16 @@
-import BottomModal from '@/src/components/ui/bottom-modal';
-import { useAsyncDataGet } from '@/src/hooks/use-async-data-get';
 import { Plus } from 'lucide-react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
-import AddressBookTag from './address-book-tag';
-import { getAllTags, getContactTags } from '../services/get-tag-data';
-import Button from '@/src/components/ui/button';
-import { Contact, Tag } from '../types/address-book-type';
+
 import ActionMenu from './action-menu';
 import { formTextStyle } from '../constants/style-class-constants';
+import { getAllTags, getContactTags } from '../services/get-tag-data';
 import { addTagToContact, removeTagFromContact, updateTag } from '../services/mutation-tag-data';
+import { Contact, Tag } from '../types/address-book-type';
+
+import BottomModal from '@/src/components/ui/bottom-modal';
+import Button from '@/src/components/ui/button';
+import { useAsyncDataGet } from '@/src/hooks/use-async-data-get';
 
 const EditAddressBookTagButton = ({
   refetch,
@@ -64,10 +65,15 @@ const SelectAddressBookTagModal = ({
   const getAllTagsUseCallback = useCallback(getAllTags, []);
   const { data: allTags, refetch: refetchAllTags } = useAsyncDataGet(getAllTagsUseCallback);
 
+  const getContactTagsUseCallback = useCallback(() => getContactTags(contact.id), [contact.id]);
+  const { data: contactTags, refetch: refetchContactTags } =
+    useAsyncDataGet(getContactTagsUseCallback);
+
   const refetch = useCallback(async () => {
     await refetchAllTags();
+    await refetchContactTags();
     await refetchItemTags();
-  }, [refetchAllTags, refetchItemTags]);
+  }, [refetchAllTags, refetchContactTags, refetchItemTags]);
 
   const handleTag = async (tag: Tag) => {
     //태그편집
@@ -78,8 +84,8 @@ const SelectAddressBookTagModal = ({
     }
     //태그선택
     if (!isEditTag) {
-      const isHasTag = allTags?.some((t) => t.id === tag.id);
-      console.log(isEditTag, 'isEditTag');
+      const isHasTag = contactTags?.some((t) => t.id === tag.id);
+      console.log('Contact has tag:', isHasTag, 'Tag:', tag.name);
       if (!isHasTag) {
         await addTagToContact(contact.id, tag.id);
       }
@@ -98,11 +104,22 @@ const SelectAddressBookTagModal = ({
     <BottomModal isModalVisible={isModalVisible} setIsModalVisible={setIsModalVisible}>
       <View className="gap-10 p-4">
         <View className="flex-row flex-wrap gap-1">
-          {allTags?.map((tag) => (
-            <TouchableOpacity key={tag.id} onPress={() => handleTag(tag)}>
-              <AddressBookTag>{tag.name}</AddressBookTag>
-            </TouchableOpacity>
-          ))}
+          {allTags?.map((tag) => {
+            const isSelected = contactTags?.some((t) => t.id === tag.id);
+            return (
+              <TouchableOpacity key={tag.id} onPress={() => handleTag(tag)}>
+                <View
+                  className={`rounded-full px-3 py-1 ${isSelected ? 'bg-paleCobalt' : 'bg-gray-200'}`}
+                >
+                  <Text
+                    className={`text-sm font-medium ${isSelected ? 'text-white' : 'text-gray-700'}`}
+                  >
+                    {tag.name}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
         </View>
         <Button onPress={() => setIsEditTag(!isEditTag)}>
           <Text className="text-ss color-white">

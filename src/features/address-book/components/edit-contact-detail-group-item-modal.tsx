@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
+
+import { formTextStyle } from '../constants/style-class-constants';
+import { createNoteItem, updateNoteItem } from '../services/mutation-note-group-data';
 import { NoteItem } from '../types/address-book-type';
 
 import BottomModal from '@/src/components/ui/bottom-modal';
 import Button from '@/src/components/ui/button';
-import { formTextStyle } from '../constants/style-class-constants';
-import { createNoteItem, updateNoteItem } from '../services/mutation-note-group-data';
 
 const EditContactDetailGroupItemModal = ({
   isModalVisible,

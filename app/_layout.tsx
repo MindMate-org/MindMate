@@ -2,8 +2,9 @@ import { useEffect } from 'react';
 import '../global.css';
 import { SplashScreen, Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
-import { useInitializeDatabase } from '../src/hooks/use-initialize-database';
 import Toast from 'react-native-toast-message';
+
+import { useInitializeDatabase } from '../src/hooks/use-initialize-database';
 
 SplashScreen.preventAutoHideAsync();
 

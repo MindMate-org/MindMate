@@ -1,7 +1,8 @@
+import * as ImagePicker from 'expo-image-picker';
 import { Alert } from 'react-native';
+
 import { db } from '../hooks/use-initialize-database';
 import { MediaType } from '../types/common-db-types';
-import * as ImagePicker from 'expo-image-picker';
 
 type fetchInsertMediaType = {
   media: MediaType[];

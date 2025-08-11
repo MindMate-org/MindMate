@@ -1,36 +1,34 @@
+import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import {
   View,
   Text,
   TextInput,
   ScrollView,
   TouchableOpacity,
-  Image,
   ActivityIndicator,
   Alert,
   SafeAreaView,
-  Platform,
 } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import CheckBox from 'src/components/ui/checkbox';
-import AlarmTimePicker from 'src/features/routine/components/AlarmTimePicker';
-import RepeatInfoModal from 'src/features/routine/components/RepeatInfoModal';
-import { useRoutineDetailQuery } from 'src/features/routine/hooks/use-routine-query';
+import FormInput from 'src/components/ui/form-input';
+import MediaPicker from 'src/components/ui/media-picker';
+import { useMediaPicker } from 'src/features/diary/hooks/use-media-picker';
+import RepeatInfoModal from 'src/features/routine/components/repeat-info-modal';
+import { useAlarm } from 'src/features/routine/hooks/use-alarm';
 import {
   useCreateRoutine,
   useUpdateRoutine,
 } from 'src/features/routine/hooks/use-routine-mutation';
+import { useRoutineDetailQuery } from 'src/features/routine/hooks/use-routine-query';
 import {
   CreateRoutinePayload,
   UpdateRoutinePayload,
   RepeatCycleType,
 } from 'src/features/routine/types';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import type { DateTimePickerProps } from 'react-native-modal-datetime-picker';
-import { useMediaPicker } from 'src/features/diary/hooks/use-media-picker';
-import { useForm } from 'react-hook-form';
-import { useAlarm } from 'src/features/routine/hooks/use-alarm';
 
 const RoutineDetail = () => {
   const { id, startDate } = useLocalSearchParams();
@@ -52,7 +50,6 @@ const RoutineDetail = () => {
   const [subTasks, setSubTasks] = useState(['']);
   const [repeatInfo, setRepeatInfo] = useState<RepeatCycleType>('매일');
   const [alarmTime, setAlarmTime] = useState(new Date());
-  const [imageUrl, setImageUrl] = useState('');
   const [showRepeatInfo, setShowRepeatInfo] = useState(false);
   const [showImagePicker, setShowImagePicker] = useState(false);
   const [deadline, setDeadline] = useState<string>('2025-07-31');
@@ -79,7 +76,7 @@ const RoutineDetail = () => {
   );
 
   // 알람 훅
-  const { initializeAlarms, scheduleRecurringAlarm, cancelAlarm } = useAlarm();
+  const { initializeAlarms, scheduleAlarm, cancelAlarm } = useAlarm();
 
   // 기존 루틴 데이터 로드 (수정 모드)
   useEffect(() => {
@@ -103,23 +100,13 @@ const RoutineDetail = () => {
         setIsAlarmEnabled(false);
       }
 
-      setImageUrl(routine.imageUrl || '');
+      if (routine.imageUrl) {
+        setValue('media', [{ uri: routine.imageUrl, type: 'image' }]);
+      }
       if (routine.deadline) setDeadline(routine.deadline);
       setDuration('00:00');
     }
   }, [routine, isEdit]);
-
-  // 미디어 변경 시 이미지 URL 업데이트
-  useEffect(() => {
-    if (watchedMedia.length > 0) {
-      const firstImage = watchedMedia.find((media) => media.type === 'image');
-      if (firstImage) {
-        setImageUrl(firstImage.uri);
-      }
-    } else {
-      setImageUrl('');
-    }
-  }, [watchedMedia]);
 
   // 하위 작업 추가
   const addSubTask = () => {
@@ -140,12 +127,6 @@ const RoutineDetail = () => {
     setSubTasks(newSubTasks);
   };
 
-  // 이미지 제거
-  const handleRemoveImage = () => {
-    setValue('media', []);
-    setImageUrl('');
-  };
-
   // 알람 설정
   const setupAlarm = async (routineData: any) => {
     try {
@@ -163,16 +144,37 @@ const RoutineDetail = () => {
 
       // 알람이 활성화되어 있고 알람 시간이 설정된 경우에만 알람 설정
       if (isAlarmEnabled && routineData.alarmTime) {
-        const routineStartDate =
-          isEdit && routine ? new Date(routine.createdAt) : new Date(startDate as string);
-        const endDate = routineData.deadline ? new Date(routineData.deadline) : undefined;
+        // 현재 날짜의 로컬 시간으로 알람 시간 설정
+        const now = new Date();
+        const [hours, minutes] = routineData.alarmTime.split(':');
+        const alarmDate = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+          parseInt(hours),
+          parseInt(minutes),
+          0,
+          0,
+        );
 
-        const success = await scheduleRecurringAlarm(routineData, routineStartDate, endDate);
+        // 과거 시간이면 내일로 설정
+        if (alarmDate <= now) {
+          alarmDate.setDate(alarmDate.getDate() + 1);
+        }
+
+        console.log(
+          '[루틴 생성 알람] 설정 시간:',
+          `${hours}:${minutes}`,
+          '예약된 알람:',
+          alarmDate.toLocaleString('ko-KR'),
+        );
+
+        const success = await scheduleAlarm(routineData, alarmDate);
         if (success) {
-          console.log('알람 설정 완료');
+          console.log('루틴 알람 설정 완료');
           return true;
         } else {
-          console.log('알람 설정 실패');
+          console.log('루틴 알람 설정 실패');
           return false;
         }
       }
@@ -209,6 +211,9 @@ const RoutineDetail = () => {
         title: task.trim(),
         order: index + 1,
       }));
+
+    // 이미지 URL 가져오기
+    const imageUrl = watchedMedia.length > 0 ? watchedMedia[0].uri : undefined;
 
     if (isEdit) {
       // 수정 모드
@@ -314,7 +319,7 @@ const RoutineDetail = () => {
   return (
     <SafeAreaView className="flex-1 bg-[#F4F4F4]">
       {/* 헤더 */}
-      <View className="mt-12 flex-row items-center justify-center rounded-t-xl bg-white px-4 py-4 shadow-sm">
+      <View className="pt-safe flex-row items-center justify-center rounded-t-xl bg-white px-4 py-4 shadow-sm">
         <TouchableOpacity
           onPress={() => router.back()}
           className="absolute left-4"
@@ -328,27 +333,26 @@ const RoutineDetail = () => {
       </View>
 
       <ScrollView className="flex-1 bg-white px-4">
-        <View className="py-4">
+        <View className="py-4 pb-safe">
           {/* 제목 */}
-          <Text className="mb-2 text-base font-bold text-[#7B7FD6]">루틴 이름</Text>
-          <TextInput
+          <FormInput
             value={title}
             onChangeText={setTitle}
+            label="루틴 이름"
             placeholder="루틴 이름을 입력해주세요"
-            className="mb-6 rounded-xl border border-[#E0E4F7] bg-white px-4 py-3 shadow-sm"
-            placeholderTextColor="#B0B8CC"
+            required
+            className="mb-6"
           />
 
           {/* 설명 */}
-          <Text className="mb-2 text-base font-bold text-[#7B7FD6]">설명</Text>
-          <TextInput
+          <FormInput
             value={description}
             onChangeText={setDescription}
+            label="설명"
             placeholder="루틴에 대한 설명을 입력해주세요 (선택사항)"
             multiline
-            numberOfLines={3}
-            className="mb-6 rounded-xl border border-[#E0E4F7] bg-white px-4 py-3 shadow-sm"
-            placeholderTextColor="#B0B8CC"
+            height={80}
+            className="mb-6"
           />
 
           {/* 하위 작업 */}
@@ -377,42 +381,22 @@ const RoutineDetail = () => {
           </TouchableOpacity>
 
           {/* 사진 */}
-          <Text className="mb-2 text-base font-bold text-[#7B7FD6]">사진</Text>
-          <View className="mb-6">
-            {imageUrl ? (
-              <View className="relative self-start">
-                <Image
-                  source={{ uri: imageUrl }}
-                  className="h-32 w-32 rounded-xl"
-                  resizeMode="cover"
-                />
-                <TouchableOpacity
-                  onPress={handleRemoveImage}
-                  className="absolute right-2 top-2 rounded-full bg-black bg-opacity-50 p-1"
-                >
-                  <Ionicons name="close" size={20} color="white" />
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <TouchableOpacity
-                onPress={handleImagePicker}
-                disabled={mediaUploadState.isUploading}
-                className="bg-gray-50 h-32 w-32 items-center justify-center self-start rounded-xl border-2 border-dashed border-[#B0B8CC]"
-              >
-                {mediaUploadState.isUploading ? (
-                  <View className="items-center">
-                    <ActivityIndicator size="small" color="#576BCD" />
-                    <Text className="text-gray-500 mt-2 text-sm">업로드 중...</Text>
-                  </View>
-                ) : (
-                  <View className="items-center">
-                    <Ionicons name="camera-outline" size={32} color="#7B7FD6" />
-                    <Text className="text-gray-500 mt-2 text-sm">사진 추가하기</Text>
-                  </View>
-                )}
-              </TouchableOpacity>
-            )}
-          </View>
+          <MediaPicker
+            mediaList={watchedMedia.map((media, index) => ({
+              uri: media.uri,
+              type: media.type,
+              id: media.id || index.toString(),
+            }))}
+            onAddMedia={handleImagePicker}
+            onRemoveMedia={(idx) => {
+              const newMedia = watchedMedia.filter((_, i) => i !== idx);
+              setValue('media', newMedia);
+            }}
+            maxCount={3}
+            label="사진 추가"
+            isLoading={mediaUploadState.isUploading}
+            className="mb-6"
+          />
 
           {/* 옵션 영역 */}
           <View className="mb-6 rounded-xl bg-[#F7F8FD] px-4 py-4">

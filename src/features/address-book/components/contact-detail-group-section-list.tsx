@@ -1,16 +1,18 @@
-import { useCallback, useEffect, useState } from 'react';
-import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { getNoteGroupsByContactId } from '../services/get-note-group-data';
-import { NoteGroup, NoteItem } from '../types/address-book-type';
-import { useAsyncDataGet } from '@/src/hooks/use-async-data-get';
-import { getNoteItemsByGroupId } from '../services/get-note-group-data';
-import CommonBox from '@/src/components/ui/common-box';
-import Button from '@/src/components/ui/button';
-import { deleteNoteGroup, deleteNoteItem } from '../services/mutation-note-group-data';
 import { EllipsisVertical } from 'lucide-react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+
 import ActionMenu from './action-menu';
 import EditContactDetailGroupItemModal from './edit-contact-detail-group-item-modal';
 import EditContactDetailGroupModal from './edit-contact-detail-group-modal';
+import { getNoteGroupsByContactId } from '../services/get-note-group-data';
+import { getNoteItemsByGroupId } from '../services/get-note-group-data';
+import { deleteNoteGroup, deleteNoteItem } from '../services/mutation-note-group-data';
+import { NoteGroup, NoteItem } from '../types/address-book-type';
+
+import Button from '@/src/components/ui/button';
+import CommonBox from '@/src/components/ui/common-box';
+import { useAsyncDataGet } from '@/src/hooks/use-async-data-get';
 
 const ContactDetailGroupSectionList = ({
   id,

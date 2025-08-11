@@ -1,6 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
-import { Feather, AntDesign } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
 import {
   ArrowDownWideNarrow,
@@ -12,11 +10,14 @@ import {
   PenTool,
   Calendar,
 } from 'lucide-react-native';
-import { DiaryService } from '../../../src/features/diary/services';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
+
 import { DiaryListItem } from '../../../src/features/diary/components/diary-list-item';
 import SearchModal from '../../../src/features/diary/components/search-modal';
-import { formatDateTimeString } from '../../../src/lib/date-utils';
+import { DiaryService } from '../../../src/features/diary/services';
 import { groupDiariesByPeriod } from '../../../src/features/diary/utils/diary-grouping';
+import { formatDateTimeString } from '../../../src/lib/date-utils';
 
 type SortOrderType = 'asc' | 'desc';
 
@@ -61,7 +62,7 @@ const DiaryListPage = () => {
     }, []),
   );
 
-  const fetchDiaries = async () => {
+  const fetchDiaries = useCallback(async () => {
     try {
       setIsLoading(true);
       setErrorCount(0);
@@ -88,13 +89,13 @@ const DiaryListPage = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isSearchActive, errorCount, diaries.length]);
 
   const handleSortToggle = () => {
     setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'));
   };
 
-  const handleSearch = async (filters: any) => {
+  const handleSearch = useCallback(async (filters: any) => {
     try {
       setIsLoading(true);
       const searchResult = await DiaryService.searchDiaries({
@@ -111,37 +112,38 @@ const DiaryListPage = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const handleResetSearch = () => {
+  const handleResetSearch = useCallback(() => {
     setFilteredDiaries(diaries);
     setIsSearchActive(false);
-  };
+  }, [diaries]);
 
-  // 썸네일 URI 설정 (DiaryService에서 이미 우선순위가 적용됨: 이미지 > 동영상)
-  const diariesWithThumbnail = filteredDiaries.map((item) => ({
-    ...item,
-    thumbnailUri: item.media_uri, // 이미 우선순위가 적용된 미디어 URI
-  }));
+  // 썸네일 URI 설정 및 정렬을 useMemo로 최적화
+  const sortedDiaries = useMemo(() => {
+    const diariesWithThumbnail = filteredDiaries.map((item) => ({
+      ...item,
+      thumbnailUri: item.media_uri,
+    }));
 
-  // 정렬 (수정 시간 우선, 없으면 생성 시간)
-  const sortedDiaries = [...diariesWithThumbnail].sort((a, b) => {
-    const dateA = new Date(a.updated_at ?? a.created_at ?? '').getTime();
-    const dateB = new Date(b.updated_at ?? b.created_at ?? '').getTime();
-    return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
-  });
+    return [...diariesWithThumbnail].sort((a, b) => {
+      const dateA = new Date(a.updated_at ?? a.created_at ?? '').getTime();
+      const dateB = new Date(b.updated_at ?? b.created_at ?? '').getTime();
+      return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+    });
+  }, [filteredDiaries, sortOrder]);
 
-  // 그룹화
-  const grouped = groupDiariesByPeriod(sortedDiaries);
+  // 그룹화를 useMemo로 최적화
+  const grouped = useMemo(() => groupDiariesByPeriod(sortedDiaries), [sortedDiaries]);
 
   return (
     <View className="flex-1 bg-turquoise">
       <ScrollView
         className="flex-1"
-        contentContainerStyle={{ 
-          paddingHorizontal: 12, 
-          paddingTop: 12, 
-          paddingBottom: 80 
+        contentContainerStyle={{
+          paddingHorizontal: 12,
+          paddingTop: 12,
+          paddingBottom: 80,
         }}
         contentContainerClassName="sm:px-4 sm:pt-4 sm:pb-24 lg:px-6 lg:pt-6"
       >
@@ -150,31 +152,31 @@ const DiaryListPage = () => {
           <View className="flex-row gap-1 sm:gap-2">
             <Pressable
               onPress={() => router.push('/diary/trash')}
-              className="flex-1 flex-row items-center justify-center gap-1 rounded-lg bg-white px-1 sm:px-2 py-2 sm:py-2.5 shadow-sm min-h-[40px] sm:min-h-[44px]"
+              className="min-h-[40px] flex-1 flex-row items-center justify-center gap-1 rounded-lg bg-white px-1 py-2 shadow-sm sm:min-h-[44px] sm:px-2 sm:py-2.5"
             >
-              <Trash2 color={'#576bcd'} size={14} className="sm:w-4 sm:h-4" />
-              <Text className="text-xs sm:text-sm font-medium text-paleCobalt">휴지통</Text>
+              <Trash2 color={'#576bcd'} size={14} className="sm:h-4 sm:w-4" />
+              <Text className="text-xs font-medium text-paleCobalt sm:text-sm">휴지통</Text>
             </Pressable>
             <Pressable
               onPress={() => router.push('/diary/stats')}
-              className="flex-1 flex-row items-center justify-center gap-1 rounded-lg bg-white px-1 sm:px-2 py-2 sm:py-2.5 shadow-sm min-h-[40px] sm:min-h-[44px]"
+              className="min-h-[40px] flex-1 flex-row items-center justify-center gap-1 rounded-lg bg-white px-1 py-2 shadow-sm sm:min-h-[44px] sm:px-2 sm:py-2.5"
             >
-              <BarChart3 color={'#576bcd'} size={14} className="sm:w-4 sm:h-4" />
-              <Text className="text-xs sm:text-sm font-medium text-paleCobalt">통계</Text>
+              <BarChart3 color={'#576bcd'} size={14} className="sm:h-4 sm:w-4" />
+              <Text className="text-xs font-medium text-paleCobalt sm:text-sm">통계</Text>
             </Pressable>
             <Pressable
               onPress={() => router.push('/diary/favorites')}
-              className="flex-1 flex-row items-center justify-center gap-1 rounded-lg bg-white px-1 sm:px-2 py-2 sm:py-2.5 shadow-sm min-h-[40px] sm:min-h-[44px]"
+              className="min-h-[40px] flex-1 flex-row items-center justify-center gap-1 rounded-lg bg-white px-1 py-2 shadow-sm sm:min-h-[44px] sm:px-2 sm:py-2.5"
             >
-              <Star color={'#FFD700'} size={14} fill={'#FFD700'} className="sm:w-4 sm:h-4" />
-              <Text className="text-xs sm:text-sm font-medium text-paleCobalt">북마크</Text>
+              <Star color={'#FFD700'} size={14} fill={'#FFD700'} className="sm:h-4 sm:w-4" />
+              <Text className="text-xs font-medium text-paleCobalt sm:text-sm">북마크</Text>
             </Pressable>
             <Pressable
               onPress={() => setShowSearchModal(true)}
-              className="flex-1 flex-row items-center justify-center gap-1 rounded-lg bg-white px-1 sm:px-2 py-2 sm:py-2.5 shadow-sm min-h-[40px] sm:min-h-[44px]"
+              className="min-h-[40px] flex-1 flex-row items-center justify-center gap-1 rounded-lg bg-white px-1 py-2 shadow-sm sm:min-h-[44px] sm:px-2 sm:py-2.5"
             >
-              <Search color={'#576bcd'} size={14} className="sm:w-4 sm:h-4" />
-              <Text className="text-xs sm:text-sm font-medium text-paleCobalt">검색</Text>
+              <Search color={'#576bcd'} size={14} className="sm:h-4 sm:w-4" />
+              <Text className="text-xs font-medium text-paleCobalt sm:text-sm">검색</Text>
             </Pressable>
           </View>
           {isSearchActive && (
@@ -340,9 +342,9 @@ const DiaryListPage = () => {
       {/* + 버튼 */}
       <Pressable
         onPress={() => router.push('/diary/create')}
-        className="absolute bottom-20 sm:bottom-24 right-8 sm:right-12 w-16 h-16 sm:w-20 sm:h-20 items-center justify-center rounded-full bg-paleCobalt shadow-lg"
+        className="absolute bottom-20 right-8 h-16 w-16 items-center justify-center rounded-full bg-paleCobalt shadow-lg sm:bottom-24 sm:right-12 sm:h-20 sm:w-20"
       >
-        <AntDesign name="plus" size={32} color="white" className="sm:text-5xl" />
+        <Text className="text-3xl font-light text-white sm:text-5xl">+</Text>
       </Pressable>
 
       {/* 검색 모달 */}

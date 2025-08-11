@@ -1,8 +1,9 @@
-import { Text, TouchableOpacity, View } from 'react-native';
 import CommonBox from '@components/ui/common-box';
-import SearchCategoryButton from './search-category-button';
 import { router } from 'expo-router';
 import { ChevronRight } from 'lucide-react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
+
+import SearchCategoryButton from './search-category-button';
 import { getCategoryData } from '../utils/getCategoryData';
 
 type SearchItemCardProps = {
@@ -14,7 +15,7 @@ type SearchItemCardProps = {
 
 const SearchItemCard = ({ id, category, name, location }: SearchItemCardProps) => {
   const handlePress = () => {
-    router.push(`./search/${id}`);
+    router.push(`/search/${id}`);
   };
 
   const { color } = getCategoryData(category);
@@ -24,7 +25,7 @@ const SearchItemCard = ({ id, category, name, location }: SearchItemCardProps) =
       <TouchableOpacity onPress={handlePress}>
         <View className="flex-row items-center ">
           <View className="mr-4">
-            <SearchCategoryButton label={category} />
+            <SearchCategoryButton label={category} isSelected={false} />
           </View>
 
           <View className="flex-1">

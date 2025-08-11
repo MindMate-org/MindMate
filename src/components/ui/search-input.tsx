@@ -1,5 +1,5 @@
 import { Search, X } from 'lucide-react-native';
-import { Dispatch, SetStateAction, useEffect } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { TextInput, TouchableOpacity, View } from 'react-native';
 
 type SearchInputType = {

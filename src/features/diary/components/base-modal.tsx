@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Modal, Pressable, StatusBar } from 'react-native';
+import { Modal, Pressable, StatusBar } from 'react-native';
 
 /**
  * 기본 모달 컴포넌트의 props 타입

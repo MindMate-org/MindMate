@@ -1,13 +1,14 @@
+import { useRouter } from 'expo-router';
+import { ChevronLeft, Star, Heart } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
 import { TouchableOpacity } from 'react-native';
-import { ChevronLeft, Star, Heart } from 'lucide-react-native';
-import { DiaryService } from '../../src/features/diary/services';
-import { DiaryListItem } from '../../src/features/diary/components/diary-list-item';
-import { formatDateTimeString } from '../../src/lib/date-utils';
-import { groupDiariesByPeriod } from '../../src/features/diary/utils/diary-grouping';
+
 import { Colors } from '../../src/constants/colors';
+import { DiaryListItem } from '../../src/features/diary/components/diary-list-item';
+import { DiaryService } from '../../src/features/diary/services';
+import { groupDiariesByPeriod } from '../../src/features/diary/utils/diary-grouping';
+import { formatDateTimeString } from '../../src/lib/date-utils';
 
 /**
  * 북마크 페이지 컴포넌트
@@ -43,7 +44,7 @@ const FavoritesPage = () => {
       setLoading(true);
       const result = await DiaryService.getAllDiariesWithMedia();
       // 북마크만 필터링
-      const favorites = result.filter(diary => diary.is_favorite);
+      const favorites = result.filter((diary) => diary.is_favorite);
       setFavoriteDiaries(favorites);
     } catch (error) {
       console.error('북마크 일기 조회 실패:', error);
@@ -88,7 +89,9 @@ const FavoritesPage = () => {
           {loading ? (
             <View className="flex-1 items-center justify-center" style={{ marginTop: 100 }}>
               <ActivityIndicator size="large" color="#576bcd" />
-              <Text className="mt-4 text-center text-base text-paleCobalt">북마크를 불러오는 중...</Text>
+              <Text className="mt-4 text-center text-base text-paleCobalt">
+                북마크를 불러오는 중...
+              </Text>
             </View>
           ) : favoriteDiaries.length === 0 ? (
             <View className="flex-1 items-center justify-center" style={{ marginTop: 100 }}>

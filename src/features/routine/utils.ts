@@ -100,10 +100,6 @@ export const formatRepeatCycle = (detail: RepeatCycleDetail): RepeatCycleType =>
   }
 };
 
-// KST(UTC+9)로 변환하는 함수
-function toKSTDate(date: Date) {
-  return new Date(date.getTime() + 9 * 60 * 60 * 1000);
-}
 
 /**
  * 특정 날짜에 루틴이 실행되어야 하는지 확인하는 함수

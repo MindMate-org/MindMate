@@ -2,8 +2,6 @@
  * 루틴 관련 SQLite DB CRUD 서비스
  */
 
-import { db } from '../../hooks/use-initialize-database';
-import { RoutineType, CreateRoutinePayload, UpdateRoutinePayload } from './types';
 import {
   RoutineDbType,
   SubTaskDbType,
@@ -11,7 +9,9 @@ import {
   RoutineWithSubTasksType,
   RoutineQueryOptions,
 } from './db/routine-db-types';
+import { RoutineType, CreateRoutinePayload, UpdateRoutinePayload } from './types';
 import { shouldRunOnDate } from './utils';
+import { db } from '../../hooks/use-initialize-database';
 
 /**
  * DB 타입을 앱 타입으로 변환하는 헬퍼 함수

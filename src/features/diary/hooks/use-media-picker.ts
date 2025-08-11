@@ -1,7 +1,8 @@
-import { Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { DiaryMediaType } from '../types';
 import { UseFormSetValue } from 'react-hook-form';
+import { Alert } from 'react-native';
+
+import { DiaryMediaType } from '../types';
 import { useMediaUpload } from './use-media-upload';
 
 /**

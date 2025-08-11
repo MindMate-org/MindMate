@@ -1,4 +1,8 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'expo-router';
+import { ChevronLeft, Clock } from 'lucide-react-native';
 import React, { useState, useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import {
   View,
   Text,
@@ -8,21 +12,18 @@ import {
   SafeAreaView,
   Alert,
 } from 'react-native';
-import { useRouter } from 'expo-router';
-import { ChevronLeft, Clock } from 'lucide-react-native';
+
 import { Colors } from '../../src/constants/colors';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { DiaryService } from '../../src/features/diary/services';
-import { DiaryFormDataType, diaryFormSchema, DiaryMediaType } from '../../src/features/diary/types';
 import MediaButtons from '../../src/features/diary/components/media-buttons';
 import MediaPreview from '../../src/features/diary/components/media-preview';
 import MoodPicker from '../../src/features/diary/components/mood-picker';
 import StylePicker from '../../src/features/diary/components/style-picker';
+import { DEFAULT_DIARY_STYLE } from '../../src/features/diary/constants/style-options';
 import { useAudioRecording } from '../../src/features/diary/hooks/use-audio-recording';
 import { useMediaPicker } from '../../src/features/diary/hooks/use-media-picker';
+import { DiaryService } from '../../src/features/diary/services';
+import { DiaryFormDataType, diaryFormSchema } from '../../src/features/diary/types';
 import { formatDateTime } from '../../src/lib/date-utils';
-import { DEFAULT_DIARY_STYLE } from '../../src/features/diary/constants/style-options';
 
 /**
  * 일기 작성 페이지 컴포넌트

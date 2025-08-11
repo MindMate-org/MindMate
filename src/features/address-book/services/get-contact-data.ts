@@ -1,5 +1,5 @@
 import { db } from '../../../hooks/use-initialize-database';
-import { Contact, NoteGroup } from '../types/address-book-type';
+import { Contact } from '../types/address-book-type';
 
 // 내 연락처만 가져오기
 export const getMyContact = async (): Promise<Contact> => {
@@ -12,10 +12,12 @@ export const getMyContact = async (): Promise<Contact> => {
   }
 };
 
-// 다른 사람들의 연락처만 가져오기
+// 다른 사람들의 연락처만 가져오기 - 인덱스 활용을 위해 ORDER BY 추가
 export const getOthersContacts = async (): Promise<Contact[]> => {
   try {
-    const data = await db.getAllAsync<Contact>('SELECT * FROM contact WHERE is_me = 0');
+    const data = await db.getAllAsync<Contact>(
+      'SELECT * FROM contact WHERE is_me = 0 ORDER BY name COLLATE NOCASE',
+    );
     return data;
   } catch (error) {
     console.error(error);

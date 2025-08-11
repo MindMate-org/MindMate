@@ -1,4 +1,3 @@
-import { db } from '../../hooks/use-initialize-database';
 import {
   DiaryTableType,
   MediaTableType,
@@ -8,6 +7,7 @@ import {
   DiaryWithMediaType,
   DiarySearchDbFilterType,
 } from './db/diary-db-types';
+import { db } from '../../hooks/use-initialize-database';
 
 /**
  * 일기 관련 데이터베이스 작업을 처리하는 서비스 클래스
@@ -41,7 +41,12 @@ export class DiaryService {
    * console.log(`총 ${diaries.length}개의 일기가 있습니다`);
    * ```
    */
-  static async getAllDiaries(): Promise<DiaryTableType[]> {
+  /**
+   * 모든 일기를 최신순으로 조회합니다
+   * @returns Promise<DiaryTableType[]> 일기 목록 배열 (최신순 정렬)
+   * @throws {Error} 데이터베이스 조회 실패 시
+   */
+  static async fetchGetDiaries(): Promise<DiaryTableType[]> {
     try {
       const result = await db.getAllAsync<DiaryTableType>(
         `SELECT * FROM diaries WHERE deleted_at IS NULL ORDER BY created_at DESC`,
@@ -51,6 +56,13 @@ export class DiaryService {
       console.error('일기 목록 조회 실패:', error);
       throw error;
     }
+  }
+
+  /**
+   * @deprecated Use fetchGetDiaries instead
+   */
+  static async getAllDiaries(): Promise<DiaryTableType[]> {
+    return this.fetchGetDiaries();
   }
 
   /**
@@ -117,9 +129,9 @@ export class DiaryService {
    * });
    * ```
    */
-  static async searchDiaries(filter: DiarySearchDbFilterType): Promise<
-    (DiaryTableType & { media_uri: string | null; media_type: string | null })[]
-  > {
+  static async searchDiaries(
+    filter: DiarySearchDbFilterType,
+  ): Promise<(DiaryTableType & { media_uri: string | null; media_type: string | null })[]> {
     try {
       let query = `SELECT DISTINCT d.*, 
                   COALESCE(img.file_path, vid.file_path) as media_uri,
@@ -137,7 +149,7 @@ export class DiaryService {
              WHERE owner_type = 'diary' AND media_type = 'video'
              GROUP BY owner_id
            ) vid ON vid.owner_id = d.id AND img.owner_id IS NULL`;
-      
+
       const conditions: string[] = [];
       const params: any[] = [];
 
@@ -305,30 +317,39 @@ export class DiaryService {
       }
 
       console.log('일기+미디어 조회 시작');
-      
+
+      // 최적화된 쿼리: CTE(Common Table Expression) 사용하여 성능 개선
       const result = await db.getAllAsync<
         DiaryTableType & { media_uri: string | null; media_type: string | null }
       >(
-        `SELECT d.*, 
-                COALESCE(img.file_path, vid.file_path) as media_uri,
-                COALESCE(img.media_type, vid.media_type) as media_type
+        `WITH media_priority AS (
+           SELECT 
+             owner_id,
+             file_path,
+             media_type,
+             ROW_NUMBER() OVER (
+               PARTITION BY owner_id 
+               ORDER BY 
+                 CASE media_type 
+                   WHEN 'image' THEN 1 
+                   WHEN 'video' THEN 2 
+                   ELSE 3 
+                 END, 
+                 id
+             ) as rn
+           FROM media
+           WHERE owner_type = 'diary'
+         )
+         SELECT d.*, 
+                mp.file_path as media_uri,
+                mp.media_type
          FROM diaries d
-         LEFT JOIN (
-           SELECT owner_id, file_path, media_type, MIN(id) as min_id
-           FROM media
-           WHERE owner_type = 'diary' AND media_type = 'image'
-           GROUP BY owner_id
-         ) img ON img.owner_id = d.id
-         LEFT JOIN (
-           SELECT owner_id, file_path, media_type, MIN(id) as min_id
-           FROM media
-           WHERE owner_type = 'diary' AND media_type = 'video'
-           GROUP BY owner_id
-         ) vid ON vid.owner_id = d.id AND img.owner_id IS NULL
+         LEFT JOIN media_priority mp ON mp.owner_id = d.id AND mp.rn = 1
          WHERE d.deleted_at IS NULL
-         ORDER BY d.created_at DESC`,
+         ORDER BY 
+           CASE WHEN d.updated_at IS NOT NULL THEN d.updated_at ELSE d.created_at END DESC`,
       );
-      
+
       console.log(`일기+미디어 조회 완료: ${result?.length || 0}개`);
       return result || [];
     } catch (error) {
@@ -337,7 +358,7 @@ export class DiaryService {
         stack: error instanceof Error ? error.stack : undefined,
         timestamp: new Date().toISOString(),
       });
-      
+
       // 에러를 상위로 던져서 UI에서 적절히 처리할 수 있도록 함
       throw error;
     }
@@ -531,7 +552,7 @@ export class DiaryService {
    * deleted_at이 NULL이 아닌 일기들과 해당 미디어를 반환합니다.
    * 삭제된 순서대로 정렬하여 반환합니다.
    *
-   * @returns Promise<(DiaryTableType & { media_uri: string | null; media_type: string | null })[]> 
+   * @returns Promise<(DiaryTableType & { media_uri: string | null; media_type: string | null })[]>
    * 삭제된 일기 목록 (미디어 정보 포함)
    * @throws {Error} 데이터베이스 조회 실패 시
    */
@@ -565,7 +586,7 @@ export class DiaryService {
          WHERE d.deleted_at IS NOT NULL
          ORDER BY d.deleted_at DESC`,
       );
-      
+
       return result || [];
     } catch (error) {
       console.error('휴지통 일기+미디어 조회 실패:', error);

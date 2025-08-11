@@ -1,6 +1,7 @@
+import { getNoteGroupsByContactId, getNoteItemById } from './get-note-group-data';
+
 import { NoteGroup, NoteItem } from '@/src/features/address-book/types/address-book-type';
 import { db } from '@/src/hooks/use-initialize-database';
-import { getNoteGroupsByContactId, getNoteItemById } from './get-note-group-data';
 
 // 노트 그룹 생성
 export const createNoteGroup = async (contactId: string, title: string): Promise<NoteGroup> => {

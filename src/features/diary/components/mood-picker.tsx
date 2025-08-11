@@ -1,6 +1,7 @@
+import { Smile } from 'lucide-react-native';
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { Smile } from 'lucide-react-native';
+
 import { Colors } from '../../../constants/colors';
 import { MoodType, MOOD_OPTIONS } from '../types';
 import BaseModal from './base-modal';

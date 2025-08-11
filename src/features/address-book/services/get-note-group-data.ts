@@ -1,5 +1,6 @@
-import { db } from '@/src/hooks/use-initialize-database';
 import { NoteGroup, NoteItem } from '../types/address-book-type';
+
+import { db } from '@/src/hooks/use-initialize-database';
 
 // 특정 연락처의 모든 메모 그룹 조회
 export const getNoteGroupsByContactId = async (contactId: string): Promise<NoteGroup[]> => {

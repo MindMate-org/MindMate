@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+
 import { Colors } from '../../../constants/colors';
 import { DiaryStyleType } from '../types';
 import BaseModal from './base-modal';

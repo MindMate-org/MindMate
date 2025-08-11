@@ -1,10 +1,6 @@
 import { db } from '../../../hooks/use-initialize-database';
-import {
-  Tag,
-  Contact,
-  ContactTag,
-  ContactWithTags,
-} from '@/src/features/address-book/types/address-book-type';
+
+import { Tag, Contact, ContactWithTags } from '@/src/features/address-book/types/address-book-type';
 
 // 특정 연락처의 모든 태그 조회
 export const getContactTags = async (contactId: number): Promise<Tag[]> => {

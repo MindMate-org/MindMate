@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Image, TouchableOpacity, Dimensions, Text, StyleSheet } from 'react-native';
-import { ChevronLeft, ChevronRight, Mic, Play, Pause } from 'lucide-react-native';
 import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
 import { Audio } from 'expo-av';
+import { ChevronLeft, ChevronRight, Play, Pause } from 'lucide-react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Image, TouchableOpacity, Dimensions, Text, StyleSheet } from 'react-native';
+
 import { Colors } from '../../../constants/colors';
 
 type MediaSliderProps = {
@@ -74,7 +75,7 @@ const MediaSlider = ({ media }: MediaSliderProps) => {
   const handleVideoPress = async () => {
     try {
       setVideoError(null);
-      
+
       if (!isVideoPlaying) {
         setIsVideoLoading(true);
         await videoRef.current?.playAsync();
@@ -92,7 +93,7 @@ const MediaSlider = ({ media }: MediaSliderProps) => {
     if (status.isLoaded) {
       setIsVideoPlaying(status.isPlaying);
       setIsVideoLoading(false);
-      
+
       if (status.didJustFinish) {
         setIsVideoPlaying(false);
       }
@@ -110,12 +111,12 @@ const MediaSlider = ({ media }: MediaSliderProps) => {
     setIsVideoPlaying(false);
     setIsVideoLoading(false);
     setVideoError(null);
-    
+
     if (sound) {
       sound.unloadAsync();
       setSound(null);
     }
-    
+
     // 비디오 일시정지
     if (videoRef.current) {
       videoRef.current.pauseAsync();

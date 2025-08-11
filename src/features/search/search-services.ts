@@ -1,6 +1,7 @@
-import { db } from '@/src/hooks/use-initialize-database';
-import { SearchFormSchema } from './utils/search-form-schema';
 import { SearchData } from './db/search-db-types';
+import { SearchFormSchema } from './utils/search-form-schema';
+
+import { db } from '@/src/hooks/use-initialize-database';
 import { MediaFullType } from '@/src/lib/db/share-db-types';
 import { MediaType } from '@/src/types/common-db-types';
 

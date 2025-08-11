@@ -1,8 +1,10 @@
+import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';
 import { Image, TouchableOpacity, View, Text, Alert } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import BottomModal from '@/src/components/ui/bottom-modal';
+
 import { updateContact } from '../services/mutation-contact-data';
+
+import BottomModal from '@/src/components/ui/bottom-modal';
 
 const AddressBookImage = ({
   image = '',
@@ -18,7 +20,13 @@ const AddressBookImage = ({
   return (
     <>
       <TouchableOpacity onPress={() => setIsModalVisible(true)}>
-        <Image className="ml-6 h-20 w-20 rounded-full bg-gray" source={{ uri: image || '' }} />
+        {image ? (
+          <Image className="ml-6 h-20 w-20 rounded-full bg-gray" source={{ uri: image }} />
+        ) : (
+          <View className="bg-gray-300 ml-6 h-20 w-20 items-center justify-center rounded-full">
+            <Text className="text-2xl text-white">👤</Text>
+          </View>
+        )}
       </TouchableOpacity>
       {isModalVisible && (
         <EditAddressBookImageModal

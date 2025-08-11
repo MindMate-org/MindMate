@@ -1,20 +1,20 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { TouchableOpacity, View } from 'react-native';
-import CommonBox from '../../../components/ui/common-box';
-import AddressBookName from './address-book-name';
+import { useRouter } from 'expo-router';
 import { EllipsisVertical } from 'lucide-react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { TouchableOpacity, View, Text } from 'react-native';
+
+import ActionMenu from './action-menu';
 import AddressBookContent from './address-book-content';
 import AddressBookImage from './address-book-image';
-import { Contact } from '../types/address-book-type';
-import { useRouter } from 'expo-router';
-import ActionMenu from './action-menu';
-import { deleteContact } from '../services/mutation-contact-data';
+import AddressBookName from './address-book-name';
+import AddressBookTag from './address-book-tag';
 import CallButton from './call-button';
+import EditAddressBookTagButton from './edit-address-book-tag-button';
 import MessageButton from './message-button';
 import { useAsyncDataGet } from '../../../hooks/use-async-data-get';
 import { getAllTags, getContactTags } from '../services/get-tag-data';
-import AddressBookTag from './address-book-tag';
-import EditAddressBookTagButton from './edit-address-book-tag-button';
+import { deleteContact } from '../services/mutation-contact-data';
+import { Contact } from '../types/address-book-type';
 
 const AddressBookItem = ({ contact, refetch }: { contact: Contact; refetch: () => void }) => {
   const router = useRouter();
@@ -44,44 +44,34 @@ const AddressBookItem = ({ contact, refetch }: { contact: Contact; refetch: () =
   };
 
   return (
-    <CommonBox color="paleCobalt">
-      <TouchableOpacity onPress={handleEdit}>
-        {/* 상단 부분 */}
-        <View className="flex-row justify-between">
-          <View className="flex-row flex-wrap gap-1">
+    <View className="relative mb-2 rounded-xl bg-white p-4 shadow-sm">
+      <TouchableOpacity onPress={handleEdit} className="relative">
+        {/* 상단: 태그와 메뉴 */}
+        <View className="mb-3 flex-row items-start justify-between">
+          <View className="flex-1 flex-row flex-wrap gap-1">
             {tags?.map((tag) => <AddressBookTag key={tag.id}>{tag.name}</AddressBookTag>)}
             <EditAddressBookTagButton refetch={refetchForEditTags} contact={contact} />
           </View>
-          <View className="flex-row items-start justify-between gap-2">
-            <AddressBookName>{contact.name}</AddressBookName>
-            <TouchableOpacity onPress={() => setIsActionMenuVisible(true)}>
-              <View className="h-6 w-6 items-center justify-center">
-                <EllipsisVertical size={25} color="#666" />
-              </View>
-            </TouchableOpacity>
-          </View>
-          {isActionMenuVisible && (
-            <ActionMenu
-              isVisible={isActionMenuVisible}
-              onClose={() => setIsActionMenuVisible(false)}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          )}
+          <TouchableOpacity onPress={() => setIsActionMenuVisible(true)} className="ml-2 p-1">
+            <EllipsisVertical size={20} color="#9ca3af" />
+          </TouchableOpacity>
         </View>
 
-        <View className="flex-row">
-          {/* 프로필사진 컴포넌트 */}
-          <View className="flex-[1] justify-center">
+        {/* 메인 콘텐츠 */}
+        <View className="flex-row items-center">
+          {/* 프로필 이미지 */}
+          <View className="mr-4">
             <AddressBookImage image={contact.profile_image} id={contact.id.toString()} />
           </View>
 
-          {/* 텍스트 정보 */}
-          <View className="flex-[2]">
-            {/* 한줄 상세 설명 */}
-            <AddressBookContent>{contact.memo}</AddressBookContent>
+          {/* 연락처 정보 */}
+          <View className="flex-1">
+            <AddressBookName>{contact.name}</AddressBookName>
+            <Text className="mb-2 text-sm text-gray">{contact.phone_number}</Text>
 
-            {/* 버튼 */}
+            {contact.memo && <AddressBookContent>{contact.memo}</AddressBookContent>}
+
+            {/* 액션 버튼들 */}
             <View className="mt-3 flex-row gap-2">
               <CallButton phoneNumber={contact.phone_number} />
               <MessageButton phoneNumber={contact.phone_number} />
@@ -89,7 +79,17 @@ const AddressBookItem = ({ contact, refetch }: { contact: Contact; refetch: () =
           </View>
         </View>
       </TouchableOpacity>
-    </CommonBox>
+
+      {/* 액션 메뉴 */}
+      {isActionMenuVisible && (
+        <ActionMenu
+          isVisible={isActionMenuVisible}
+          onClose={() => setIsActionMenuVisible(false)}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      )}
+    </View>
   );
 };
 

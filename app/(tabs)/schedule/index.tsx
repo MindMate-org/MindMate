@@ -1,173 +1,316 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, Image } from 'react-native';
-import { Calendar, Check, BellRing, BellOff } from 'lucide-react-native';
-import { router } from 'expo-router';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { router, useFocusEffect } from 'expo-router';
+import { Calendar, Check } from 'lucide-react-native';
+import React, { useState, useMemo, useCallback } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, Image, Alert } from 'react-native';
+
 import { Colors } from '../../../src/constants/colors';
-import AddButton from 'src/components/ui/add-button';
+import { useSchedulesByDate } from '../../../src/features/schedule/hooks/use-schedule';
+import { toggleScheduleCompletion } from '../../../src/features/schedule/services/schedule-services';
+import type { Schedule } from '../../../src/features/schedule/types/schedule-types';
 
 type TaskItemProps = {
-  time: string;
-  title: string;
-  completed: boolean;
-  hasNotification: boolean;
+  schedule: Schedule;
+  onToggle: (id: number) => void;
+  onPress?: () => void;
 };
 
 const SchedulePage = () => {
-  const [selectedDate, setSelectedDate] = useState(5);
+  const today = new Date();
+  const [selectedDate, setSelectedDate] = useState(today);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  // 선택된 날짜 기준으로 주의 날짜들 계산
+  const weekDates = useMemo(() => {
+    const startOfWeek = new Date(selectedDate);
+    const dayOfWeek = selectedDate.getDay();
+    startOfWeek.setDate(selectedDate.getDate() - dayOfWeek);
+
+    return Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(startOfWeek);
+      date.setDate(startOfWeek.getDate() + i);
+      return date;
+    });
+  }, [selectedDate.toDateString()]);
+
   const days = ['일', '월', '화', '수', '목', '금', '토'];
-  const dates = [1, 2, 3, 4, 5, 6, 7];
 
-  const handlePress = () => {
-    router.push('/(tabs)/schedule/create');
-  };
+  // 선택된 날짜의 ISO 문자열을 메모이제이션
+  const selectedDateISOString = useMemo(() => {
+    const dateOnly = new Date(selectedDate);
+    dateOnly.setHours(0, 0, 0, 0);
+    return dateOnly.toISOString();
+  }, [selectedDate.toDateString()]);
 
-  const TaskItem = ({ time, title, completed, hasNotification }: TaskItemProps) => (
-    <View className="relative mb-3 h-20 justify-center rounded-lg bg-white p-4 shadow-dropShadow">
-    <View className="relative mb-3 h-20 justify-center rounded-lg bg-white p-4 shadow-dropShadow">
-      <View
-        className={`absolute left-0 h-20 w-2 rounded-l-md ${completed ? 'bg-teal' : 'bg-pink'}`}
-      ></View>
-      <View className="flex-row items-center justify-between">
-        <View className="flex-row items-center">
-          <Text className="mr-4 text-sm text-gray">{time}</Text>
-          <Text className="mr-4 text-sm text-gray">{time}</Text>
-          <Text className="text-md font-bold text-black">{title}</Text>
-        </View>
-        <View className="flex-row items-center">
-          {/** 아이콘으로 들어가는 체크 표시와 종은 lucid Icon 설치 이후 수정하겠습니다! */}
-          {completed ? (
-            <View className="mr-2 h-7 w-7 items-center justify-center rounded-md bg-teal">
-            <View className="mr-2 h-7 w-7 items-center justify-center rounded-md bg-teal">
-              <Text className="text-xs">
-                <Check color={Colors.black} />
-              </Text>
-            </View>
-          ) : (
-            <>
-              <View className="mr-4 h-7 w-7 items-center justify-center rounded-md border-2 border-pink">
-              <View className="mr-4 h-7 w-7 items-center justify-center rounded-md border-2 border-pink">
-                <Text className="text-xs"></Text>
-              </View>
-              <View className="h-7 w-7 items-center justify-center">
-                <Text className="text-xs">
-                  {hasNotification ? (
-                    <BellRing color={Colors.red} />
-                  ) : (
-                    <BellOff color={Colors.gray} />
-                  )}
-                </Text>
-              </View>
-            </>
-          )}
-        </View>
-      </View>
-    </View>
+  // 선택된 날짜의 일정들 가져오기
+  const { schedules, loading, refetch } = useSchedulesByDate(selectedDateISOString);
+
+  // 화면이 포커스될 때마다 일정 목록 새로고침
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch]),
   );
 
+  // 선택된 날짜 객체 (표시용)
+  const selectedDateObject = selectedDate;
+
+  const completedSchedules = schedules.filter((s) => s.is_completed === 1);
+  const incompleteSchedules = schedules.filter((s) => s.is_completed === 0);
+
+  const handlePress = () => {
+    router.push('/schedule/create');
+  };
+
+  const handleToggleCompletion = async (id: number) => {
+    try {
+      const success = await toggleScheduleCompletion(id);
+      if (success) {
+        refetch();
+      } else {
+        Alert.alert('오류', '일정 상태 변경에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Error toggling schedule completion:', error);
+      Alert.alert('오류', '일정 상태 변경 중 문제가 발생했습니다.');
+    }
+  };
+
+  const handleSchedulePress = (scheduleId: number) => {
+    router.push(`/schedule/${scheduleId}`);
+  };
+
+  const handleCalendarPress = () => {
+    setShowDatePicker(true);
+  };
+
+  const handleDateChange = (event: any, date?: Date) => {
+    setShowDatePicker(false);
+    if (date) {
+      setSelectedDate(date);
+    }
+  };
+
+  const TaskItem = ({ schedule, onToggle, onPress }: TaskItemProps) => {
+    const scheduleTime = new Date(schedule.time);
+    const timeString = scheduleTime.toLocaleTimeString('ko-KR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    return (
+      <TouchableOpacity
+        className="relative mb-3 rounded-xl bg-white p-4 shadow-sm"
+        onPress={onPress}
+      >
+        <View
+          className={`absolute left-0 h-full w-1 rounded-l-xl ${
+            schedule.is_completed ? 'bg-teal' : 'bg-pink'
+          }`}
+        />
+        <View className="ml-2 flex-row items-center justify-between">
+          <View className="flex-1">
+            <View className="mb-1 flex-row items-center">
+              <Text className="mr-3 text-sm font-medium text-gray">{timeString}</Text>
+              <Text className="flex-1 text-base font-bold text-black">{schedule.title}</Text>
+            </View>
+            {schedule.contents && (
+              <Text className="mb-2 text-sm text-gray" numberOfLines={1}>
+                {schedule.contents}
+              </Text>
+            )}
+            {(schedule.location || schedule.companion) && (
+              <View className="flex-row">
+                {schedule.location && (
+                  <Text className="mr-3 text-xs text-paleCobalt">📍 {schedule.location}</Text>
+                )}
+                {schedule.companion && (
+                  <Text className="text-xs text-paleCobalt">👥 {schedule.companion}</Text>
+                )}
+              </View>
+            )}
+          </View>
+          <TouchableOpacity
+            onPress={() => onToggle(schedule.id)}
+            className={`h-8 w-8 items-center justify-center rounded-md ${
+              schedule.is_completed ? 'bg-teal' : 'border-2 border-pink bg-white'
+            }`}
+          >
+            {schedule.is_completed ? <Check size={16} color="white" /> : null}
+          </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   return (
-    <SafeAreaView className="flex-1 bg-turquoise">
     <SafeAreaView className="flex-1 bg-turquoise">
       <ScrollView className="flex-1">
         {/* 오늘 날짜 헤더 */}
         <View className="mt-6 px-4">
           <View className="relative mb-6 flex-row items-center justify-center">
-            <Text className="text-lg text-paleCobalt">2025년 6월 5일</Text>
-            <Text className="text-lg text-paleCobalt">2025년 6월 5일</Text>
-            <TouchableOpacity className="absolute right-0 p-2">
+            <Text className="text-lg font-medium text-paleCobalt">
+              {selectedDateObject.toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </Text>
+            <TouchableOpacity className="absolute right-0 p-2" onPress={handleCalendarPress}>
               <Calendar color={Colors.paleCobalt} />
             </TouchableOpacity>
           </View>
 
           {/* 달력 날짜 */}
           <View className="mb-6 flex-row justify-between">
-            {days.map((day, index) => (
-              <View key={day} className="items-center">
-                <TouchableOpacity
-                  onPress={() => setSelectedDate(dates[index])}
-                  className={`h-20 w-10 items-center justify-center gap-2 rounded-full ${
-                    selectedDate === dates[index] ? 'bg-teal' : 'bg-transparent'
-                  }`}
-                >
-                  <Text className="text-sm text-paleCobalt">{day}</Text>
-                  <Text className="text-base font-medium text-paleCobalt">{dates[index]}</Text>
-                  <Text className="text-sm text-paleCobalt">{day}</Text>
-                  <Text className="text-base font-medium text-paleCobalt">{dates[index]}</Text>
-                </TouchableOpacity>
-              </View>
-            ))}
+            {weekDates.map((date, index) => {
+              const isSelected =
+                selectedDate.getDate() === date.getDate() &&
+                selectedDate.getMonth() === date.getMonth() &&
+                selectedDate.getFullYear() === date.getFullYear();
+              return (
+                <View key={index} className="items-center">
+                  <TouchableOpacity
+                    onPress={() => setSelectedDate(date)}
+                    className={`h-16 w-12 items-center justify-center gap-1 rounded-xl ${
+                      isSelected ? 'bg-paleCobalt' : 'bg-white/50'
+                    }`}
+                  >
+                    <Text
+                      className={`text-xs font-medium ${
+                        isSelected ? 'text-white' : 'text-paleCobalt'
+                      }`}
+                    >
+                      {days[index]}
+                    </Text>
+                    <Text
+                      className={`text-sm font-bold ${
+                        isSelected ? 'text-white' : 'text-paleCobalt'
+                      }`}
+                    >
+                      {date.getDate()}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              );
+            })}
           </View>
 
-          {/* 오늘 할 일 00개 했어요! 배너 */}
-          <View className="mb-6 h-[131px] items-center justify-center rounded-xl bg-paleYellow px-4 py-7 shadow-dropShadowHard">
+          {/* 일정 통계 배너 */}
+          <View className="mb-6 rounded-xl bg-paleYellow p-6 shadow-sm">
             <View className="flex-row items-center justify-between">
-              <View className="relative gap-4">
-                <Text className="justify-start text-lg font-bold text-paleCobalt">
-                <Text className="justify-start text-lg font-bold text-paleCobalt">
-                  오늘 일정 <Text className="font-bold text-black">14</Text>개 중
+              <View className="flex-1">
+                <Text className="mb-1 text-lg font-bold text-paleCobalt">
+                  오늘 일정 <Text className="text-black">{schedules.length}</Text>개 중
                 </Text>
                 <Text className="text-xl font-bold text-paleCobalt">
-                <Text className="text-xl font-bold text-paleCobalt">
-                  총 <Text className="font-bold text-black">10</Text>개를 완료
+                  총 <Text className="text-black">{completedSchedules.length}</Text>개를 완료
                   <Text className="text-lg">했어요!</Text>
                 </Text>
               </View>
               <Image
-                className="bottom-6 z-20 h-16 w-16"
-                source={require('@assets/winking-face-png.png')}
+                className="h-16 w-16"
+                source={require('../../../assets/winking-face-png.png')}
               />
             </View>
           </View>
         </View>
 
-        <View className="px-4 pb-6">
-          <View className="mb-4 flex-1 flex-row justify-end">
-            <View className="mr-2 flex-row gap-2 px-3 py-1">
-              <View className="h-6 w-6 rounded-md bg-pink"></View>
-              <View className="h-6 w-6 rounded-md bg-pink"></View>
-              <Text className="text-sm font-medium">미완료</Text>
+        <View className="px-4 pb-24">
+          {loading ? (
+            <View className="items-center py-8">
+              <Text className="text-paleCobalt">일정을 불러오는 중...</Text>
             </View>
-            <View className="mr-2 flex-row gap-2 px-3 py-1">
-              <View className="h-6 w-6 rounded-md bg-teal"></View>
-              <View className="h-6 w-6 rounded-md bg-teal"></View>
-              <Text className="text-sm font-medium">완료</Text>
-            </View>
-          </View>
+          ) : (
+            <>
+              {/* 범례 */}
+              <View className="mb-4 flex-row justify-end">
+                <View className="mr-4 flex-row items-center gap-2">
+                  <View className="h-4 w-4 rounded-full bg-pink"></View>
+                  <Text className="text-sm font-medium text-gray">
+                    미완료 ({incompleteSchedules.length})
+                  </Text>
+                </View>
+                <View className="flex-row items-center gap-2">
+                  <View className="h-4 w-4 rounded-full bg-teal"></View>
+                  <Text className="text-sm font-medium text-gray">
+                    완료 ({completedSchedules.length})
+                  </Text>
+                </View>
+              </View>
 
-          {/* 미완료 칸 */}
-          <Text className="mb-3 text-md font-bold text-black">미완료</Text>
-          <Text className="mb-3 text-md font-bold text-black">미완료</Text>
-          <TaskItem
-            time="08:00"
-            title="리액트 네이티브 공부"
-            completed={false}
-            hasNotification={false}
-          />
-          <TaskItem
-            time="08:00"
-            title="리액트 네이티브 공부"
-            completed={false}
-            hasNotification={true}
-          />
+              {schedules.length === 0 ? (
+                <View className="items-center py-12">
+                  <Calendar size={48} color="#9ca3af" />
+                  <Text className="mt-4 text-lg font-medium text-gray">등록된 일정이 없습니다</Text>
+                  <Text className="mt-2 text-sm text-gray">새로운 일정을 추가해보세요!</Text>
+                  <TouchableOpacity
+                    className="mt-4 rounded-lg bg-paleCobalt px-4 py-2"
+                    onPress={() => router.push('/schedule/create')}
+                  >
+                    <Text className="text-sm text-white">일정 추가</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <>
+                  {/* 미완료 일정 */}
+                  {incompleteSchedules.length > 0 && (
+                    <>
+                      <Text className="mb-3 text-lg font-bold text-black">
+                        미완료 ({incompleteSchedules.length})
+                      </Text>
+                      {incompleteSchedules.map((schedule) => (
+                        <TaskItem
+                          key={schedule.id}
+                          schedule={schedule}
+                          onToggle={handleToggleCompletion}
+                          onPress={() => handleSchedulePress(schedule.id)}
+                        />
+                      ))}
+                    </>
+                  )}
 
-          {/* 완료 칸 */}
-          <Text className="mb-3 mt-6 text-md font-bold text-black">완료</Text>
-          <Text className="mb-3 mt-6 text-md font-bold text-black">완료</Text>
-          <TaskItem
-            time="08:00"
-            title="리액트 네이티브 공부"
-            completed={true}
-            hasNotification={false}
-          />
+                  {/* 완료된 일정 */}
+                  {completedSchedules.length > 0 && (
+                    <>
+                      <Text className="mb-3 mt-6 text-lg font-bold text-black">
+                        완료 ({completedSchedules.length})
+                      </Text>
+                      {completedSchedules.map((schedule) => (
+                        <TaskItem
+                          key={schedule.id}
+                          schedule={schedule}
+                          onToggle={handleToggleCompletion}
+                          onPress={() => handleSchedulePress(schedule.id)}
+                        />
+                      ))}
+                    </>
+                  )}
+                </>
+              )}
+            </>
+          )}
         </View>
       </ScrollView>
 
       {/* 일정 추가 버튼 */}
       <TouchableOpacity
-        className="absolute bottom-8 right-6 h-16 w-16 items-center justify-center rounded-full bg-paleCobalt"
-        onPress={() => handlePress()}
+        className="absolute bottom-20 right-8 h-16 w-16 items-center justify-center rounded-full bg-paleCobalt shadow-lg sm:bottom-24 sm:right-12 sm:h-20 sm:w-20"
+        onPress={handlePress}
+        activeOpacity={0.8}
       >
-        <Text className="text-5xl font-light text-white">+</Text>
+        <Text className="text-3xl font-light text-white sm:text-5xl">+</Text>
       </TouchableOpacity>
+
+      {/* 날짜 선택기 */}
+      {showDatePicker && (
+        <DateTimePicker
+          value={selectedDate}
+          mode="date"
+          display="default"
+          onChange={handleDateChange}
+        />
+      )}
     </SafeAreaView>
   );
 };

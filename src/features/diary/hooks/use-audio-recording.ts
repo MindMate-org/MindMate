@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
-import { Alert } from 'react-native';
 import { Audio } from 'expo-av';
 import * as DocumentPicker from 'expo-document-picker';
-import { DiaryMediaType, RecordingStateType } from '../types';
+import { useState, useEffect } from 'react';
 import { UseFormSetValue } from 'react-hook-form';
+import { Alert } from 'react-native';
+
+import { DiaryMediaType, RecordingStateType } from '../types';
 import { useMediaUpload } from './use-media-upload';
 
 /**
@@ -51,7 +52,7 @@ export const useAudioRecording = (
       }
 
       startUpload();
-      
+
       const result = await DocumentPicker.getDocumentAsync({
         type: 'audio/*',
         copyToCacheDirectory: true,
@@ -59,21 +60,21 @@ export const useAudioRecording = (
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const asset = result.assets[0];
-        
+
         // 음성 파일 처리 시뮬레이션
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
         const newMedia: DiaryMediaType = {
           id: Date.now().toString(),
           type: 'audio',
           uri: asset.uri,
           duration: undefined, // 선택된 파일의 경우 duration 정보가 없을 수 있음
         };
-        
+
         setValue('media', [...watchedMedia, newMedia]);
         Alert.alert('성공', '음성 파일이 추가되었습니다.');
       }
-      
+
       finishUpload();
     } catch (error) {
       console.error('음성 파일 선택 실패:', error);

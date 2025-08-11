@@ -1,6 +1,6 @@
-import { View, Text, TouchableOpacity, Linking } from 'react-native';
-import React from 'react';
 import { Phone } from 'lucide-react-native';
+import React from 'react';
+import { Text, TouchableOpacity, Linking } from 'react-native';
 
 const CallButton = ({ phoneNumber }: { phoneNumber: string }) => {
   const handleCall = () => {
@@ -9,11 +9,11 @@ const CallButton = ({ phoneNumber }: { phoneNumber: string }) => {
   };
   return (
     <TouchableOpacity
-      className="flex-1 flex-row items-center justify-center rounded-full bg-paleCobalt py-1"
+      className="flex-1 flex-row items-center justify-center rounded-lg bg-paleCobalt px-3 py-2"
       onPress={handleCall}
     >
-      <Phone size={16} className="" fill="white" stroke="none" />
-      <Text className="ml-1 text-sm text-white">전화걸기</Text>
+      <Phone size={14} color="white" />
+      <Text className="ml-1 text-xs font-medium text-white">전화</Text>
     </TouchableOpacity>
   );
 };
