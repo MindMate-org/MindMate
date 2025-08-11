@@ -13,13 +13,13 @@ import {
 } from 'react-native';
 
 import {
-  getScheduleById,
-  updateSchedule,
-  deleteSchedule,
+  fetchGetScheduleById,
+  fetchUpdateSchedule,
+  fetchDeleteSchedule,
 } from '../../src/features/schedule/services/schedule-services';
 import type {
-  Schedule,
-  UpdateScheduleData,
+  ScheduleType,
+  UpdateScheduleDataType,
 } from '../../src/features/schedule/types/schedule-types';
 
 const ScheduleDetailPage = () => {
@@ -44,7 +44,7 @@ const ScheduleDetailPage = () => {
 
   const loadSchedule = async () => {
     try {
-      const data = await getScheduleById(scheduleId);
+      const data = await fetchGetScheduleById(scheduleId);
       if (data) {
         setSchedule(data);
         setTitle(data.title);
@@ -80,7 +80,7 @@ const ScheduleDetailPage = () => {
     };
 
     try {
-      const success = await updateSchedule(scheduleId, updateData);
+      const success = await fetchUpdateSchedule(scheduleId, updateData);
       if (success) {
         Alert.alert('완료', '일정이 수정되었습니다.');
         setIsEditing(false);
@@ -102,7 +102,7 @@ const ScheduleDetailPage = () => {
         style: 'destructive',
         onPress: async () => {
           try {
-            const success = await deleteSchedule(scheduleId);
+            const success = await fetchDeleteSchedule(scheduleId);
             if (success) {
               Alert.alert('완료', '일정이 삭제되었습니다.', [
                 { text: '확인', onPress: () => router.back() },

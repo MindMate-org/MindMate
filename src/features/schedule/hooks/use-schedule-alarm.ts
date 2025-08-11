@@ -2,7 +2,7 @@ import * as Notifications from 'expo-notifications';
 import { useState } from 'react';
 import { Alert } from 'react-native';
 
-import type { Schedule } from '../types/schedule-types';
+import type { ScheduleType } from '../types/schedule-types';
 
 // 일정 알림 훅
 export const useScheduleAlarm = () => {
@@ -45,7 +45,7 @@ export const useScheduleAlarm = () => {
   };
 
   // 일정 알림 설정
-  const scheduleAlarm = async (schedule: Schedule) => {
+  const scheduleAlarm = async (schedule: ScheduleType) => {
     if (!isInitialized) {
       const initialized = await initializeAlarms();
       if (!initialized) return false;
