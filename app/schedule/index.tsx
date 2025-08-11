@@ -7,10 +7,10 @@ import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, Image, Alert } 
 import { Colors } from '../../src/constants/colors';
 import { useSchedulesByDate } from '../../src/features/schedule/hooks/use-schedule';
 import { toggleScheduleCompletion } from '../../src/features/schedule/services/schedule-services';
-import type { Schedule } from '../../src/features/schedule/types/schedule-types';
+import type { ScheduleType } from '../../src/features/schedule/types/schedule-types';
 
 type TaskItemProps = {
-  schedule: Schedule;
+  schedule: ScheduleType;
   onToggle: (id: number) => void;
   onPress?: () => void;
 };

@@ -19,7 +19,7 @@ export class AddressBookService {
   static async fetchGetContacts(): Promise<ContactType[]> {
     try {
       const result = await db.getAllAsync<ContactType>(
-        `SELECT * FROM contacts WHERE deleted_at IS NULL ORDER BY name ASC`,
+        `SELECT * FROM contact WHERE deleted_at IS NULL ORDER BY name ASC`,
       );
       return result || [];
     } catch (error) {
@@ -36,7 +36,7 @@ export class AddressBookService {
   static async fetchGetContact(id: number): Promise<ContactType | null> {
     try {
       const result = await db.getFirstAsync<ContactType>(
-        `SELECT * FROM contacts WHERE id = ? AND deleted_at IS NULL`,
+        `SELECT * FROM contact WHERE id = ? AND deleted_at IS NULL`,
         [id],
       );
       return result || null;
@@ -53,7 +53,7 @@ export class AddressBookService {
   static async fetchGetMyContact(): Promise<ContactType | null> {
     try {
       const result = await db.getFirstAsync<ContactType>(
-        `SELECT * FROM contacts WHERE is_me = 1 AND deleted_at IS NULL`,
+        `SELECT * FROM contact WHERE is_me = 1 AND deleted_at IS NULL`,
       );
       return result || null;
     } catch (error) {
@@ -69,7 +69,7 @@ export class AddressBookService {
   static async fetchGetOthersContacts(): Promise<ContactType[]> {
     try {
       const result = await db.getAllAsync<ContactType>(
-        `SELECT * FROM contacts WHERE is_me = 0 AND deleted_at IS NULL ORDER BY name ASC`,
+        `SELECT * FROM contact WHERE is_me = 0 AND deleted_at IS NULL ORDER BY name ASC`,
       );
       return result || [];
     } catch (error) {
@@ -87,7 +87,7 @@ export class AddressBookService {
     try {
       const now = new Date().toISOString();
       const result = await db.runAsync(
-        `INSERT INTO contacts (
+        `INSERT INTO contact (
           name, phone_number, memo, profile_image, is_me, created_at, updated_at
         ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
@@ -144,7 +144,7 @@ export class AddressBookService {
       values.push(now);
       values.push(id);
 
-      await db.runAsync(`UPDATE contacts SET ${fields.join(', ')} WHERE id = ?`, values);
+      await db.runAsync(`UPDATE contact SET ${fields.join(', ')} WHERE id = ?`, values);
     } catch (error) {
       console.error('연락처 수정 실패:', error);
       throw error;
@@ -159,7 +159,7 @@ export class AddressBookService {
   static async fetchDeleteContact(id: number): Promise<void> {
     try {
       const now = new Date().toISOString();
-      await db.runAsync(`UPDATE contacts SET deleted_at = ? WHERE id = ?`, [now, id]);
+      await db.runAsync(`UPDATE contact SET deleted_at = ? WHERE id = ?`, [now, id]);
     } catch (error) {
       console.error('연락처 삭제 실패:', error);
       throw error;
@@ -253,7 +253,7 @@ export class AddressBookService {
   static async fetchGetNoteGroups(contactId: number): Promise<NoteGroupType[]> {
     try {
       const result = await db.getAllAsync<NoteGroupType>(
-        `SELECT * FROM note_groups WHERE contact_id = ? ORDER BY created_at DESC`,
+        `SELECT * FROM note_group WHERE contact_id = ? ORDER BY group_id DESC`,
         [contactId],
       );
       return result || [];
@@ -269,16 +269,13 @@ export class AddressBookService {
    * @returns Promise<number> 생성된 노트 그룹 ID
    */
   static async fetchCreateNoteGroup(
-    noteGroupData: Omit<NoteGroupType, 'id' | 'created_at' | 'updated_at'>,
+    noteGroupData: Omit<NoteGroupType, 'group_id'>,
   ): Promise<number> {
     try {
-      const now = new Date().toISOString();
-      const result = await db.runAsync(
-        `INSERT INTO note_groups (
-          contact_id, title, content, created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?)`,
-        [noteGroupData.contact_id, noteGroupData.title, noteGroupData.content, now, now],
-      );
+      const result = await db.runAsync(`INSERT INTO note_group (contact_id, title) VALUES (?, ?)`, [
+        noteGroupData.contact_id,
+        noteGroupData.title,
+      ]);
       return result.lastInsertRowId;
     } catch (error) {
       console.error('노트 그룹 생성 실패:', error);
@@ -294,11 +291,9 @@ export class AddressBookService {
    */
   static async fetchUpdateNoteGroup(
     id: number,
-    updateData: Partial<Omit<NoteGroupType, 'id' | 'contact_id' | 'created_at'>>,
+    updateData: Partial<Omit<NoteGroupType, 'group_id' | 'contact_id'>>,
   ): Promise<void> {
     try {
-      const now = new Date().toISOString();
-
       const fields = [];
       const values = [];
 
@@ -306,16 +301,14 @@ export class AddressBookService {
         fields.push('title = ?');
         values.push(updateData.title);
       }
-      if (updateData.content !== undefined) {
-        fields.push('content = ?');
-        values.push(updateData.content);
+
+      if (fields.length === 0) {
+        throw new Error('수정할 데이터가 없습니다.');
       }
 
-      fields.push('updated_at = ?');
-      values.push(now);
       values.push(id);
 
-      await db.runAsync(`UPDATE note_groups SET ${fields.join(', ')} WHERE id = ?`, values);
+      await db.runAsync(`UPDATE note_group SET ${fields.join(', ')} WHERE group_id = ?`, values);
     } catch (error) {
       console.error('노트 그룹 수정 실패:', error);
       throw error;
@@ -329,7 +322,7 @@ export class AddressBookService {
    */
   static async fetchDeleteNoteGroup(id: number): Promise<void> {
     try {
-      await db.runAsync(`DELETE FROM note_groups WHERE id = ?`, [id]);
+      await db.runAsync(`DELETE FROM note_group WHERE group_id = ?`, [id]);
     } catch (error) {
       console.error('노트 그룹 삭제 실패:', error);
       throw error;

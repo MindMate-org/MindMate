@@ -47,3 +47,10 @@ export type ContactWithDetailsType = ContactType & {
   tags?: TagType[];
   noteGroups?: NoteGroupWithItemsType[];
 };
+
+// Backward compatibility aliases
+export type Contact = ContactType;
+export type Tag = TagType;
+export type NoteGroup = NoteGroupType;
+export type NoteItem = NoteItemType;
+export type ContactTag = ContactTagType;

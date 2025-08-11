@@ -100,7 +100,6 @@ export const formatRepeatCycle = (detail: RepeatCycleDetail): RepeatCycleType =>
   }
 };
 
-
 /**
  * 특정 날짜에 루틴이 실행되어야 하는지 확인하는 함수
  * @param routine - 루틴 정보 (생성 날짜 포함)

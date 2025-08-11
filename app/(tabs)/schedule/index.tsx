@@ -7,10 +7,10 @@ import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, Image, Alert } 
 import { Colors } from '../../../src/constants/colors';
 import { useSchedulesByDate } from '../../../src/features/schedule/hooks/use-schedule';
 import { toggleScheduleCompletion } from '../../../src/features/schedule/services/schedule-services';
-import type { Schedule } from '../../../src/features/schedule/types/schedule-types';
+import type { ScheduleType } from '../../../src/features/schedule/types/schedule-types';
 
 type TaskItemProps = {
-  schedule: Schedule;
+  schedule: ScheduleType;
   onToggle: (id: number) => void;
   onPress?: () => void;
 };
@@ -21,6 +21,7 @@ const SchedulePage = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   // 선택된 날짜 기준으로 주의 날짜들 계산
+  const selectedDateString = selectedDate.toDateString();
   const weekDates = useMemo(() => {
     const startOfWeek = new Date(selectedDate);
     const dayOfWeek = selectedDate.getDay();
@@ -31,7 +32,7 @@ const SchedulePage = () => {
       date.setDate(startOfWeek.getDate() + i);
       return date;
     });
-  }, [selectedDate.toDateString()]);
+  }, [selectedDate, selectedDateString]);
 
   const days = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -40,7 +41,7 @@ const SchedulePage = () => {
     const dateOnly = new Date(selectedDate);
     dateOnly.setHours(0, 0, 0, 0);
     return dateOnly.toISOString();
-  }, [selectedDate.toDateString()]);
+  }, [selectedDate, selectedDateString]);
 
   // 선택된 날짜의 일정들 가져오기
   const { schedules, loading, refetch } = useSchedulesByDate(selectedDateISOString);

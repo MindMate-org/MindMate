@@ -51,17 +51,6 @@ const DiaryListPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [errorCount, setErrorCount] = useState(0);
 
-  useEffect(() => {
-    fetchDiaries();
-  }, []);
-
-  // 페이지 포커스 시마다 데이터 새로고침
-  useFocusEffect(
-    useCallback(() => {
-      fetchDiaries();
-    }, []),
-  );
-
   const fetchDiaries = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -77,19 +66,26 @@ const DiaryListPage = () => {
       setErrorCount((prev) => prev + 1);
 
       // 에러가 3번 이상 발생하면 사용자에게 알림
-      if (errorCount >= 2) {
-        console.warn('일기 조회 에러가 반복 발생:', err);
-      }
+      console.warn('일기 조회 에러가 반복 발생:', err);
 
-      // 에러 발생 시 기존 데이터 유지 (빈 배열로 초기화 안함)
-      if (diaries.length === 0) {
-        setDiaries([]);
-        setFilteredDiaries([]);
-      }
+      // 에러 발생 시 빈 배열로 설정
+      setDiaries([]);
+      setFilteredDiaries([]);
     } finally {
       setIsLoading(false);
     }
-  }, [isSearchActive, errorCount, diaries.length]);
+  }, [isSearchActive]);
+
+  useEffect(() => {
+    fetchDiaries();
+  }, [fetchDiaries]);
+
+  // 페이지 포커스 시마다 데이터 새로고침
+  useFocusEffect(
+    useCallback(() => {
+      fetchDiaries();
+    }, [fetchDiaries]),
+  );
 
   const handleSortToggle = () => {
     setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'));

@@ -1,10 +1,12 @@
 import { getContactById } from '@/src/features/address-book/services/get-contact-data';
 import { getMyContact } from '@/src/features/address-book/services/get-contact-data';
-import { Contact } from '@/src/features/address-book/types/address-book-type';
+import { ContactType } from '@/src/features/address-book/types/address-book-type';
 import { db } from '@/src/hooks/use-initialize-database';
 
 //연락처 추가
-export const fetchCreateContact = async (contactData: Omit<Contact, 'id'>): Promise<Contact> => {
+export const fetchCreateContact = async (
+  contactData: Omit<ContactType, 'id'>,
+): Promise<ContactType> => {
   try {
     const result = await db.runAsync(
       `INSERT INTO contact (name, phone_number, profile_image, memo, is_me, created_at) 
@@ -30,8 +32,8 @@ export const fetchCreateContact = async (contactData: Omit<Contact, 'id'>): Prom
 // 연락처 수정
 export const fetchUpdateContact = async (
   id: string,
-  contactData: Partial<Contact>,
-): Promise<Contact> => {
+  contactData: Partial<ContactType>,
+): Promise<ContactType> => {
   try {
     // 수정할 필드들만 동적으로 SQL 생성
     const updateFields: string[] = [];
@@ -88,7 +90,7 @@ export const fetchDeleteContact = async (id: string): Promise<boolean> => {
 };
 
 // 내 연락처 수정 (is_me = 1인 연락처 전용)
-export const updateMyContact = async (contactData: Partial<Contact>): Promise<Contact> => {
+export const updateMyContact = async (contactData: Partial<ContactType>): Promise<ContactType> => {
   try {
     const updateFields: string[] = [];
     const updateValues: any[] = [];
@@ -136,3 +138,6 @@ export const deleteAllContacts = async (): Promise<boolean> => {
     throw error;
   }
 };
+
+// Backward compatibility alias
+export const updateContact = fetchUpdateContact;

@@ -1,14 +1,14 @@
 import { useRouter } from 'expo-router';
 import React, { useState, useCallback } from 'react';
 import { View, ScrollView, Text, ActivityIndicator } from 'react-native';
-import AddButton from 'src/components/ui/add-button';
-import Calendar from 'src/components/ui/calendar';
-import EnhancedCalendar from 'src/components/ui/enhanced-calendar';
-import Modal from 'src/components/ui/modal';
-import RoutineListCard from 'src/features/routine/components/routine-list-card';
-import { useDeleteRoutine } from 'src/features/routine/hooks/use-routine-mutation';
-import { useRoutineQuery } from 'src/features/routine/hooks/use-routine-query';
-import { toKSTDateString, formatTime, formatDate } from 'src/lib/date-utils';
+import AddButton from '../../../src/components/ui/add-button';
+import Calendar from '../../../src/components/ui/calendar';
+import EnhancedCalendar from '../../../src/components/ui/enhanced-calendar';
+import Modal from '../../../src/components/ui/modal';
+import RoutineListCard from '../../../src/features/routine/components/routine-list-card';
+import { useDeleteRoutine } from '../../../src/features/routine/hooks/use-routine-mutation';
+import { useRoutineQuery } from '../../../src/features/routine/hooks/use-routine-query';
+import { toKSTDateString, formatTime, formatDate } from '../../../src/lib/date-utils';
 
 const RoutineMain = () => {
   const router = useRouter();
@@ -40,7 +40,7 @@ const RoutineMain = () => {
   // 루틴 상세 페이지로 이동
   const handleViewRoutine = useCallback(
     (id: string) => {
-      router.push(`/routine/routineform?id=${id}`);
+      router.push(`/routine/routine-form?id=${id}`);
     },
     [router],
   );

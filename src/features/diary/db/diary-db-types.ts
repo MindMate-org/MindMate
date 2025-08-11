@@ -43,15 +43,15 @@ export type MediaTableType = {
   /** 미디어 ID */
   id: number;
   /** 소유자 타입 */
-  ownerType: string;
+  owner_type: string;
   /** 소유자 ID */
-  ownerId: number;
+  owner_id: number;
   /** 미디어 타입 */
-  mediaType: string;
+  media_type: string;
   /** 파일 경로 */
-  filePath: string;
+  file_path: string;
   /** 생성 일시 */
-  createdAt: string;
+  created_at: string;
 };
 
 /**
@@ -93,13 +93,13 @@ export type DiaryUpdateDbPayloadType = Partial<DiaryCreateDbPayloadType> & {
  */
 export type MediaCreateDbPayloadType = {
   /** 소유자 타입 */
-  ownerType: 'diary';
+  owner_type: 'diary';
   /** 소유자 ID (일기 ID) */
-  ownerId: number;
+  owner_id: number;
   /** 미디어 타입 */
-  mediaType: 'image' | 'video' | 'audio';
+  media_type: 'image' | 'video' | 'audio';
   /** 파일 경로 */
-  filePath: string;
+  file_path: string;
 };
 
 /**

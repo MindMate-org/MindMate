@@ -8,5 +8,5 @@ export const useFocusPage = (callback: () => void) => {
       // 페이지가 포커스될 때 실행
       callback();
     }
-  }, [isFocused]);
+  }, [isFocused, callback]);
 };

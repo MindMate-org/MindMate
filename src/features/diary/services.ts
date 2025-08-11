@@ -748,7 +748,7 @@ export class DiaryService {
       const result = await db.runAsync(
         `INSERT INTO media (owner_type, owner_id, media_type, file_path) 
          VALUES (?, ?, ?, ?)`,
-        [input.ownerType, input.ownerId, input.mediaType, input.filePath],
+        [input.owner_type, input.owner_id, input.media_type, input.file_path],
       );
       return result.lastInsertRowId;
     } catch (error) {

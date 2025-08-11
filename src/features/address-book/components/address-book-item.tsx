@@ -14,9 +14,9 @@ import MessageButton from './message-button';
 import { useAsyncDataGet } from '../../../hooks/use-async-data-get';
 import { getAllTags, getContactTags } from '../services/get-tag-data';
 import { fetchDeleteContact } from '../services/mutation-contact-data';
-import { Contact } from '../types/address-book-type';
+import { ContactType } from '../types/address-book-type';
 
-const AddressBookItem = ({ contact, refetch }: { contact: Contact; refetch: () => void }) => {
+const AddressBookItem = ({ contact, refetch }: { contact: ContactType; refetch: () => void }) => {
   const router = useRouter();
   const [isActionMenuVisible, setIsActionMenuVisible] = useState(false);
   const getContactTagsUseCallBack = useCallback(() => getContactTags(contact.id), [contact.id]);

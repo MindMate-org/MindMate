@@ -1,41 +1,21 @@
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { ArrowLeft, Save, Calendar, MapPin, Users, Trash2, Edit3 } from 'lucide-react-native';
+import { ChevronLeft, Edit3, Trash2, Clock, MapPin, Plus } from 'lucide-react-native';
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  SafeAreaView,
-  ScrollView,
-  Alert,
-} from 'react-native';
+import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Alert, Image } from 'react-native';
 
+import { Colors } from '../../src/constants/colors';
 import {
   fetchGetScheduleById,
-  fetchUpdateSchedule,
   fetchDeleteSchedule,
 } from '../../src/features/schedule/services/schedule-services';
-import type {
-  ScheduleType,
-  UpdateScheduleDataType,
-} from '../../src/features/schedule/types/schedule-types';
+import type { ScheduleType } from '../../src/features/schedule/types/schedule-types';
 
 const ScheduleDetailPage = () => {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const scheduleId = parseInt(id, 10);
 
-  const [schedule, setSchedule] = useState<Schedule | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState('');
-  const [contents, setContents] = useState('');
-  const [location, setLocation] = useState('');
-  const [companion, setCompanion] = useState('');
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [schedule, setSchedule] = useState<ScheduleType | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -47,11 +27,6 @@ const ScheduleDetailPage = () => {
       const data = await fetchGetScheduleById(scheduleId);
       if (data) {
         setSchedule(data);
-        setTitle(data.title);
-        setContents(data.contents || '');
-        setLocation(data.location || '');
-        setCompanion(data.companion || '');
-        setSelectedDate(new Date(data.time));
       } else {
         Alert.alert('오류', '일정을 찾을 수 없습니다.', [
           { text: '확인', onPress: () => router.back() },
@@ -65,33 +40,8 @@ const ScheduleDetailPage = () => {
     }
   };
 
-  const handleSave = async () => {
-    if (!title.trim()) {
-      Alert.alert('오류', '일정 제목을 입력해주세요.');
-      return;
-    }
-
-    const updateData: UpdateScheduleData = {
-      title: title.trim(),
-      contents: contents.trim() || undefined,
-      time: selectedDate.toISOString(),
-      location: location.trim() || undefined,
-      companion: companion.trim() || undefined,
-    };
-
-    try {
-      const success = await fetchUpdateSchedule(scheduleId, updateData);
-      if (success) {
-        Alert.alert('완료', '일정이 수정되었습니다.');
-        setIsEditing(false);
-        loadSchedule();
-      } else {
-        Alert.alert('오류', '일정 수정에 실패했습니다.');
-      }
-    } catch (error) {
-      console.error('Error updating schedule:', error);
-      Alert.alert('오류', '일정 수정 중 문제가 발생했습니다.');
-    }
+  const handleEdit = () => {
+    router.push(`/schedule/edit/${schedule?.id}`);
   };
 
   const handleDelete = () => {
@@ -119,46 +69,17 @@ const ScheduleDetailPage = () => {
     ]);
   };
 
-  const handleDateChange = (event: any, date?: Date) => {
-    setShowDatePicker(false);
-    if (date) {
-      const newDate = new Date(selectedDate);
-      newDate.setFullYear(date.getFullYear());
-      newDate.setMonth(date.getMonth());
-      newDate.setDate(date.getDate());
-      setSelectedDate(newDate);
-    }
-  };
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const days = ['일', '월', '화', '수', '목', '금', '토'];
+    const dayName = days[date.getDay()];
 
-  const handleTimeChange = (event: any, time?: Date) => {
-    setShowTimePicker(false);
-    if (time) {
-      const newDate = new Date(selectedDate);
-      newDate.setHours(time.getHours());
-      newDate.setMinutes(time.getMinutes());
-      setSelectedDate(newDate);
-    }
-  };
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      weekday: 'short',
-    });
-  };
-
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('ko-KR', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')} (${dayName})`;
   };
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-turquoise">
+      <SafeAreaView className="bg-gray-50 pt-safe flex-1">
         <View className="flex-1 items-center justify-center">
           <Text className="text-paleCobalt">로딩 중...</Text>
         </View>
@@ -168,7 +89,7 @@ const ScheduleDetailPage = () => {
 
   if (!schedule) {
     return (
-      <SafeAreaView className="flex-1 bg-turquoise">
+      <SafeAreaView className="bg-gray-50 pt-safe flex-1">
         <View className="flex-1 items-center justify-center">
           <Text className="text-paleCobalt">일정을 찾을 수 없습니다.</Text>
         </View>
@@ -176,208 +97,98 @@ const ScheduleDetailPage = () => {
     );
   }
 
-  return (
-    <SafeAreaView className="flex-1 bg-turquoise">
-      {/* 헤더 */}
-      <View className="flex-row items-center justify-between bg-turquoise px-4 py-3">
-        <TouchableOpacity onPress={() => router.back()} className="flex-row items-center">
-          <ArrowLeft size={24} color="#576bcd" />
-          <Text className="ml-2 text-lg font-medium text-paleCobalt">일정 상세</Text>
-        </TouchableOpacity>
+  // Mock images for demonstration (replace with actual schedule images)
+  const mockImages = [
+    'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=300&h=200&fit=crop',
+    'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=300&h=200&fit=crop',
+  ];
 
-        <View className="flex-row gap-2">
-          {isEditing ? (
-            <TouchableOpacity
-              className="flex-row items-center rounded-lg bg-paleCobalt px-4 py-2"
-              onPress={handleSave}
-            >
-              <Save size={16} color="white" />
-              <Text className="ml-1 text-sm font-medium text-white">저장</Text>
-            </TouchableOpacity>
-          ) : (
-            <>
-              <TouchableOpacity
-                className="flex-row items-center rounded-lg bg-paleCobalt px-3 py-2"
-                onPress={() => setIsEditing(true)}
-              >
-                <Edit3 size={16} color="white" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                className="flex-row items-center rounded-lg bg-red-500 px-3 py-2"
-                onPress={handleDelete}
-              >
-                <Trash2 size={16} color="white" />
-              </TouchableOpacity>
-            </>
-          )}
-        </View>
+  return (
+    <SafeAreaView className="bg-gray-50 pt-safe flex-1">
+      {/* 헤더 */}
+      <View className="flex-row items-center justify-between bg-white px-4 py-4 shadow-sm">
+        <TouchableOpacity onPress={() => router.back()}>
+          <ChevronLeft size={24} color={Colors.paleCobalt} />
+        </TouchableOpacity>
+        <Text className="text-lg font-bold text-paleCobalt">일정 상세보기</Text>
+        <View style={{ width: 24 }} />
       </View>
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="px-4">
-          {/* 완료 상태 표시 */}
-          <View className="mb-4 rounded-xl bg-white p-4 shadow-sm">
-            <View className="flex-row items-center">
-              <View
-                className={`h-4 w-4 rounded-full ${schedule.is_completed ? 'bg-teal' : 'bg-pink'}`}
-              />
-              <Text className="text-gray-800 ml-3 text-lg font-medium">
-                {schedule.is_completed ? '완료됨' : '미완료'}
-              </Text>
-            </View>
-          </View>
-
-          {/* 기본 정보 */}
-          <View className="mb-6 rounded-xl bg-white p-6 shadow-sm">
-            <Text className="text-gray-800 mb-4 text-lg font-bold">기본 정보</Text>
-
-            {/* 제목 */}
-            <View className="mb-4">
-              <Text className="text-gray-700 mb-2 text-sm font-medium">제목</Text>
-              {isEditing ? (
-                <TextInput
-                  className="border-gray-300 text-gray-800 rounded-lg border bg-white px-4 py-3 text-base"
-                  value={title}
-                  onChangeText={setTitle}
-                  placeholderTextColor="#9CA3AF"
-                />
-              ) : (
-                <Text className="text-gray-800 text-lg font-medium">{schedule.title}</Text>
-              )}
-            </View>
-
-            {/* 내용 */}
-            <View>
-              <Text className="text-gray-700 mb-2 text-sm font-medium">내용</Text>
-              {isEditing ? (
-                <TextInput
-                  className="border-gray-300 text-gray-800 h-24 rounded-lg border bg-white px-4 py-3 text-base"
-                  value={contents}
-                  onChangeText={setContents}
-                  placeholderTextColor="#9CA3AF"
-                  multiline
-                  textAlignVertical="top"
-                />
-              ) : (
-                <Text className="text-gray-600 text-base">
-                  {schedule.contents || '내용이 없습니다.'}
-                </Text>
-              )}
-            </View>
-          </View>
-
-          {/* 일시 정보 */}
-          <View className="mb-6 rounded-xl bg-white p-6 shadow-sm">
-            <Text className="text-gray-800 mb-4 text-lg font-bold">일시</Text>
-
-            {isEditing ? (
-              <>
-                <TouchableOpacity
-                  className="border-gray-300 mb-4 flex-row items-center rounded-lg border bg-white px-4 py-3"
-                  onPress={() => setShowDatePicker(true)}
-                >
-                  <Calendar size={20} color="#576bcd" />
-                  <Text className="text-gray-800 ml-3 flex-1 text-base">
-                    {formatDate(selectedDate)}
-                  </Text>
+        <View className="p-4">
+          {/* 메인 카드 */}
+          <View className="rounded-xl bg-white p-6 shadow-sm">
+            {/* 제목과 액션 버튼들 */}
+            <View className="mb-4 flex-row items-start justify-between">
+              <View className="flex-1">
+                <Text className="text-gray-900 text-xl font-bold">{schedule.title}</Text>
+              </View>
+              <View className="flex-row space-x-3">
+                <TouchableOpacity onPress={handleEdit}>
+                  <Edit3 size={20} color={Colors.paleCobalt} />
                 </TouchableOpacity>
-
-                <TouchableOpacity
-                  className="border-gray-300 flex-row items-center rounded-lg border bg-white px-4 py-3"
-                  onPress={() => setShowTimePicker(true)}
-                >
-                  <Text className="text-gray-800 ml-3 flex-1 text-base">
-                    {formatTime(selectedDate)}
-                  </Text>
+                <TouchableOpacity onPress={handleDelete}>
+                  <Trash2 size={20} color="#EF4444" />
                 </TouchableOpacity>
-              </>
-            ) : (
-              <View>
-                <Text className="text-gray-800 text-lg font-medium">
-                  {formatDate(new Date(schedule.time))}
-                </Text>
-                <Text className="text-gray-600 text-base">
-                  {formatTime(new Date(schedule.time))}
-                </Text>
+                <TouchableOpacity>
+                  <View className="border-gray-300 h-5 w-5 rounded border" />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* 날짜 정보 */}
+            <View className="mb-2 flex-row items-center">
+              <Clock size={16} color={Colors.paleCobalt} />
+              <Text className="text-gray-600 ml-2 text-sm">{formatDate(schedule.time)}</Text>
+            </View>
+
+            {/* 장소 정보 */}
+            {schedule.location && (
+              <View className="mb-6 flex-row items-center">
+                <MapPin size={16} color={Colors.paleCobalt} />
+                <Text className="text-gray-600 ml-2 text-sm">{schedule.location}</Text>
               </View>
             )}
-          </View>
 
-          {/* 추가 정보 */}
-          <View className="mb-6 rounded-xl bg-white p-6 shadow-sm">
-            <Text className="text-gray-800 mb-4 text-lg font-bold">추가 정보</Text>
+            {/* 내용 */}
+            <Text className="text-gray-700 mb-6 text-base leading-6">
+              {schedule.contents || '내용이 없습니다.'}
+            </Text>
 
-            {/* 장소 */}
-            <View className="mb-4">
-              <View className="mb-2 flex-row items-center">
-                <MapPin size={16} color="#6b7280" />
-                <Text className="text-gray-700 ml-2 text-sm font-medium">장소</Text>
-              </View>
-              {isEditing ? (
-                <TextInput
-                  className="border-gray-300 text-gray-800 rounded-lg border bg-white px-4 py-3 text-base"
-                  value={location}
-                  onChangeText={setLocation}
-                  placeholderTextColor="#9CA3AF"
-                />
-              ) : (
-                <Text className="text-gray-600 text-base">
-                  {schedule.location || '장소가 설정되지 않았습니다.'}
-                </Text>
-              )}
-            </View>
-
-            {/* 동행자 */}
+            {/* 이미지 섹션 */}
             <View>
-              <View className="mb-2 flex-row items-center">
-                <Users size={16} color="#6b7280" />
-                <Text className="text-gray-700 ml-2 text-sm font-medium">동행자</Text>
+              <View className="mb-4 flex-row items-center justify-between">
+                <Text className="text-gray-900 text-base font-semibold">이미지</Text>
               </View>
-              {isEditing ? (
-                <TextInput
-                  className="border-gray-300 text-gray-800 rounded-lg border bg-white px-4 py-3 text-base"
-                  value={companion}
-                  onChangeText={setCompanion}
-                  placeholderTextColor="#9CA3AF"
-                />
-              ) : (
-                <Text className="text-gray-600 text-base">
-                  {schedule.companion || '동행자가 없습니다.'}
-                </Text>
-              )}
+
+              <View className="flex-row space-x-3">
+                {mockImages.map((imageUrl, index) => (
+                  <View key={index} className="relative">
+                    <Image
+                      source={{ uri: imageUrl }}
+                      className="h-20 w-20 rounded-lg"
+                      resizeMode="cover"
+                    />
+                  </View>
+                ))}
+
+                {/* 추가 버튼 */}
+                <TouchableOpacity className="h-20 w-20 items-center justify-center rounded-lg bg-teal">
+                  <Plus size={24} color="white" />
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-
-          {!isEditing && (
-            <TouchableOpacity
-              className="mb-8 rounded-lg bg-paleCobalt/10 px-4 py-3"
-              onPress={() => setIsEditing(true)}
-            >
-              <Text className="text-center text-base font-medium text-paleCobalt">
-                일정 수정하기
-              </Text>
-            </TouchableOpacity>
-          )}
         </View>
       </ScrollView>
 
-      {/* Date/Time Pickers */}
-      {showDatePicker && (
-        <DateTimePicker
-          value={selectedDate}
-          mode="date"
-          display="default"
-          onChange={handleDateChange}
-        />
-      )}
-      {showTimePicker && (
-        <DateTimePicker
-          value={selectedDate}
-          mode="time"
-          display="default"
-          onChange={handleTimeChange}
-        />
-      )}
+      {/* 하단 페이지 인디케이터 */}
+      <View className="pb-safe flex-row justify-center space-x-2 py-4">
+        <View className="h-2 w-2 rounded-full bg-paleCobalt" />
+        <View className="bg-gray-300 h-2 w-2 rounded-full" />
+        <View className="bg-gray-300 h-2 w-2 rounded-full" />
+        <View className="bg-gray-300 h-2 w-2 rounded-full" />
+      </View>
     </SafeAreaView>
   );
 };

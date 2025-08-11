@@ -8,7 +8,7 @@ import EditContactDetailGroupModal from './edit-contact-detail-group-modal';
 import { getNoteGroupsByContactId } from '../services/get-note-group-data';
 import { getNoteItemsByGroupId } from '../services/get-note-group-data';
 import { deleteNoteGroup, deleteNoteItem } from '../services/mutation-note-group-data';
-import { NoteGroup, NoteItem } from '../types/address-book-type';
+import { NoteGroupType, NoteItemType } from '../types/address-book-type';
 
 import Button from '@/src/components/ui/button';
 import CommonBox from '@/src/components/ui/common-box';
@@ -25,7 +25,7 @@ const ContactDetailGroupSectionList = ({
     const data = await getNoteGroupsByContactId(id);
     return data;
   }, [id]);
-  const { data, refetch: allGroupRefetch } = useAsyncDataGet<NoteGroup[]>(
+  const { data, refetch: allGroupRefetch } = useAsyncDataGet<NoteGroupType[]>(
     getNoteGroupsByContactIdCallback,
   );
 
@@ -49,7 +49,13 @@ const ContactDetailGroupSectionList = ({
   );
 };
 
-const ContactDetailGroupList = ({ group, refetch }: { group: NoteGroup; refetch: () => void }) => {
+const ContactDetailGroupList = ({
+  group,
+  refetch,
+}: {
+  group: NoteGroupType;
+  refetch: () => void;
+}) => {
   const getNoteItemsByGroupIdCallback = useCallback(async () => {
     const data = await getNoteItemsByGroupId(group.group_id.toString());
     return data;
@@ -57,7 +63,7 @@ const ContactDetailGroupList = ({ group, refetch }: { group: NoteGroup; refetch:
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isActionMenuVisible, setIsActionMenuVisible] = useState(false);
 
-  const { data, refetch: noteItemRefetch } = useAsyncDataGet<NoteItem[]>(
+  const { data, refetch: noteItemRefetch } = useAsyncDataGet<NoteItemType[]>(
     getNoteItemsByGroupIdCallback,
   );
   const handleDeleteContactDetailGroup = async () => {
@@ -106,7 +112,7 @@ const AddContactDetailGroupItemButton = ({
   group,
 }: {
   refetch: () => void;
-  group: NoteGroup;
+  group: NoteGroupType;
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -127,7 +133,7 @@ const AddContactDetailGroupItemButton = ({
   );
 };
 
-const ContactDetailGroupItem = ({ item, refetch }: { item: NoteItem; refetch: () => void }) => {
+const ContactDetailGroupItem = ({ item, refetch }: { item: NoteItemType; refetch: () => void }) => {
   const [isActionMenuVisible, setIsActionMenuVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
 

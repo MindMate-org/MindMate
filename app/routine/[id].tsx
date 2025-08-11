@@ -13,22 +13,22 @@ import {
   SafeAreaView,
 } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import CheckBox from 'src/components/ui/checkbox';
-import FormInput from 'src/components/ui/form-input';
-import MediaPicker from 'src/components/ui/media-picker';
-import { useMediaPicker } from 'src/features/diary/hooks/use-media-picker';
-import RepeatInfoModal from 'src/features/routine/components/repeat-info-modal';
-import { useAlarm } from 'src/features/routine/hooks/use-alarm';
+import CheckBox from '../../src/components/ui/checkbox';
+import FormInput from '../../src/components/ui/form-input';
+import MediaPicker from '../../src/components/ui/media-picker';
+import { useMediaPicker } from '../../src/features/diary/hooks/use-media-picker';
+import RepeatInfoModal from '../../src/features/routine/components/repeat-info-modal';
+import { useAlarm } from '../../src/features/routine/hooks/use-alarm';
 import {
   useCreateRoutine,
   useUpdateRoutine,
-} from 'src/features/routine/hooks/use-routine-mutation';
-import { useRoutineDetailQuery } from 'src/features/routine/hooks/use-routine-query';
+} from '../../src/features/routine/hooks/use-routine-mutation';
+import { useRoutineDetailQuery } from '../../src/features/routine/hooks/use-routine-query';
 import {
   CreateRoutinePayload,
   UpdateRoutinePayload,
   RepeatCycleType,
-} from 'src/features/routine/types';
+} from '../../src/features/routine/types';
 
 const RoutineDetail = () => {
   const { id, startDate } = useLocalSearchParams();
@@ -333,7 +333,7 @@ const RoutineDetail = () => {
       </View>
 
       <ScrollView className="flex-1 bg-white px-4">
-        <View className="py-4 pb-safe">
+        <View className="pb-safe py-4">
           {/* 제목 */}
           <FormInput
             value={title}

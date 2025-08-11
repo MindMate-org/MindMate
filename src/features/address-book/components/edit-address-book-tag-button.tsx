@@ -6,7 +6,7 @@ import ActionMenu from './action-menu';
 import { formTextStyle } from '../constants/style-class-constants';
 import { getAllTags, getContactTags } from '../services/get-tag-data';
 import { addTagToContact, removeTagFromContact, updateTag } from '../services/mutation-tag-data';
-import { Contact, Tag } from '../types/address-book-type';
+import { ContactType, TagType } from '../types/address-book-type';
 
 import BottomModal from '@/src/components/ui/bottom-modal';
 import Button from '@/src/components/ui/button';
@@ -17,7 +17,7 @@ const EditAddressBookTagButton = ({
   contact,
 }: {
   refetch: () => void;
-  contact: Contact;
+  contact: ContactType;
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -55,11 +55,11 @@ const SelectAddressBookTagModal = ({
   isModalVisible: boolean;
   setIsModalVisible: (isModalVisible: boolean) => void;
   refetchItemTags: () => void;
-  contact: Contact;
+  contact: ContactType;
 }) => {
   const [isActionMenuVisible, setIsActionMenuVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
-  const [tagState, setTagState] = useState<Tag | null>(null);
+  const [tagState, setTagState] = useState<TagType | null>(null);
   const [isEditTag, setIsEditTag] = useState(false);
 
   const getAllTagsUseCallback = useCallback(getAllTags, []);
@@ -75,7 +75,7 @@ const SelectAddressBookTagModal = ({
     await refetchItemTags();
   }, [refetchAllTags, refetchContactTags, refetchItemTags]);
 
-  const handleTag = async (tag: Tag) => {
+  const handleTag = async (tag: TagType) => {
     //태그편집
     if (isEditTag) {
       setIsActionMenuVisible(true);
@@ -155,7 +155,7 @@ const EditAddressBookTagModal = ({
 }: {
   isModalVisible: boolean;
   setIsModalVisible: (isModalVisible: boolean) => void;
-  tag: Tag;
+  tag: TagType;
   refetch: () => void;
 }) => {
   const [text, setText] = useState(tag.name || '');

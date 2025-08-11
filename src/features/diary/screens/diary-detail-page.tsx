@@ -39,6 +39,12 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
 
+  // useMemo must be called at top level to avoid hooks order violation
+  const mood = useMemo(() => {
+    if (!diary) return null;
+    return MOOD_OPTIONS.find((m) => m.value === diary.mood);
+  }, [diary]);
+
   useEffect(() => {
     if (id && typeof id === 'string') {
       const numericId = parseInt(id, 10);
@@ -80,8 +86,8 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
     if (!diary) return;
 
     try {
-      await DiaryService.toggleFavorite(diary.id, !diary.isFavorite);
-      setDiary({ ...diary, isFavorite: !diary.isFavorite });
+      await DiaryService.toggleFavorite(diary.id);
+      setDiary({ ...diary, is_favorite: diary.is_favorite === 1 ? 0 : 1 });
     } catch (error) {
       console.error('즐겨찾기 토글 실패:', error);
       Alert.alert('오류', '즐겨찾기 상태 변경에 실패했습니다.');
@@ -143,10 +149,8 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
     );
   }
 
-  const mood = useMemo(() => MOOD_OPTIONS.find((m) => m.id === diary.mood), [diary.mood]);
-
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="pt-safe flex-1 bg-white">
       {/* 헤더 */}
       <View className="flex-row items-center justify-between border-b-2 border-turquoise bg-white px-4 py-4">
         <TouchableOpacity onPress={handleBack}>
@@ -166,9 +170,9 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
             <Text className="ml-2 text-sm text-paleCobalt">편집</Text>
           </TouchableOpacity>
           <TouchableOpacity className="flex-row items-center py-2" onPress={handleToggleFavorite}>
-            <Star size={16} color={diary.isFavorite ? '#fbbf24' : Colors.paleCobalt} />
+            <Star size={16} color={diary.is_favorite ? '#fbbf24' : Colors.paleCobalt} />
             <Text className="ml-2 text-sm text-paleCobalt">
-              {diary.isFavorite ? '즐겨찾기 해제' : '즐겨찾기'}
+              {diary.is_favorite ? '즐겨찾기 해제' : '즐겨찾기'}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -185,20 +189,15 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
         </View>
       )}
 
-      <ScrollView className="flex-1">
-        <View
-          className="mx-4 mt-4 rounded-xl p-6"
-          style={{
-            backgroundColor: diary.backgroundColor || '#F5F7FF',
-          }}
-        >
+      <ScrollView className="flex-1" contentContainerStyle={{ paddingTop: 8 }}>
+        <View className="mx-4 mt-4 rounded-xl bg-white p-6 shadow-sm">
           {/* 제목 */}
           <Text
             className="mb-4 text-xl font-bold"
             style={{
-              color: diary.textColor,
-              fontFamily: diary.font === 'default' ? undefined : diary.font,
-              textAlign: diary.textAlign as 'left' | 'center' | 'right',
+              color: diary.text_color || '#000000',
+              fontFamily: diary.font === 'default' ? undefined : diary.font || undefined,
+              textAlign: diary.text_align as 'left' | 'center' | 'right',
             }}
           >
             {diary.title}
@@ -208,10 +207,10 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
           <Text
             className="mb-6 leading-7"
             style={{
-              color: diary.textColor,
-              fontSize: diary.fontSize,
-              fontFamily: diary.font === 'default' ? undefined : diary.font,
-              textAlign: diary.textAlign as 'left' | 'center' | 'right',
+              color: diary.text_color || '#000000',
+              fontSize: diary.font_size || 16,
+              fontFamily: diary.font === 'default' ? undefined : diary.font || undefined,
+              textAlign: diary.text_align as 'left' | 'center' | 'right',
             }}
           >
             {diary.body}
@@ -220,7 +219,13 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
           {/* 미디어 */}
           {media.length > 0 && (
             <View className="mb-6">
-              <MediaSlider media={media} />
+              <MediaSlider
+                media={media.map((m) => ({
+                  id: m.id,
+                  mediaType: m.media_type,
+                  filePath: m.file_path,
+                }))}
+              />
             </View>
           )}
         </View>
@@ -230,7 +235,7 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
           <View className="mb-4 flex-row items-center">
             <Text className="text-gray-600 text-sm">작성일: </Text>
             <Text className="text-gray-800 text-sm font-medium">
-              {formatDateTimeString(diary.createdAt)}
+              {formatDateTimeString(diary.created_at || '')}
             </Text>
           </View>
 
@@ -238,7 +243,7 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
             <View className="flex-row items-center">
               <Text className="text-gray-600 text-sm">기분: </Text>
               <Text className="mr-2 text-lg">{mood.emoji}</Text>
-              <Text className="text-gray-800 text-sm font-medium">{mood.name}</Text>
+              <Text className="text-gray-800 text-sm font-medium">{mood.label}</Text>
             </View>
           )}
         </View>
@@ -248,7 +253,10 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
         visible={showExportModal}
         onClose={() => setShowExportModal(false)}
         diary={diary}
-        media={media}
+        media={media.map((m) => ({
+          filePath: m.file_path,
+          mediaType: m.media_type,
+        }))}
       />
 
       {/* 메뉴 닫기용 오버레이 */}

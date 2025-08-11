@@ -3,7 +3,7 @@ import { Text, TextInput, View } from 'react-native';
 
 import { formTextStyle } from '../constants/style-class-constants';
 import { createNoteGroup, updateNoteGroup } from '../services/mutation-note-group-data';
-import { NoteGroup } from '../types/address-book-type';
+import { NoteGroupType } from '../types/address-book-type';
 
 import BottomModal from '@/src/components/ui/bottom-modal';
 import Button from '@/src/components/ui/button';
@@ -19,7 +19,7 @@ const EditContactDetailGroupModal = ({
   setIsModalVisible: (visible: boolean) => void;
   id?: string;
   refetch: () => void;
-  group?: NoteGroup;
+  group?: NoteGroupType;
 }) => {
   const [groupName, setGroupName] = useState(group?.title || '');
 

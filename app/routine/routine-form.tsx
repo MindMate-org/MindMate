@@ -13,8 +13,8 @@ import {
 import {
   useUpdateRoutine,
   useUpdateSubTaskCompletion,
-} from 'src/features/routine/hooks/use-routine-mutation';
-import { useRoutineDetailQuery } from 'src/features/routine/hooks/use-routine-query';
+} from '../../src/features/routine/hooks/use-routine-mutation';
+import { useRoutineDetailQuery } from '../../src/features/routine/hooks/use-routine-query';
 
 const RoutineForm = () => {
   const router = useRouter();

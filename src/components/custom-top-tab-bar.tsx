@@ -30,10 +30,7 @@ export default function CustomTopTabBar({
         <TouchableOpacity onPress={() => router.push('/')}>
           <Text className="text-lg font-bold text-blue-600 sm:text-xl lg:text-2xl">MIND MATE</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
-          onPress={() => router.push('/settings')}
-          className="rounded-full p-2"
-        >
+        <TouchableOpacity onPress={() => router.push('/settings')} className="rounded-full p-2">
           <Settings size={20} color="#576BCD" />
         </TouchableOpacity>
       </View>

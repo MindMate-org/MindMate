@@ -1,5 +1,9 @@
 import { db } from '../../../hooks/use-initialize-database';
-import type { ScheduleType, CreateScheduleDataType, UpdateScheduleDataType } from '../types/schedule-types';
+import type {
+  ScheduleType,
+  CreateScheduleDataType,
+  UpdateScheduleDataType,
+} from '../types/schedule-types';
 
 // 일정 목록 조회
 export const fetchGetSchedules = async (): Promise<ScheduleType[]> => {
@@ -55,7 +59,10 @@ export const fetchCreateSchedule = async (data: CreateScheduleDataType): Promise
 };
 
 // 일정 업데이트
-export const fetchUpdateSchedule = async (id: number, data: UpdateScheduleDataType): Promise<boolean> => {
+export const fetchUpdateSchedule = async (
+  id: number,
+  data: UpdateScheduleDataType,
+): Promise<boolean> => {
   try {
     const updates: string[] = [];
     const values: any[] = [];
@@ -128,7 +135,9 @@ export const toggleScheduleCompletion = async (id: number): Promise<boolean> => 
 // 특정 일정 조회
 export const fetchGetScheduleById = async (id: number): Promise<ScheduleType | null> => {
   try {
-    const result = await db.getFirstAsync<Schedule>('SELECT * FROM schedules WHERE id = ?', [id]);
+    const result = await db.getFirstAsync<ScheduleType>('SELECT * FROM schedules WHERE id = ?', [
+      id,
+    ]);
     return result || null;
   } catch (error) {
     console.error('Failed to get schedule by id:', error);

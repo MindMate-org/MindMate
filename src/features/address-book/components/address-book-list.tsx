@@ -5,7 +5,7 @@ import { ScrollView, View, Text } from 'react-native';
 import AddressBookItem from './address-book-item';
 import { useAsyncDataGet } from '../../../hooks/use-async-data-get';
 import { getOthersContacts } from '../services/get-contact-data';
-import { Contact } from '../types/address-book-type';
+import { ContactType } from '../types/address-book-type';
 
 import { useFocusPage } from '@/src/hooks/use-focus-page';
 
@@ -15,7 +15,7 @@ interface AddressBookListProps {
 
 const AddressBookList = ({ searchText }: AddressBookListProps) => {
   const getOthersContactsUseCallBack = useCallback(getOthersContacts, []);
-  const { data, refetch } = useAsyncDataGet<Contact[]>(getOthersContactsUseCallBack);
+  const { data, refetch } = useAsyncDataGet<ContactType[]>(getOthersContactsUseCallBack);
   useFocusPage(refetch);
 
   // 검색 필터링 - 검색어를 미리 소문자로 변환하여 성능 최적화

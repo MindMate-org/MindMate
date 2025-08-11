@@ -144,7 +144,6 @@ const FormEditContact = ({ id }: { id: string }) => {
             onChangeText={setPhoneNumber}
             label="전화번호"
             placeholder={placeHolder[mode].phoneNumber}
-            keyboardType="phone-pad"
           />
         </View>
 
@@ -246,12 +245,12 @@ const FieldSelectionModal = ({
   onClose,
 }: {
   onSelectPredefined: (field: (typeof FIELD_OPTIONS)[0]) => void;
-  onSelectCustom: (label: string, type: 'text' | 'email' | 'phone' | 'url') => void;
+  onSelectCustom: (label: string, type: 'text' | 'email' | 'url') => void;
   onClose: () => void;
 }) => {
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [customLabel, setCustomLabel] = useState('');
-  const [customType, setCustomType] = useState<'text' | 'email' | 'phone' | 'url'>('text');
+  const [customType, setCustomType] = useState<'text' | 'email' | 'url'>('text');
 
   const handleAddCustomField = () => {
     if (!customLabel.trim()) {
@@ -266,7 +265,6 @@ const FieldSelectionModal = ({
   const FIELD_TYPE_OPTIONS = [
     { label: '텍스트', value: 'text' as const },
     { label: '이메일', value: 'email' as const },
-    { label: '전화번호', value: 'phone' as const },
     { label: '웹사이트', value: 'url' as const },
   ];
 

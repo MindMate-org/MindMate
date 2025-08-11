@@ -8,7 +8,7 @@ import AddressBookImage from './address-book-image';
 import AddressBookName from './address-book-name';
 import { useAsyncDataGet } from '../../../hooks/use-async-data-get';
 import { AddressBookService } from '../services';
-import { Contact } from '../types/address-book-type';
+import { ContactType } from '../types/address-book-type';
 
 /**
  * 내 정보 표시 컴포넌트
@@ -17,8 +17,14 @@ import { Contact } from '../types/address-book-type';
  */
 const AddressBookSelfItem = () => {
   const router = useRouter();
-  const getMyContactUseCallBack = useCallback(AddressBookService.fetchGetMyContact, []);
-  const { data } = useAsyncDataGet<Contact>(getMyContactUseCallBack);
+  const getMyContactUseCallBack = useCallback(async () => {
+    const contact = await AddressBookService.fetchGetMyContact();
+    if (!contact) {
+      throw new Error('내 연락처가 존재하지 않습니다.');
+    }
+    return contact;
+  }, []);
+  const { data } = useAsyncDataGet<ContactType>(getMyContactUseCallBack);
 
   const handleEdit = () => {
     if (data) {

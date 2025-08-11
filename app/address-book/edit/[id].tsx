@@ -15,7 +15,7 @@ const Edit = () => {
   return (
     <SafeAreaView className="flex-1 bg-turquoise">
       {/* 헤더 */}
-      <View className="flex-row items-center bg-turquoise px-4 py-3 pt-safe">
+      <View className="pt-safe flex-row items-center bg-turquoise px-4 py-3">
         <TouchableOpacity onPress={() => router.back()} className="flex-row items-center">
           <ArrowLeft size={24} color="#576bcd" />
           <Text className="ml-2 text-lg font-medium text-paleCobalt">연락처 편집</Text>
@@ -23,7 +23,7 @@ const Edit = () => {
       </View>
 
       <ScrollView className="flex-1">
-        <View className="px-4 pb-safe">
+        <View className="pb-safe px-4">
           <FormEditContact id={id} />
           <ContactDetailGroupSectionList id={id} isModalVisible={isModalVisible} />
 

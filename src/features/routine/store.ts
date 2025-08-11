@@ -61,17 +61,17 @@ export const useRoutineStore = create<RoutineStore>()(
           state.routines.push(routine);
         }),
 
-      updateRoutine: (id, updatedRoutine) =>
+      updateRoutine: (id, updatedRoutine: Partial<RoutineType>) =>
         set((state) => {
-          const index = state.routines.findIndex((routine) => routine.id === id);
+          const index = state.routines.findIndex((routine: RoutineType) => routine.id === id);
           if (index !== -1) {
             Object.assign(state.routines[index], updatedRoutine);
           }
         }),
 
-      removeRoutine: (id) =>
+      removeRoutine: (id: string) =>
         set((state) => {
-          state.routines = state.routines.filter((routine) => routine.id !== id);
+          state.routines = state.routines.filter((routine: RoutineType) => routine.id !== id);
         }),
 
       clearError: () =>

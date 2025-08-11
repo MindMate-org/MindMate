@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { getContactById } from '../services/get-contact-data';
-import { Contact } from '../types/address-book-type';
+import { ContactType } from '../types/address-book-type';
 
 import { useAsyncDataGet } from '@/src/hooks/use-async-data-get';
 
@@ -14,7 +14,7 @@ export const useContactEditState = (id: string) => {
     const contact = await getContactById(id);
     return contact;
   }, [id]);
-  const { data, refetch } = useAsyncDataGet<Contact>(getContactByIdCallback);
+  const { data, refetch } = useAsyncDataGet<ContactType>(getContactByIdCallback);
   useEffect(() => {
     if (data) {
       setName(data.name);

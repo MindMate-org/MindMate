@@ -1,10 +1,10 @@
 import { getNoteGroupsByContactId, getNoteItemById } from './get-note-group-data';
 
-import { NoteGroup, NoteItem } from '@/src/features/address-book/types/address-book-type';
+import { NoteGroupType, NoteItemType } from '@/src/features/address-book/types/address-book-type';
 import { db } from '@/src/hooks/use-initialize-database';
 
 // 노트 그룹 생성
-export const createNoteGroup = async (contactId: string, title: string): Promise<NoteGroup> => {
+export const createNoteGroup = async (contactId: string, title: string): Promise<NoteGroupType> => {
   try {
     const result = await db.runAsync('INSERT INTO note_group (contact_id, title) VALUES (?, ?)', [
       contactId,
@@ -23,8 +23,8 @@ export const createNoteGroup = async (contactId: string, title: string): Promise
 // 노트 그룹 수정
 export const updateNoteGroup = async (
   groupId: string,
-  noteGroupData: Partial<NoteGroup>,
-): Promise<NoteGroup> => {
+  noteGroupData: Partial<NoteGroupType>,
+): Promise<NoteGroupType> => {
   try {
     // 수정할 필드들만 동적으로 SQL 생성
     const updateFields: string[] = [];
@@ -84,7 +84,7 @@ export const createNoteItem = async (
   groupId: string,
   title: string,
   content: string,
-): Promise<NoteItem> => {
+): Promise<NoteItemType> => {
   try {
     const result = await db.runAsync(
       'INSERT INTO note_item (group_id, title, content) VALUES (?, ?, ?)',
@@ -106,8 +106,8 @@ export const createNoteItem = async (
 // 노트 아이템 수정
 export const updateNoteItem = async (
   itemId: string,
-  noteItemData: Partial<Pick<NoteItem, 'group_id' | 'title' | 'content'>>,
-): Promise<NoteItem> => {
+  noteItemData: Partial<Pick<NoteItemType, 'group_id' | 'title' | 'content'>>,
+): Promise<NoteItemType> => {
   try {
     // 수정할 필드들만 동적으로 SQL 생성
     const updateFields: string[] = [];

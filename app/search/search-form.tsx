@@ -93,7 +93,11 @@ const SearchForm = () => {
       await db.withTransactionAsync(async () => {
         const lastInsertRowId = await fetchInsertSearch(data);
         if (images.length > 0) {
-          await fetchInsertMedia(images, 'search', lastInsertRowId);
+          const mediaItems = images.map((item) => ({
+            uri: item.uri,
+            type: item.type as 'image' | 'video' | 'livePhoto' | 'pairedVideo' | undefined,
+          }));
+          await fetchInsertMedia(mediaItems, 'search', lastInsertRowId);
         }
       });
       router.back();
@@ -113,7 +117,11 @@ const SearchForm = () => {
   // 폼 업데이트 함수
   const handleFormUpdate = async (data: SearchFormSchema) => {
     try {
-      await fetchUpdateSearchById(+id, data, images);
+      const mediaItems = images.map((item) => ({
+        uri: item.uri,
+        type: item.type as 'image' | 'video' | 'livePhoto' | 'pairedVideo' | undefined,
+      }));
+      await fetchUpdateSearchById(+id, data, mediaItems);
       router.back();
       Toast.show({
         type: 'success',
