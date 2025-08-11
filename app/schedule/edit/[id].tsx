@@ -5,6 +5,8 @@ import { SafeAreaView, Alert, ActivityIndicator, Text } from 'react-native';
 import { Colors } from '../../../src/constants/colors';
 import { EntryForm, EntryFormDataType } from '../../../src/components/common/entry-form';
 import { AlarmSection } from '../../../src/features/schedule/components/alarm-section';
+import { AlarmTimeModal } from '../../../src/features/schedule/components/alarm-time-modal';
+import { useScheduleAlarm } from '../../../src/features/schedule/hooks/use-schedule-alarm';
 import {
   fetchGetScheduleById,
   fetchUpdateSchedule,
@@ -24,10 +26,13 @@ const EditSchedulePage = () => {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const scheduleId = parseInt(id, 10);
+  const { scheduleAlarm } = useScheduleAlarm();
 
   const [schedule, setSchedule] = useState<ScheduleType | null>(null);
   const [location, setLocation] = useState('');
   const [companion, setCompanion] = useState('');
+  const [alarmTime, setAlarmTime] = useState<Date | undefined>();
+  const [showAlarmModal, setShowAlarmModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [initialData, setInitialData] = useState<EntryFormDataType | undefined>();
 
@@ -42,6 +47,7 @@ const EditSchedulePage = () => {
         setSchedule(data);
         setLocation(data.location || '');
         setCompanion(data.companion || '');
+        setAlarmTime(data.time ? new Date(data.time) : undefined);
 
         // 초기 데이터 설정
         setInitialData({
@@ -74,13 +80,29 @@ const EditSchedulePage = () => {
       const updateData: UpdateScheduleDataType = {
         title: data.title,
         contents: data.content || undefined,
-        time: schedule?.time || new Date().toISOString(),
+        time: alarmTime ? alarmTime.toISOString() : (schedule?.time || new Date().toISOString()),
         location: location.trim() || undefined,
         companion: companion.trim() || undefined,
       };
 
       const success = await fetchUpdateSchedule(scheduleId, updateData);
       if (success) {
+        // 알림 재설정 (알림 시간이 설정된 경우에만)
+        if (alarmTime) {
+          const updatedSchedule = {
+            id: scheduleId,
+            title: data.title,
+            time: alarmTime.toISOString(),
+            contents: data.content || undefined,
+            location: location.trim() || undefined,
+            companion: companion.trim() || undefined,
+            is_completed: schedule?.is_completed || 0,
+            created_at: schedule?.created_at || new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+          await scheduleAlarm(updatedSchedule);
+        }
+
         Alert.alert('완료', '일정이 수정되었습니다.', [
           { text: '확인', onPress: () => router.back() },
         ]);
@@ -98,8 +120,11 @@ const EditSchedulePage = () => {
   };
 
   const handleAlarmPress = () => {
-    // TODO: 알림 설정 모달 구현
-    Alert.alert('알림', '알림 설정 기능은 곧 추가될 예정입니다.');
+    setShowAlarmModal(true);
+  };
+
+  const handleAlarmConfirm = (date: Date) => {
+    setAlarmTime(date);
   };
 
   if (loading) {
@@ -125,19 +150,29 @@ const EditSchedulePage = () => {
       onLocationChange={setLocation}
       onCompanionChange={setCompanion}
       onAlarmPress={handleAlarmPress}
+      alarmTime={alarmTime}
     />
   );
 
   return (
-    <EntryForm
-      title="일정 수정하기"
-      initialData={initialData}
-      onSubmit={handleSubmit}
-      onCancel={handleCancel}
-      showMoodPicker={false}
-      showAlarmSection={true}
-      alarmSection={alarmSection}
-    />
+    <>
+      <EntryForm
+        title="일정 수정하기"
+        initialData={initialData}
+        onSubmit={handleSubmit}
+        onCancel={handleCancel}
+        showMoodPicker={false}
+        showAlarmSection={true}
+        alarmSection={alarmSection}
+      />
+
+      <AlarmTimeModal
+        isVisible={showAlarmModal}
+        onClose={() => setShowAlarmModal(false)}
+        onConfirm={handleAlarmConfirm}
+        initialDate={alarmTime || new Date()}
+      />
+    </>
   );
 };
 

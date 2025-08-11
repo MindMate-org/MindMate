@@ -4,6 +4,7 @@ import { Alert } from 'react-native';
 
 import { EntryForm, EntryFormDataType } from '../../src/components/common/entry-form';
 import { AlarmSection } from '../../src/features/schedule/components/alarm-section';
+import { AlarmTimeModal } from '../../src/features/schedule/components/alarm-time-modal';
 import { useScheduleAlarm } from '../../src/features/schedule/hooks/use-schedule-alarm';
 import { fetchCreateSchedule } from '../../src/features/schedule/services/schedule-services';
 import type { CreateScheduleDataType } from '../../src/features/schedule/types/schedule-types';
@@ -20,13 +21,15 @@ const CreateSchedulePage = () => {
 
   const [location, setLocation] = useState('');
   const [companion, setCompanion] = useState('');
+  const [alarmTime, setAlarmTime] = useState<Date | undefined>();
+  const [showAlarmModal, setShowAlarmModal] = useState(false);
 
   const handleSubmit = async (data: EntryFormDataType, audioUri?: string) => {
     try {
       const scheduleData: CreateScheduleDataType = {
         title: data.title,
         contents: data.content || undefined,
-        time: new Date().toISOString(),
+        time: alarmTime ? alarmTime.toISOString() : new Date().toISOString(),
         location: location.trim() || undefined,
         companion: companion.trim() || undefined,
       };
@@ -34,19 +37,21 @@ const CreateSchedulePage = () => {
       const newScheduleId = await fetchCreateSchedule(scheduleData);
 
       if (newScheduleId) {
-        // 알림 설정
-        const mockSchedule = {
-          id: newScheduleId,
-          title: data.title,
-          time: new Date().toISOString(),
-          contents: data.content || undefined,
-          location: location.trim() || undefined,
-          companion: companion.trim() || undefined,
-          is_completed: 0,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-        await scheduleAlarm(mockSchedule);
+        // 알림 설정 (알림 시간이 설정된 경우에만)
+        if (alarmTime) {
+          const mockSchedule = {
+            id: newScheduleId,
+            title: data.title,
+            time: alarmTime.toISOString(),
+            contents: data.content || undefined,
+            location: location.trim() || undefined,
+            companion: companion.trim() || undefined,
+            is_completed: 0,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+          await scheduleAlarm(mockSchedule);
+        }
 
         Alert.alert('완료', '일정이 저장되었습니다.', [
           { text: '확인', onPress: () => router.back() },
@@ -65,8 +70,11 @@ const CreateSchedulePage = () => {
   };
 
   const handleAlarmPress = () => {
-    // TODO: 알림 설정 모달 구현
-    Alert.alert('알림', '알림 설정 기능은 곧 추가될 예정입니다.');
+    setShowAlarmModal(true);
+  };
+
+  const handleAlarmConfirm = (date: Date) => {
+    setAlarmTime(date);
   };
 
   const alarmSection = (
@@ -76,18 +84,28 @@ const CreateSchedulePage = () => {
       onLocationChange={setLocation}
       onCompanionChange={setCompanion}
       onAlarmPress={handleAlarmPress}
+      alarmTime={alarmTime}
     />
   );
 
   return (
-    <EntryForm
-      title="일정 작성하기"
-      onSubmit={handleSubmit}
-      onCancel={handleCancel}
-      showMoodPicker={false}
-      showAlarmSection={true}
-      alarmSection={alarmSection}
-    />
+    <>
+      <EntryForm
+        title="일정 작성하기"
+        onSubmit={handleSubmit}
+        onCancel={handleCancel}
+        showMoodPicker={false}
+        showAlarmSection={true}
+        alarmSection={alarmSection}
+      />
+
+      <AlarmTimeModal
+        isVisible={showAlarmModal}
+        onClose={() => setShowAlarmModal(false)}
+        onConfirm={handleAlarmConfirm}
+        initialDate={alarmTime || new Date()}
+      />
+    </>
   );
 };
 

@@ -10,7 +10,7 @@ export default function CustomTopTabBar({
   navigation,
 }: MaterialTopTabBarProps) {
   // 디버깅용 로그 (개발 중에만 사용)
-  if (__DEV__) {
+  if (process.env.NODE_ENV === 'development') {
     console.log(
       'Tab Routes:',
       state.routes.map((r, index) => ({

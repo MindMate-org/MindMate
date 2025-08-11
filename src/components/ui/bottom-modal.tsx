@@ -1,3 +1,5 @@
+import React from 'react';
+
 import Modal from './modal';
 
 type BottomModalProps = {

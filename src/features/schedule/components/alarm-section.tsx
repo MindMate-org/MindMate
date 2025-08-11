@@ -10,6 +10,7 @@ interface AlarmSectionProps {
   onLocationChange: (location: string) => void;
   onCompanionChange: (companion: string) => void;
   onAlarmPress?: () => void;
+  alarmTime?: Date;
 }
 
 /**
@@ -24,7 +25,19 @@ export const AlarmSection: React.FC<AlarmSectionProps> = ({
   onLocationChange,
   onCompanionChange,
   onAlarmPress,
+  alarmTime,
 }) => {
+  const formatAlarmTime = (date: Date) => {
+    return date.toLocaleString('ko-KR', {
+      month: 'short',
+      day: 'numeric',
+      weekday: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
+  };
+
   return (
     <View className="space-y-4 bg-white px-4 py-4">
       {/* 장소 */}
@@ -32,7 +45,7 @@ export const AlarmSection: React.FC<AlarmSectionProps> = ({
         <MapPin size={20} color={Colors.paleCobalt} />
         <TextInput
           className="text-gray-700 ml-3 flex-1 text-base"
-          placeholder="서울시 마포구 마포나루길 467"
+          placeholder="장소를 입력하세요"
           placeholderTextColor="#6B7280"
           value={location}
           onChangeText={onLocationChange}
@@ -42,7 +55,9 @@ export const AlarmSection: React.FC<AlarmSectionProps> = ({
       {/* 알람 */}
       <TouchableOpacity className="flex-row items-center" onPress={onAlarmPress}>
         <Bell size={20} color={Colors.paleCobalt} />
-        <Text className="text-gray-700 ml-3 text-base">미리 알림 받지 않음</Text>
+        <Text className="text-gray-700 ml-3 text-base">
+          {alarmTime ? formatAlarmTime(alarmTime) : '미리 알림 받지 않음'}
+        </Text>
       </TouchableOpacity>
 
       {/* 참가자 */}
@@ -50,7 +65,7 @@ export const AlarmSection: React.FC<AlarmSectionProps> = ({
         <Users size={20} color={Colors.paleCobalt} />
         <TextInput
           className="text-gray-700 ml-3 flex-1 text-base"
-          placeholder="참가자 입력"
+          placeholder="참가자를 입력하세요"
           placeholderTextColor="#6B7280"
           value={companion}
           onChangeText={onCompanionChange}

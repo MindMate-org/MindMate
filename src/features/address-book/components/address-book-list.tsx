@@ -43,7 +43,7 @@ const AddressBookList = ({ searchText }: AddressBookListProps) => {
     return (
       <View className="flex-1 items-center justify-center px-4">
         <Text className="text-center text-lg text-paleCobalt">
-          "{searchText}"에 대한 검색 결과가 없습니다.
+          &ldquo;{searchText}&rdquo;에 대한 검색 결과가 없습니다.
         </Text>
         <Text className="mt-2 text-center text-sm text-gray">다른 검색어를 시도해보세요.</Text>
       </View>
