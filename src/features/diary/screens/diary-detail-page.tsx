@@ -140,7 +140,7 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
       {/* 헤더 */}
       <FadeInView>
         <View style={{

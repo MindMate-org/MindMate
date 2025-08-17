@@ -137,7 +137,7 @@ const DiaryListPage = () => {
   const grouped = useMemo(() => groupDiariesByPeriod(sortedDiaries), [sortedDiaries]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#a7f3d0' }}>
+    <View style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{

@@ -113,7 +113,7 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
         <LoadingState message="일정을 불러오는 중..." />
       </SafeAreaView>
     );
@@ -121,7 +121,7 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
 
   if (error || !schedule) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
         <ErrorState
           message={error || '일정을 찾을 수 없습니다.'}
           onRetry={() => fetchScheduleDetail(parseInt(id as string, 10))}
@@ -131,7 +131,7 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
       {/* 헤더 */}
       <FadeInView>
         <View style={{

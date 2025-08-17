@@ -18,13 +18,13 @@ const Edit = () => {
   return (
     <SafeAreaView style={{ 
       flex: 1, 
-      backgroundColor: isDark ? themeColors.background : '#a7f3d0' 
+      backgroundColor: isDark ? themeColors.background : '#F0F3FF' 
     }}>
       {/* 헤더 */}
       <View style={{
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: isDark ? themeColors.background : '#a7f3d0',
+        backgroundColor: isDark ? themeColors.background : '#F0F3FF',
         paddingHorizontal: 16,
         paddingVertical: 12,
       }}>

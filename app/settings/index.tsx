@@ -133,7 +133,7 @@ const SettingsPage = () => {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
       {/* 헤더 */}
       <View style={{ 
         flexDirection: 'row', 

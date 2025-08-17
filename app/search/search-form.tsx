@@ -159,7 +159,7 @@ const SearchForm = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={{ 
         flex: 1, 
-        backgroundColor: isDark ? themeColors.background : '#a7f3d0',
+        backgroundColor: isDark ? themeColors.background : '#F0F3FF',
         paddingHorizontal: 16,
         paddingTop: 32,
       }}>

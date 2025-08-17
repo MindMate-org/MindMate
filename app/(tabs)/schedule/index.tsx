@@ -208,7 +208,7 @@ const SchedulePage = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#a7f3d0' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
       <ScrollView style={{ flex: 1 }}>
         {/* 오늘 날짜 헤더 */}
         <View style={{ marginTop: 24, paddingHorizontal: 16 }}>

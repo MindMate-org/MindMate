@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { SafeAreaView, Alert, ActivityIndicator } from 'react-native';
 
 import { EntryForm, EntryFormDataType } from '../../../src/components/common/entry-form';
+import { useThemeColors } from '../../../src/components/providers/theme-provider';
 import { Colors } from '../../../src/constants/colors';
 import { DiaryService } from '../../../src/features/diary/services';
 import { DiaryMediaType as FormMediaType } from '../../../src/features/diary/types';
@@ -19,6 +20,7 @@ type DiaryMediaType = Awaited<ReturnType<typeof DiaryService.getMediaByDiaryId>>
 const DiaryEditPage = () => {
   const router = useRouter();
   const { id } = useLocalSearchParams();
+  const { theme: themeColors, isDark } = useThemeColors();
   const [isLoading, setIsLoading] = useState(true);
   const [diary, setDiary] = useState<DiaryDetailType | null>(null);
   const [existingMedia, setExistingMedia] = useState<DiaryMediaType>([]);
@@ -59,7 +61,7 @@ const DiaryEditPage = () => {
             fontFamily: diaryData.font || 'default',
             fontSize: diaryData.font_size || 16,
             textAlign: (diaryData.text_align as 'left' | 'center' | 'right') || 'left',
-            textColor: diaryData.text_color || '#000000',
+            textColor: diaryData.text_color || (isDark ? '#FFFFFF' : '#000000'),
             backgroundColor: diaryData.background_color || '#FFFFFF',
           },
           mood: (diaryData.mood as any) || undefined,

@@ -2,6 +2,7 @@ import { Search, X } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 
+import { useThemeColors } from '../../../components/providers/theme-provider';
 import { Colors } from '../../../constants/colors';
 import { MOOD_OPTIONS, MoodType } from '../types';
 import BaseModal from './base-modal';
@@ -24,6 +25,7 @@ type SearchModalProps = {
  * 검색 및 필터 모달 컴포넌트
  */
 const SearchModal = ({ visible, onClose, onSearch }: SearchModalProps) => {
+  const { theme: themeColors } = useThemeColors();
   const [keyword, setKeyword] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -85,7 +87,7 @@ const SearchModal = ({ visible, onClose, onSearch }: SearchModalProps) => {
 
         {/* 키워드 검색 */}
         <View style={{ marginBottom: 24 }}>
-          <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 8, color: Colors.black }}>
+          <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 8, color: themeColors.text }}>
             키워드 검색
           </Text>
           <View
@@ -111,7 +113,7 @@ const SearchModal = ({ visible, onClose, onSearch }: SearchModalProps) => {
 
         {/* 날짜 범위 */}
         <View style={{ marginBottom: 24 }}>
-          <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 8, color: Colors.black }}>
+          <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 8, color: themeColors.text }}>
             날짜 범위
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
@@ -153,7 +155,7 @@ const SearchModal = ({ visible, onClose, onSearch }: SearchModalProps) => {
 
         {/* 기분 필터 */}
         <View style={{ marginBottom: 24 }}>
-          <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 12, color: Colors.black }}>
+          <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 12, color: themeColors.text }}>
             기분별 필터
           </Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
@@ -211,7 +213,7 @@ const SearchModal = ({ visible, onClose, onSearch }: SearchModalProps) => {
 
         {/* 미디어 필터 */}
         <View style={{ marginBottom: 32 }}>
-          <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 12, color: Colors.black }}>
+          <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 12, color: themeColors.text }}>
             미디어 포함 여부
           </Text>
           <View style={{ flexDirection: 'row', gap: 8 }}>

@@ -126,7 +126,7 @@ const RoutineMain = () => {
   // 로딩 상태
   if (isLoading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#a7f3d0' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
         <LoadingState message={t.routine.loading} />
       </SafeAreaView>
     );
@@ -135,7 +135,7 @@ const RoutineMain = () => {
   // 에러 상태
   if (error) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#a7f3d0' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
         <ErrorState message={error} onRetry={refetch} />
       </SafeAreaView>
     );
@@ -144,7 +144,7 @@ const RoutineMain = () => {
   const selectedDateStr = toKSTDateString(selectedDate);
 
   return (
-    <SafeAreaView style={{ position: 'relative', flex: 1, backgroundColor: isDark ? themeColors.background : '#a7f3d0' }}>
+    <SafeAreaView style={{ position: 'relative', flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
       {/* 헤더 */}
       <FadeInView>
         <View className="flex-row items-center justify-between px-4 pb-4 pt-2">

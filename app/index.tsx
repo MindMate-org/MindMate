@@ -15,38 +15,38 @@ export default function HomeScreen() {
     {
       title: t.landing.writeDiary,
       route: '/(tabs)/diary',
-      icon: <BookOpen color={themeColors.primary} size={64} />,
-      backgroundColor: '#14b8a6',
+      icon: <BookOpen color="#576BCD" size={64} />,
+      backgroundColor: isDark ? themeColors.surface : '#C9EFEF', // teal
     },
     {
       title: t.landing.viewSchedule,
       route: '/schedule',
-      icon: <Clock color={themeColors.primary} size={64} />,
-      backgroundColor: '#fef3c7',
+      icon: <Clock color="#576BCD" size={64} />,
+      backgroundColor: isDark ? themeColors.surface : '#FFE5BC', // paleYellow
     },
     {
       title: t.landing.findItems,
       route: '/search',
-      icon: <Search color={themeColors.primary} size={64} />,
-      backgroundColor: '#fecaca',
+      icon: <Search color="#576BCD" size={64} />,
+      backgroundColor: isDark ? themeColors.surface : '#FFD7DD', // pink
     },
     {
       title: t.landing.viewRoutine,
       route: '/(tabs)/routine',
-      icon: <RefreshCcw color={themeColors.primary} size={64} />,
-      backgroundColor: '#bfdbfe',
+      icon: <RefreshCcw color="#576BCD" size={64} />,
+      backgroundColor: isDark ? themeColors.surface : '#BDC7FF', // foggyBlue
     },
     {
       title: t.landing.viewContacts,
       route: '/address-book',
-      icon: <UserRound color={themeColors.primary} size={64} />,
-      backgroundColor: themeColors.surface,
+      icon: <UserRound color="#576BCD" size={64} />,
+      backgroundColor: isDark ? themeColors.surface : '#FFFFFF', // white
     },
     {
       title: t.common.settings,
       route: '/settings',
-      icon: <Settings color={themeColors.primary} size={64} />,
-      backgroundColor: themeColors.surface,
+      icon: <Settings color={isDark ? '#576BCD' : '#FFFFFF'} size={64} />,
+      backgroundColor: isDark ? themeColors.surface : '#576BCD', // paleCobalt
     },
   ];
 
@@ -55,7 +55,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={{ position: 'relative', flex: 1, backgroundColor: themeColors.primary }}>
+    <View style={{ position: 'relative', flex: 1, backgroundColor: isDark ? themeColors.primary : '#576BCD' }}>
       <Image
         source={require('../assets/main-pg-bg-shape.png')}
         style={{
@@ -84,13 +84,13 @@ export default function HomeScreen() {
         justifyContent: 'flex-end',
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
-        backgroundColor: themeColors.backgroundSecondary,
+        backgroundColor: isDark ? themeColors.backgroundSecondary : '#F0F3FF',
       }}>
         <View style={{
           flex: 1,
           borderTopLeftRadius: 16,
           borderTopRightRadius: 16,
-          backgroundColor: themeColors.background,
+          backgroundColor: isDark ? themeColors.background : '#F0F3FF',
           paddingHorizontal: 24,
           paddingBottom: 24,
         }}>
@@ -178,7 +178,7 @@ export default function HomeScreen() {
                     style={{
                       fontSize: 14,
                       fontWeight: 'bold',
-                      color: themeColors.text,
+                      color: isDark ? themeColors.text : (item.backgroundColor === '#576BCD' ? '#FFFFFF' : '#576BCD'),
                       textAlign: 'center',
                     }}
                   >

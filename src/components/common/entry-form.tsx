@@ -148,7 +148,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
       <ScrollView style={{ flex: 1 }}>
         {/* 헤더 */}
         <View style={{
@@ -177,7 +177,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({
         <View
           style={{ 
             flex: 1,
-            backgroundColor: watchedStyle.backgroundColor || themeColors.surface,
+            backgroundColor: watchedStyle.backgroundColor || (isDark ? themeColors.surface : '#FFFFFF'),
           }}
         >
           {/* 제목 입력 */}
@@ -343,7 +343,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 borderRadius: 8,
-                backgroundColor: isDark ? themeColors.textSecondary : '#BDC7FF',
+                backgroundColor: isDark ? themeColors.textSecondary : '#FFE5BC',
                 paddingVertical: 16,
               }}
             >

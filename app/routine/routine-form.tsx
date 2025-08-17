@@ -78,7 +78,7 @@ const RoutineForm = () => {
         flex: 1, 
         alignItems: 'center', 
         justifyContent: 'center', 
-        backgroundColor: isDark ? themeColors.background : '#a7f3d0' 
+        backgroundColor: isDark ? themeColors.background : '#F0F3FF' 
       }}>
         <ActivityIndicator size="large" color={themeColors.primary} />
         <Text style={{ 
@@ -96,7 +96,7 @@ const RoutineForm = () => {
         flex: 1, 
         alignItems: 'center', 
         justifyContent: 'center', 
-        backgroundColor: isDark ? themeColors.background : '#a7f3d0',
+        backgroundColor: isDark ? themeColors.background : '#F0F3FF',
         paddingHorizontal: 16 
       }}>
         <Text style={{ 
@@ -126,7 +126,7 @@ const RoutineForm = () => {
         flex: 1, 
         alignItems: 'center', 
         justifyContent: 'center', 
-        backgroundColor: isDark ? themeColors.background : '#a7f3d0' 
+        backgroundColor: isDark ? themeColors.background : '#F0F3FF' 
       }}>
         <Text style={{ color: themeColors.textSecondary }}>루틴을 찾을 수 없습니다.</Text>
       </SafeAreaView>
@@ -162,7 +162,7 @@ const RoutineForm = () => {
   return (
     <SafeAreaView style={{ 
       flex: 1, 
-      backgroundColor: isDark ? themeColors.background : '#a7f3d0' 
+      backgroundColor: isDark ? themeColors.background : '#F0F3FF' 
     }}>
       {/* 상단 여백 */}
       <View style={{ height: 32 }} />

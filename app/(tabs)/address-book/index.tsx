@@ -20,9 +20,9 @@ const AddressBook = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#a7f3d0', paddingBottom: 20 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF', paddingBottom: 20 }}>
       {/* 고정 영역들 */}
-      <View style={{ backgroundColor: themeColors.background, paddingHorizontal: 16, paddingBottom: 16, paddingTop: 8 }}>
+      <View style={{ backgroundColor: isDark ? themeColors.background : '#F0F3FF', paddingHorizontal: 16, paddingBottom: 16, paddingTop: 8 }}>
         <AddressBookSelfItem />
         <View style={{ marginTop: 16 }}>
           <SearchInput 
@@ -34,7 +34,7 @@ const AddressBook = () => {
       </View>
 
       {/* 스크롤 가능한 영역 */}
-      <View style={{ flex: 1, backgroundColor: themeColors.background }}>
+      <View style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
         <AddressBookList searchText={searchText} />
       </View>
 

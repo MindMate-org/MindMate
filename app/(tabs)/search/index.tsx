@@ -67,7 +67,7 @@ const HomeScreen = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#a7f3d0' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
       <View style={{ 
         flex: 1, 
         alignItems: 'center', 

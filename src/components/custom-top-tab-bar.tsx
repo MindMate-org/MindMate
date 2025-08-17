@@ -30,7 +30,7 @@ export default function CustomTopTabBar({
   return (
     <SafeAreaView
       style={{
-        backgroundColor: isDark ? themeColors.surface : '#576BCD',
+        backgroundColor: isDark ? themeColors.surface : '#F0F3FF',
       }}
     >
       {/* MIND MATE 타이틀 */}
@@ -51,7 +51,7 @@ export default function CustomTopTabBar({
             style={{
               fontSize: 20,
               fontWeight: 'bold',
-              color: isDark ? themeColors.primary : '#FFFFFF',
+              color: isDark ? themeColors.primary : '#576BCD',
             }}
           >
             MIND MATE
@@ -61,7 +61,7 @@ export default function CustomTopTabBar({
           onPress={() => router.push('/settings')}
           style={{ borderRadius: 20, padding: 8 }}
         >
-          <Settings size={20} color={isDark ? themeColors.primary : '#FFFFFF'} />
+          <Settings size={20} color={isDark ? themeColors.primary : '#576BCD'} />
         </TouchableOpacity>
       </View>
 
@@ -73,7 +73,7 @@ export default function CustomTopTabBar({
           borderTopWidth: 1,
           borderBottomWidth: 1,
           borderColor: themeColors.primary,
-          backgroundColor: isDark ? themeColors.surface : '#576BCD',
+          backgroundColor: isDark ? themeColors.surface : '#F0F3FF',
           paddingHorizontal: 8,
           paddingVertical: 12,
         }}
@@ -129,7 +129,7 @@ export default function CustomTopTabBar({
                 paddingHorizontal: 8,
                 paddingVertical: 12,
                 backgroundColor: isFocused 
-                  ? (isDark ? themeColors.primary : '#FFFFFF') 
+                  ? (isDark ? themeColors.primary : '#576BCD') 
                   : 'transparent',
               }}
             >
@@ -138,8 +138,8 @@ export default function CustomTopTabBar({
                   fontSize: 13,
                   fontWeight: isFocused ? 'bold' : 'normal',
                   color: isFocused 
-                    ? (isDark ? themeColors.primaryText : '#576BCD')
-                    : (isDark ? themeColors.primary : '#FFFFFF'),
+                    ? (isDark ? themeColors.primaryText : '#FFFFFF')
+                    : (isDark ? themeColors.primary : '#576BCD'),
                 }}
               >
                 {label}
