@@ -5,7 +5,7 @@ import { Alert } from 'react-native';
 import { EntryForm, EntryFormDataType } from '../../src/components/common/entry-form';
 import { AlarmSection } from '../../src/features/schedule/components/alarm-section';
 import { useScheduleAlarm } from '../../src/features/schedule/hooks/use-schedule-alarm';
-import { fetchCreateSchedule } from '../../src/features/schedule/services/schedule-services';
+import { fetchCreateSchedule, fetchAddMediaToSchedule } from '../../src/features/schedule/services/schedule-services';
 import type { CreateScheduleDataType } from '../../src/features/schedule/types/schedule-types';
 
 /**
@@ -34,6 +34,20 @@ const CreateSchedulePage = () => {
       const newScheduleId = await fetchCreateSchedule(scheduleData);
 
       if (newScheduleId) {
+        // 미디어 파일 저장
+        const mediaFiles = data.media.map((media) => ({
+          mediaType: media.type,
+          filePath: media.uri,
+        }));
+
+        for (const media of mediaFiles) {
+          await fetchAddMediaToSchedule({
+            owner_id: newScheduleId,
+            media_type: media.mediaType,
+            file_path: media.filePath,
+          });
+        }
+
         // 알림 설정
         const mockSchedule = {
           id: newScheduleId,

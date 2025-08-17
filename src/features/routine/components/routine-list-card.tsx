@@ -2,6 +2,8 @@ import { Pencil, Trash } from 'lucide-react-native';
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 
+import { useThemeColors } from '../../../components/providers/theme-provider';
+
 /**
  * 루틴 리스트 카드 컴포넌트
  * @param title - 루틴 이름
@@ -31,32 +33,58 @@ const RoutineListCard: React.FC<RoutineListCardPropsType> = ({
   onDelete,
   className = '',
 }) => {
+  const { theme: themeColors, isDark } = useThemeColors();
   return (
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.8}
-      className={`mb-3 w-full flex-row rounded-xl bg-white shadow-dropShadow ${className}`}
-      style={{ height: 96, position: 'relative' }}
+      style={{
+        marginBottom: 12,
+        width: '100%',
+        flexDirection: 'row',
+        borderRadius: 12,
+        backgroundColor: themeColors.surface,
+        height: 96,
+        position: 'relative',
+        shadowColor: themeColors.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: isDark ? 0.3 : 0.1,
+        shadowRadius: 4,
+        elevation: 4,
+      }}
     >
-      <View className="w-2 rounded-l-xl bg-paleCobalt" />
+      <View style={{
+        width: 8,
+        borderTopLeftRadius: 12,
+        borderBottomLeftRadius: 12,
+        backgroundColor: themeColors.primary,
+      }} />
       <View style={{ position: 'absolute', top: 16, right: 20, flexDirection: 'row', zIndex: 2 }}>
         {onEdit && (
           <TouchableOpacity onPress={onEdit} style={{ marginRight: 8 }}>
-            <Pencil size={24} color="#576BCD" />
+            <Pencil size={24} color={themeColors.primary} />
           </TouchableOpacity>
         )}
         {onDelete && (
           <TouchableOpacity onPress={onDelete}>
-            <Trash size={24} color="#576BCD" />
+            <Trash size={24} color={themeColors.primary} />
           </TouchableOpacity>
         )}
       </View>
-      <View className="h-full flex-1 pl-4 pr-4">
-        <View className="h-full flex-1 justify-center">
-          <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#576BCD', marginBottom: 4 }}>
+      <View style={{ height: '100%', flex: 1, paddingLeft: 16, paddingRight: 16 }}>
+        <View style={{ height: '100%', flex: 1, justifyContent: 'center' }}>
+          <Text style={{ 
+            fontSize: 24, 
+            fontWeight: 'bold', 
+            color: themeColors.text, 
+            marginBottom: 4 
+          }}>
             {title}
           </Text>
-          <Text style={{ fontSize: 20, color: '#576BCD' }}>
+          <Text style={{ 
+            fontSize: 20, 
+            color: themeColors.textSecondary 
+          }}>
             {time} ~{duration}
           </Text>
         </View>

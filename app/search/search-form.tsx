@@ -11,7 +11,10 @@ import {
   View,
   KeyboardAvoidingView,
   Platform,
+  SafeAreaView,
 } from 'react-native';
+
+import { useThemeColors } from '../../src/components/providers/theme-provider';
 import Toast from 'react-native-toast-message';
 
 import FormInput from '../../src/components/ui/form-input';
@@ -35,6 +38,7 @@ import { MediaType } from '../../src/types/common-db-types';
 
 const SearchForm = () => {
   const router = useRouter();
+  const { theme: themeColors, isDark } = useThemeColors();
   const [images, setImages] = useState<MediaItem[]>([]);
   const params = useLocalSearchParams();
   const id = params.id;
@@ -153,14 +157,19 @@ const SearchForm = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View className="flex-1 bg-turquoise px-4 pt-8">
+      <SafeAreaView style={{ 
+        flex: 1, 
+        backgroundColor: isDark ? themeColors.background : '#a7f3d0',
+        paddingHorizontal: 16,
+        paddingTop: 32,
+      }}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
-          className="flex-1"
+          style={{ flex: 1 }}
         >
-          <ScrollView className="flex-1" keyboardShouldPersistTaps="handled">
-            <View className="pb-6">
+          <ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps="handled">
+            <View style={{ paddingBottom: 24 }}>
               <Controller
                 control={control}
                 name="name"
@@ -177,8 +186,18 @@ const SearchForm = () => {
                   />
                 )}
               />
-              <View className={`z-10 mb-9 w-full items-start justify-center gap-2`}>
-                <Text className="text-lg text-paleCobalt">카테고리</Text>
+              <View style={{
+                zIndex: 10,
+                marginBottom: 36,
+                width: '100%',
+                alignItems: 'flex-start',
+                justifyContent: 'center',
+                gap: 8,
+              }}>
+                <Text style={{
+                  fontSize: 18,
+                  color: themeColors.primary,
+                }}>카테고리</Text>
                 <Controller
                   name="category"
                   control={control}
@@ -244,30 +263,54 @@ const SearchForm = () => {
                 />
               </View>
             </View>
-            <View className="w-full flex-row gap-3">
+            <View style={{ 
+              width: '100%', 
+              flexDirection: 'row', 
+              gap: 12 
+            }}>
               <TouchableOpacity
-                className="flex-1 rounded-xl bg-[#576BCD] py-3"
+                style={{
+                  flex: 1,
+                  borderRadius: 12,
+                  backgroundColor: themeColors.primary,
+                  paddingVertical: 12,
+                }}
                 onPress={
                   id
                     ? () => handleSubmit(handleFormUpdate)()
                     : () => handleSubmit(handleFormSubmit)()
                 }
               >
-                <Text className="text-center text-base font-medium text-white">
+                <Text style={{
+                  textAlign: 'center',
+                  fontSize: 16,
+                  fontWeight: '500',
+                  color: themeColors.primaryText,
+                }}>
                   {id ? '수정하기' : '등록하기'}
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                className="flex-1 rounded-xl bg-[#F7E6C4] py-3"
+                style={{
+                  flex: 1,
+                  borderRadius: 12,
+                  backgroundColor: themeColors.accent,
+                  paddingVertical: 12,
+                }}
                 onPress={() => router.back()}
               >
-                <Text className="text-center text-base font-medium text-[#576BCD]">취소하기</Text>
+                <Text style={{
+                  textAlign: 'center',
+                  fontSize: 16,
+                  fontWeight: '500',
+                  color: themeColors.primary,
+                }}>취소하기</Text>
               </TouchableOpacity>
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
-      </View>
+      </SafeAreaView>
     </TouchableWithoutFeedback>
   );
 };

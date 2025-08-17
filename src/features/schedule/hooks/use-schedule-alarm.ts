@@ -2,6 +2,7 @@ import * as Notifications from 'expo-notifications';
 import { useState } from 'react';
 import { Alert } from 'react-native';
 
+import { PlatformChecker } from '../../../utils/platform-checker';
 import type { ScheduleType } from '../types/schedule-types';
 
 // 일정 알림 훅
@@ -11,6 +12,17 @@ export const useScheduleAlarm = () => {
   // 알림 초기화
   const initializeAlarms = async () => {
     try {
+      // Expo Go + Android 환경에서는 경고 메시지 표시하고 로컬 알림만 사용
+      if (PlatformChecker.isExpoGo() && PlatformChecker.isAndroid()) {
+        console.warn('⚠️ Expo Go에서는 Android 푸시 알림이 지원되지 않습니다. 로컬 알림만 사용됩니다.');
+        // 로컬 알림은 여전히 작동하므로 계속 진행
+      }
+
+      // 푸시 알림이 지원되지 않는 환경에서도 로컬 알림은 계속 진행
+      if (!PlatformChecker.isPushNotificationSupported()) {
+        console.log('📱 로컬 알림만 사용 가능한 환경입니다.');
+      }
+
       // 알림 권한 요청
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;

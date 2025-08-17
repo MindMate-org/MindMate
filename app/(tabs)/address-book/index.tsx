@@ -4,29 +4,37 @@ import { View, SafeAreaView } from 'react-native';
 
 import AddButton from '../../../src/components/ui/add-button';
 import SearchInput from '../../../src/components/ui/search-input';
+import { useThemeColors } from '../../../src/components/providers/theme-provider';
+import { useI18n } from '../../../src/hooks/use-i18n';
 import AddressBookList from '../../../src/features/address-book/components/address-book-list';
 import AddressBookSelfItem from '../../../src/features/address-book/components/address-book-self-item';
 
 const AddressBook = () => {
   const [searchText, setSearchText] = useState('');
   const router = useRouter();
+  const { theme: themeColors, isDark } = useThemeColors();
+  const { t } = useI18n();
 
   const handleAddPress = () => {
     router.push('/address-book/edit/new');
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-turquoise">
+    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#a7f3d0', paddingBottom: 20 }}>
       {/* 고정 영역들 */}
-      <View className="bg-turquoise px-4 pb-4 pt-2">
+      <View style={{ backgroundColor: themeColors.background, paddingHorizontal: 16, paddingBottom: 16, paddingTop: 8 }}>
         <AddressBookSelfItem />
-        <View className="mt-4">
-          <SearchInput value={searchText} onChange={setSearchText} placeholder="연락처 검색..." />
+        <View style={{ marginTop: 16 }}>
+          <SearchInput 
+            value={searchText} 
+            onChange={setSearchText} 
+            placeholder={t.addressBook.searchPlaceholder} 
+          />
         </View>
       </View>
 
       {/* 스크롤 가능한 영역 */}
-      <View className="flex-1 bg-turquoise">
+      <View style={{ flex: 1, backgroundColor: themeColors.background }}>
         <AddressBookList searchText={searchText} />
       </View>
 

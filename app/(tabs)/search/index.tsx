@@ -1,9 +1,11 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState, useEffect, useMemo } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View, SafeAreaView } from 'react-native';
 
 import Button from '../../../src/components/ui/button';
 import SearchInput from '../../../src/components/ui/search-input';
+import { useThemeColors } from '../../../src/components/providers/theme-provider';
+import { useI18n } from '../../../src/hooks/use-i18n';
 import SearchCategoryButton from '../../../src/features/search/components/search-category-button';
 import SearchItemCard from '../../../src/features/search/components/search-item-card';
 import { searchCategories } from '../../../src/features/search/constants/search-category-constants';
@@ -12,6 +14,8 @@ import { getCategoryData } from '../../../src/features/search/utils/getCategoryD
 import { db } from '../../../src/hooks/use-initialize-database';
 
 const HomeScreen = () => {
+  const { theme: themeColors, isDark } = useThemeColors();
+  const { t } = useI18n();
   const [items, setItems] = useState<SearchData[]>([]); // 전체
   const [input, setInput] = useState(''); // 검색어
   const [search, setSearch] = useState(''); // 제출 시 검색어
@@ -63,8 +67,13 @@ const HomeScreen = () => {
   };
 
   return (
-    //홈화면
-    <View className="flex-1 items-center justify-center bg-turquoise p-4">
+    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#a7f3d0' }}>
+      <View style={{ 
+        flex: 1, 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        padding: 16 
+      }}>
       <View className="mb-4 w-full">
         <SearchInput
           value={input}
@@ -123,13 +132,33 @@ const HomeScreen = () => {
       </ScrollView>
 
       <TouchableOpacity
-        className="absolute bottom-20 right-8 h-16 w-16 items-center justify-center rounded-full bg-paleCobalt shadow-lg sm:bottom-24 sm:right-12 sm:h-20 sm:w-20"
+        style={{
+          position: 'absolute',
+          bottom: 80,
+          right: 32,
+          height: 64,
+          width: 64,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 32,
+          backgroundColor: themeColors.primary,
+          shadowColor: themeColors.shadow,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: isDark ? 0.4 : 0.2,
+          shadowRadius: 8,
+          elevation: 8,
+        }}
         onPress={() => handleCreateItem()}
         activeOpacity={0.8}
       >
-        <Text className="text-3xl font-light text-white sm:text-5xl">+</Text>
+        <Text style={{
+          fontSize: 28,
+          fontWeight: '300',
+          color: themeColors.primaryText,
+        }}>+</Text>
       </TouchableOpacity>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 };
 

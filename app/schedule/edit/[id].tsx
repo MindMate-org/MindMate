@@ -2,12 +2,15 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView, Alert, ActivityIndicator, Text } from 'react-native';
 
-import { Colors } from '../../../src/constants/colors';
 import { EntryForm, EntryFormDataType } from '../../../src/components/common/entry-form';
+import { Colors } from '../../../src/constants/colors';
 import { AlarmSection } from '../../../src/features/schedule/components/alarm-section';
 import {
   fetchGetScheduleById,
   fetchUpdateSchedule,
+  fetchGetMediaByScheduleId,
+  fetchAddMediaToSchedule,
+  fetchDeleteAllMediaByScheduleId,
 } from '../../../src/features/schedule/services/schedule-services';
 import type {
   ScheduleType,
@@ -37,17 +40,28 @@ const EditSchedulePage = () => {
 
   const loadSchedule = async () => {
     try {
-      const data = await fetchGetScheduleById(scheduleId);
+      const [data, mediaData] = await Promise.all([
+        fetchGetScheduleById(scheduleId),
+        fetchGetMediaByScheduleId(scheduleId),
+      ]);
+      
       if (data) {
         setSchedule(data);
         setLocation(data.location || '');
         setCompanion(data.companion || '');
 
+        // 미디어 데이터를 EntryForm 형식으로 변환
+        const media = mediaData.map((m) => ({
+          id: m.id.toString(),
+          type: m.media_type as 'image' | 'video' | 'audio',
+          uri: m.file_path,
+        }));
+
         // 초기 데이터 설정
         setInitialData({
           title: data.title,
           content: data.contents || '',
-          media: [], // 일정은 현재 미디어를 지원하지 않음
+          media,
           style: {
             fontFamily: 'default',
             fontSize: 16,
@@ -81,6 +95,23 @@ const EditSchedulePage = () => {
 
       const success = await fetchUpdateSchedule(scheduleId, updateData);
       if (success) {
+        // 기존 미디어 모두 삭제
+        await fetchDeleteAllMediaByScheduleId(scheduleId);
+
+        // 새로운 미디어 저장
+        const mediaFiles = data.media.map((media) => ({
+          mediaType: media.type,
+          filePath: media.uri,
+        }));
+
+        for (const media of mediaFiles) {
+          await fetchAddMediaToSchedule({
+            owner_id: scheduleId,
+            media_type: media.mediaType,
+            file_path: media.filePath,
+          });
+        }
+
         Alert.alert('완료', '일정이 수정되었습니다.', [
           { text: '확인', onPress: () => router.back() },
         ]);

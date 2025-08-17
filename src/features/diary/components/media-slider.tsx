@@ -12,11 +12,12 @@ type MediaSliderProps = {
     mediaType: string;
     filePath: string;
   }>;
+  height?: number;
 };
 
 const { width: screenWidth } = Dimensions.get('window');
 
-const MediaSlider = ({ media }: MediaSliderProps) => {
+const MediaSlider = ({ media, height = 200 }: MediaSliderProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
@@ -135,7 +136,7 @@ const MediaSlider = ({ media }: MediaSliderProps) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.mediaContainer}>
+      <View style={[styles.mediaContainer, { height }]}>
         {currentMedia.mediaType === 'image' ? (
           <Image
             source={{ uri: currentMedia.filePath }}
@@ -226,8 +227,7 @@ const styles = StyleSheet.create({
   },
   mediaContainer: {
     marginHorizontal: 0,
-    width: 280,
-    height: 210,
+    width: '100%',
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',

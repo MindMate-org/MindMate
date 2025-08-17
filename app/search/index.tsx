@@ -3,6 +3,7 @@ import { useCallback, useState, useEffect, useMemo } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 import Button from '@/src/components/ui/button';
+import FadeInView from '@/src/components/ui/fade-in-view';
 import SearchInput from '@/src/components/ui/search-input';
 import SearchCategoryButton from '@/src/features/search/components/search-category-button';
 import SearchItemCard from '@/src/features/search/components/search-item-card';
@@ -110,14 +111,15 @@ const HomeScreen = () => {
           </View>
         )}
         <View className="w-full gap-4">
-          {displayItems.map((item) => (
-            <SearchItemCard
-              key={item.id}
-              id={item.id}
-              category={item.category}
-              name={item.name}
-              location={item.location}
-            />
+          {displayItems.map((item, index) => (
+            <FadeInView key={item.id} delay={index * 100} duration={600}>
+              <SearchItemCard
+                id={item.id}
+                category={item.category}
+                name={item.name}
+                location={item.location}
+              />
+            </FadeInView>
           ))}
         </View>
       </ScrollView>

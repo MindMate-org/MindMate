@@ -11,14 +11,19 @@ import AddressBookTag from './address-book-tag';
 import CallButton from './call-button';
 import EditAddressBookTagButton from './edit-address-book-tag-button';
 import MessageButton from './message-button';
+import { useThemeColors } from '../../../components/providers/theme-provider';
 import { useAsyncDataGet } from '../../../hooks/use-async-data-get';
 import { AddressBookService } from '../services';
 import { ContactType } from '../types/address-book-type';
 
 const AddressBookItem = ({ contact, refetch }: { contact: ContactType; refetch: () => void }) => {
   const router = useRouter();
+  const { theme: themeColors, isDark } = useThemeColors();
   const [isActionMenuVisible, setIsActionMenuVisible] = useState(false);
-  const getContactTagsUseCallBack = useCallback(() => AddressBookService.fetchGetContactTags(contact.id), [contact.id]);
+  const getContactTagsUseCallBack = useCallback(
+    () => AddressBookService.fetchGetContactTags(contact.id),
+    [contact.id],
+  );
   const { data: tags, refetch: refetchTags } = useAsyncDataGet(getContactTagsUseCallBack);
 
   const refetchForEditTags = useCallback(() => {
@@ -47,35 +52,78 @@ const AddressBookItem = ({ contact, refetch }: { contact: ContactType; refetch: 
   };
 
   return (
-    <View className="relative mb-2 rounded-xl bg-white p-4 shadow-sm">
-      <TouchableOpacity onPress={handleEdit} className="relative">
+    <View
+      style={{
+        position: 'relative',
+        marginBottom: 8,
+        borderRadius: 12,
+        backgroundColor: themeColors.surface,
+        padding: 16,
+        shadowColor: themeColors.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: isDark ? 0.3 : 0.1,
+        shadowRadius: 4,
+        elevation: 4,
+      }}
+    >
+      <TouchableOpacity
+        onPress={handleEdit}
+        style={{ position: 'relative' }}
+        activeOpacity={0.8}
+      >
         {/* 상단: 태그와 메뉴 */}
-        <View className="mb-3 flex-row items-start justify-between">
-          <View className="flex-1 flex-row flex-wrap gap-1">
+        <View style={{
+          marginBottom: 12,
+          flexDirection: 'row',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+        }}>
+          <View style={{
+            flex: 1,
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            gap: 4,
+          }}>
             {tags?.map((tag) => <AddressBookTag key={tag.id}>{tag.name}</AddressBookTag>)}
             <EditAddressBookTagButton refetch={refetchForEditTags} contact={contact} />
           </View>
-          <TouchableOpacity onPress={() => setIsActionMenuVisible(true)} className="ml-2 p-1">
-            <EllipsisVertical size={20} color="#9ca3af" />
+          <TouchableOpacity
+            onPress={() => setIsActionMenuVisible(true)}
+            style={{
+              marginLeft: 8,
+              borderRadius: 16,
+              padding: 8,
+              backgroundColor: isDark ? 'rgba(156, 163, 175, 0.2)' : 'rgba(156, 163, 175, 0.1)',
+            }}
+          >
+            <EllipsisVertical size={18} color={themeColors.textSecondary} />
           </TouchableOpacity>
         </View>
 
         {/* 메인 콘텐츠 */}
-        <View className="flex-row items-center">
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           {/* 프로필 이미지 */}
-          <View className="mr-4">
+          <View style={{ marginRight: 16 }}>
             <AddressBookImage image={contact.profile_image} id={contact.id.toString()} />
           </View>
 
           {/* 연락처 정보 */}
-          <View className="flex-1">
+          <View style={{ flex: 1 }}>
             <AddressBookName>{contact.name}</AddressBookName>
-            <Text className="mb-2 text-sm text-gray">{contact.phone_number}</Text>
+            <Text style={{
+              color: themeColors.textSecondary,
+              marginBottom: 8,
+              fontSize: 14,
+            }}>{contact.phone_number}</Text>
 
             {contact.memo && <AddressBookContent>{contact.memo}</AddressBookContent>}
 
             {/* 액션 버튼들 */}
-            <View className="mt-3 flex-row gap-2">
+            <View style={{
+              marginTop: 12,
+              flexDirection: 'row',
+              gap: 8,
+            }}>
               <CallButton phoneNumber={contact.phone_number} />
               <MessageButton phoneNumber={contact.phone_number} />
             </View>

@@ -2,6 +2,7 @@ import { Bell, MapPin, Users } from 'lucide-react-native';
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 
+import { useThemeColors } from '../../../components/providers/theme-provider';
 import { Colors } from '../../../constants/colors';
 
 interface AlarmSectionProps {
@@ -25,33 +26,65 @@ export const AlarmSection: React.FC<AlarmSectionProps> = ({
   onCompanionChange,
   onAlarmPress,
 }) => {
+  const { theme: themeColors } = useThemeColors();
+  
   return (
-    <View className="space-y-4 bg-white px-4 py-4">
+    <View style={{
+      paddingHorizontal: 16,
+      paddingVertical: 16,
+      gap: 16,
+    }}>
       {/* 장소 */}
-      <View className="flex-row items-center">
-        <MapPin size={20} color={Colors.paleCobalt} />
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+      }}>
+        <MapPin size={20} color={themeColors.primary} />
         <TextInput
-          className="text-gray-700 ml-3 flex-1 text-base"
+          style={{
+            marginLeft: 12,
+            flex: 1,
+            fontSize: 16,
+            color: themeColors.text,
+          }}
           placeholder="서울시 마포구 마포나루길 467"
-          placeholderTextColor="#6B7280"
+          placeholderTextColor={themeColors.textSecondary}
           value={location}
           onChangeText={onLocationChange}
         />
       </View>
 
       {/* 알람 */}
-      <TouchableOpacity className="flex-row items-center" onPress={onAlarmPress}>
-        <Bell size={20} color={Colors.paleCobalt} />
-        <Text className="text-gray-700 ml-3 text-base">미리 알림 받지 않음</Text>
+      <TouchableOpacity 
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}
+        onPress={onAlarmPress}
+      >
+        <Bell size={20} color={themeColors.primary} />
+        <Text style={{
+          marginLeft: 12,
+          fontSize: 16,
+          color: themeColors.text,
+        }}>미리 알림 받지 않음</Text>
       </TouchableOpacity>
 
       {/* 참가자 */}
-      <View className="flex-row items-center">
-        <Users size={20} color={Colors.paleCobalt} />
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+      }}>
+        <Users size={20} color={themeColors.primary} />
         <TextInput
-          className="text-gray-700 ml-3 flex-1 text-base"
+          style={{
+            marginLeft: 12,
+            flex: 1,
+            fontSize: 16,
+            color: themeColors.text,
+          }}
           placeholder="참가자 입력"
-          placeholderTextColor="#6B7280"
+          placeholderTextColor={themeColors.textSecondary}
           value={companion}
           onChangeText={onCompanionChange}
         />

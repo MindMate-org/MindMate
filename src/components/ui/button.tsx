@@ -1,6 +1,8 @@
 import React from 'react';
 import { TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 
+import { useThemeColors } from '../providers/theme-provider';
+
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'floating';
 export type ButtonSize = 'sm' | 'md' | 'lg' | 'xl';
 
@@ -40,6 +42,7 @@ const Button = ({
   activeOpacity = 0.8,
   text = '+',
 }: ButtonPropsType) => {
+  const { theme: themeColors, isDark } = useThemeColors();
   const getVariantStyles = () => {
     switch (variant) {
       case 'primary':
@@ -51,7 +54,7 @@ const Button = ({
       case 'ghost':
         return 'bg-transparent';
       case 'floating':
-        return 'absolute bg-paleCobalt shadow-lg rounded-full items-center justify-center bottom-20 right-8 sm:bottom-24 sm:right-12';
+        return `absolute items-center justify-center rounded-full bottom-20 right-8`;
       default:
         return 'bg-paleCobalt';
     }
@@ -59,16 +62,7 @@ const Button = ({
 
   const getSizeStyles = () => {
     if (variant === 'floating') {
-      switch (size) {
-        case 'sm':
-          return 'h-12 w-12';
-        case 'md':
-          return 'h-16 w-16 sm:h-20 sm:w-20';
-        case 'lg':
-          return 'h-20 w-20 sm:h-24 sm:w-24';
-        default:
-          return 'h-16 w-16 sm:h-20 sm:w-20';
-      }
+      return 'h-16 w-16'; // 다른 탭들과 동일한 크기 (64x64)
     } else {
       switch (size) {
         case 'sm':
@@ -87,16 +81,7 @@ const Button = ({
 
   const getTextStyles = () => {
     if (variant === 'floating') {
-      switch (size) {
-        case 'sm':
-          return 'text-2xl';
-        case 'md':
-          return 'text-3xl sm:text-5xl';
-        case 'lg':
-          return 'text-4xl sm:text-6xl';
-        default:
-          return 'text-3xl sm:text-5xl';
-      }
+      return 'text-3xl font-light'; // 다른 탭들과 동일한 텍스트 크기
     }
     return '';
   };
@@ -112,16 +97,27 @@ const Button = ({
       onPress={onPress}
       disabled={disabled || loading}
       activeOpacity={activeOpacity}
-      style={
-        isFloating && size === 'md' ? { transform: [{ scale: disabled ? 0.95 : 1 }] } : undefined
-      }
+      style={{
+        ...(isFloating ? {
+          backgroundColor: themeColors.primary,
+          shadowColor: themeColors.shadow,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: isDark ? 0.4 : 0.2,
+          shadowRadius: 8,
+          elevation: 8,
+        } : {}),
+        ...(isFloating && size === 'md' ? { transform: [{ scale: disabled ? 0.95 : 1 }] } : {}),
+      }}
     >
       {loading ? (
         <ActivityIndicator color={variant === 'outline' ? '#576BCD' : 'white'} />
       ) : (
         <>
           {isFloating ? (
-            <Text className={`font-light text-white ${getTextStyles()}`}>{text}</Text>
+            <Text 
+              className={getTextStyles()}
+              style={{ color: themeColors.primaryText }}
+            >{text}</Text>
           ) : (
             children
           )}

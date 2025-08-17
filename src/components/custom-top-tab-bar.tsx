@@ -2,13 +2,18 @@ import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs';
 import { router } from 'expo-router';
 import { Settings } from 'lucide-react-native';
 import React from 'react';
-import { View, TouchableOpacity, Text } from 'react-native';
+import { View, TouchableOpacity, Text, SafeAreaView } from 'react-native';
+
+import { useThemeColors } from './providers/theme-provider';
+import { useI18n } from '../hooks/use-i18n';
 
 export default function CustomTopTabBar({
   state,
   descriptors,
   navigation,
 }: MaterialTopTabBarProps) {
+  const { theme: themeColors, isDark } = useThemeColors();
+  const { t } = useI18n();
   // 디버깅용 로그 (개발 중에만 사용)
   if (__DEV__) {
     console.log(
@@ -23,38 +28,78 @@ export default function CustomTopTabBar({
   }
 
   return (
-    <View className="pt-safe bg-blue-50">
+    <SafeAreaView
+      style={{
+        backgroundColor: isDark ? themeColors.surface : '#576BCD',
+      }}
+    >
       {/* MIND MATE 타이틀 */}
-      <View className="flex-row items-center justify-between px-4 py-3 sm:py-4">
-        <View className="w-8" />
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingHorizontal: 16,
+          paddingTop: 32,
+          paddingBottom: 16,
+          
+        }}
+      >
+        <View style={{ width: 32 }} />
         <TouchableOpacity onPress={() => router.push('/')}>
-          <Text className="text-lg font-bold text-blue-600 sm:text-xl lg:text-2xl">MIND MATE</Text>
+          <Text
+            style={{
+              fontSize: 20,
+              fontWeight: 'bold',
+              color: isDark ? themeColors.primary : '#FFFFFF',
+            }}
+          >
+            MIND MATE
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push('/settings')} className="rounded-full p-2">
-          <Settings size={20} color="#576BCD" />
+        <TouchableOpacity
+          onPress={() => router.push('/settings')}
+          style={{ borderRadius: 20, padding: 8 }}
+        >
+          <Settings size={20} color={isDark ? themeColors.primary : '#FFFFFF'} />
         </TouchableOpacity>
       </View>
 
-      <View className="flex-row items-center justify-center border-b border-t border-blue-600 bg-blue-50 px-2 py-2 sm:px-3">
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderTopWidth: 1,
+          borderBottomWidth: 1,
+          borderColor: themeColors.primary,
+          backgroundColor: isDark ? themeColors.surface : '#576BCD',
+          paddingHorizontal: 8,
+          paddingVertical: 12,
+        }}
+      >
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
 
-          // 라벨 결정 로직 개선
+          // 다국어 라벨 매핑
+          const getLabelFromRoute = (routeName: string) => {
+            const labelMap: { [key: string]: string } = {
+              diary: t.tabs.diary,
+              schedule: t.tabs.schedule,
+              routine: t.tabs.routine,
+              search: t.tabs.search,
+              'address-book': t.tabs.addressBook,
+            };
+            return labelMap[routeName] || routeName;
+          };
+
           let label = route.name;
           if (typeof options.tabBarLabel === 'string') {
             label = options.tabBarLabel;
           } else if (options.title) {
             label = options.title;
           } else {
-            // 기본 라벨 매핑
-            const labelMap: { [key: string]: string } = {
-              diary: '일기',
-              schedule: '일정',
-              routine: '루틴',
-              search: '찾기',
-              'address-book': '주소록',
-            };
-            label = labelMap[route.name] || route.name;
+            label = getLabelFromRoute(route.name);
           }
 
           const isFocused = state.index === index;
@@ -75,14 +120,27 @@ export default function CustomTopTabBar({
             <TouchableOpacity
               key={route.key}
               onPress={onPress}
-              className={`mx-1 flex-1 items-center justify-center rounded-lg px-2 py-2 sm:mx-2 sm:px-3 sm:py-3 ${
-                isFocused ? 'bg-blue-600' : 'bg-transparent'
-              }`}
+              style={{
+                marginHorizontal: 4,
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 8,
+                paddingHorizontal: 8,
+                paddingVertical: 12,
+                backgroundColor: isFocused 
+                  ? (isDark ? themeColors.primary : '#FFFFFF') 
+                  : 'transparent',
+              }}
             >
               <Text
-                className={`text-xs sm:text-sm ${
-                  isFocused ? 'font-bold text-white' : 'font-normal text-blue-600'
-                }`}
+                style={{
+                  fontSize: 13,
+                  fontWeight: isFocused ? 'bold' : 'normal',
+                  color: isFocused 
+                    ? (isDark ? themeColors.primaryText : '#576BCD')
+                    : (isDark ? themeColors.primary : '#FFFFFF'),
+                }}
               >
                 {label}
               </Text>
@@ -90,6 +148,6 @@ export default function CustomTopTabBar({
           );
         })}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

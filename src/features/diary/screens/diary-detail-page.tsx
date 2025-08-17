@@ -1,18 +1,14 @@
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ChevronLeft, MoreVertical, Trash2, Edit3, Share2, Star } from 'lucide-react-native';
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  SafeAreaView,
-  Alert,
-  Pressable,
-} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, Pressable } from 'react-native';
 
+import { CustomAlertManager } from '../../../components/ui/custom-alert';
 import ErrorState from '../../../components/ui/error-state';
+import FadeInView from '../../../components/ui/fade-in-view';
 import LoadingState from '../../../components/ui/loading-state';
+import { useThemeColors } from '../../../components/providers/theme-provider';
+import { useI18n } from '../../../hooks/use-i18n';
 import { Colors } from '../../../constants/colors';
 import { formatDateTimeString } from '../../../lib/date-utils';
 import ExportModal from '../components/export-modal';
@@ -31,6 +27,8 @@ export interface DiaryDetailPageProps {}
  */
 const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
   const router = useRouter();
+  const { theme: themeColors, isDark } = useThemeColors();
+  const { t } = useI18n();
   const { id } = useLocalSearchParams();
   const [diary, setDiary] = useState<DiaryDetailType | null>(null);
   const [media, setMedia] = useState<DiaryMediaType>([]);
@@ -51,7 +49,7 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
       if (!isNaN(numericId)) {
         fetchDiaryDetail(numericId);
       } else {
-        setError('잘못된 일기 ID입니다.');
+        setError(t.diary.invalidId);
         setIsLoading(false);
       }
     }
@@ -73,7 +71,7 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
       setMedia(mediaData);
     } catch (error) {
       console.error('일기 상세 정보 조회 실패:', error);
-      setError('일기 정보를 불러오는 데 실패했습니다.');
+      setError(t.diary.loadFailed);
     } finally {
       setIsLoading(false);
     }
@@ -90,7 +88,7 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
       setDiary({ ...diary, is_favorite: diary.is_favorite === 1 ? 0 : 1 });
     } catch (error) {
       console.error('즐겨찾기 토글 실패:', error);
-      Alert.alert('오류', '즐겨찾기 상태 변경에 실패했습니다.');
+      CustomAlertManager.error('즐겨찾기 상태 변경에 실패했습니다.');
     }
   }, [diary]);
 
@@ -100,24 +98,16 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
   const handleDelete = () => {
     if (!diary) return;
 
-    Alert.alert('일기 삭제', '정말로 이 일기를 삭제하시겠습니까?', [
-      { text: '취소', style: 'cancel' },
-      {
-        text: '삭제',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await DiaryService.deleteDiary(diary.id);
-            Alert.alert('완료', '일기가 삭제되었습니다.', [
-              { text: '확인', onPress: () => router.back() },
-            ]);
-          } catch (error) {
-            console.error('일기 삭제 실패:', error);
-            Alert.alert('오류', '일기 삭제에 실패했습니다.');
-          }
-        },
-      },
-    ]);
+    CustomAlertManager.confirm('일기 삭제', '정말로 이 일기를 삭제하시겠습니까?', async () => {
+      try {
+        await DiaryService.deleteDiary(diary.id);
+        await CustomAlertManager.success('일기가 삭제되었습니다.');
+        router.back();
+      } catch (error) {
+        console.error('일기 삭제 실패:', error);
+        CustomAlertManager.error('일기 삭제에 실패했습니다.');
+      }
+    });
   };
 
   /**
@@ -150,103 +140,282 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
   }
 
   return (
-    <SafeAreaView className="pt-safe flex-1 bg-white">
+    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
       {/* 헤더 */}
-      <View className="flex-row items-center justify-between border-b-2 border-turquoise bg-white px-4 py-4">
-        <TouchableOpacity onPress={handleBack}>
-          <ChevronLeft size={24} color={Colors.paleCobalt} />
-        </TouchableOpacity>
-        <Text className="text-lg font-bold text-paleCobalt">일기 상세</Text>
-        <TouchableOpacity onPress={() => setShowMenu(!showMenu)}>
-          <MoreVertical size={24} color={Colors.paleCobalt} />
-        </TouchableOpacity>
-      </View>
+      <FadeInView>
+        <View style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          backgroundColor: themeColors.surface,
+          paddingHorizontal: 16,
+          paddingVertical: 16,
+        }}>
+          <TouchableOpacity onPress={handleBack} style={{
+            borderRadius: 20,
+            padding: 8,
+          }}>
+            <ChevronLeft size={24} color={themeColors.primary} />
+          </TouchableOpacity>
+          <Text style={{
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: themeColors.primary,
+          }}>{t.diary.detail}</Text>
+          <TouchableOpacity
+            onPress={() => setShowMenu(!showMenu)}
+            style={{
+              borderRadius: 20,
+              padding: 8,
+              backgroundColor: showMenu ? `${themeColors.primary}20` : 'transparent',
+            }}
+          >
+            <MoreVertical size={24} color={themeColors.primary} />
+          </TouchableOpacity>
+        </View>
+      </FadeInView>
 
       {/* 메뉴 */}
       {showMenu && (
-        <View className="absolute right-4 top-16 z-10 w-32 rounded-lg bg-white p-2 shadow-lg">
-          <TouchableOpacity className="flex-row items-center py-2" onPress={handleEdit}>
-            <Edit3 size={16} color={Colors.paleCobalt} />
-            <Text className="ml-2 text-sm text-paleCobalt">편집</Text>
+        <FadeInView style={{
+          position: 'absolute',
+          right: 16,
+          top: 80,
+          zIndex: 10,
+          width: 160,
+          borderRadius: 12,
+          backgroundColor: themeColors.surface,
+          padding: 8,
+          shadowColor: themeColors.shadow,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: isDark ? 0.3 : 0.1,
+          shadowRadius: 12,
+          elevation: 12,
+        }}>
+          <TouchableOpacity
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              borderRadius: 8,
+              paddingHorizontal: 12,
+              paddingVertical: 12,
+            }}
+            onPress={handleEdit}
+          >
+            <Edit3 size={18} color={themeColors.primary} />
+            <Text style={{
+              marginLeft: 12,
+              fontSize: 14,
+              fontWeight: '500',
+              color: themeColors.text,
+            }}>{t.diary.edit}</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="flex-row items-center py-2" onPress={handleToggleFavorite}>
-            <Star size={16} color={diary.is_favorite ? '#fbbf24' : Colors.paleCobalt} />
-            <Text className="ml-2 text-sm text-paleCobalt">
-              {diary.is_favorite ? '즐겨찾기 해제' : '즐겨찾기'}
+          <TouchableOpacity
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              borderRadius: 8,
+              paddingHorizontal: 12,
+              paddingVertical: 12,
+            }}
+            onPress={handleToggleFavorite}
+          >
+            <Star
+              size={18}
+              color={diary.is_favorite ? '#fbbf24' : themeColors.primary}
+              fill={diary.is_favorite ? '#fbbf24' : 'none'}
+            />
+            <Text style={{
+              marginLeft: 12,
+              fontSize: 14,
+              fontWeight: '500',
+              color: themeColors.text,
+            }}>
+              {diary.is_favorite ? t.diary.removeFavorite : t.diary.favorite}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className="flex-row items-center py-2"
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              borderRadius: 8,
+              paddingHorizontal: 12,
+              paddingVertical: 12,
+            }}
             onPress={() => setShowExportModal(true)}
           >
-            <Share2 size={16} color={Colors.paleCobalt} />
-            <Text className="ml-2 text-sm text-paleCobalt">내보내기</Text>
+            <Share2 size={18} color={themeColors.primary} />
+            <Text style={{
+              marginLeft: 12,
+              fontSize: 14,
+              fontWeight: '500',
+              color: themeColors.text,
+            }}>{t.diary.export}</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="flex-row items-center py-2" onPress={handleDelete}>
-            <Trash2 size={16} color="#ef4444" />
-            <Text className="ml-2 text-sm text-red-500">삭제</Text>
+          <TouchableOpacity
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              borderRadius: 8,
+              paddingHorizontal: 12,
+              paddingVertical: 12,
+            }}
+            onPress={handleDelete}
+          >
+            <Trash2 size={18} color={themeColors.error} />
+            <Text style={{
+              marginLeft: 12,
+              fontSize: 14,
+              fontWeight: '500',
+              color: themeColors.error,
+            }}>{t.common.delete}</Text>
           </TouchableOpacity>
-        </View>
+        </FadeInView>
       )}
 
-      <ScrollView className="flex-1" contentContainerStyle={{ paddingTop: 8 }}>
-        <View className="mx-4 mt-4 rounded-xl bg-white p-6 shadow-sm">
-          {/* 제목 */}
-          <Text
-            className="mb-4 text-xl font-bold"
-            style={{
-              color: diary.text_color || '#000000',
-              fontFamily: diary.font === 'default' ? undefined : diary.font || undefined,
-              textAlign: diary.text_align as 'left' | 'center' | 'right',
-            }}
-          >
-            {diary.title}
-          </Text>
-
-          {/* 내용 */}
-          <Text
-            className="mb-6 leading-7"
-            style={{
-              color: diary.text_color || '#000000',
-              fontSize: diary.font_size || 16,
-              fontFamily: diary.font === 'default' ? undefined : diary.font || undefined,
-              textAlign: diary.text_align as 'left' | 'center' | 'right',
-            }}
-          >
-            {diary.body}
-          </Text>
-
-          {/* 미디어 */}
-          {media.length > 0 && (
-            <View className="mb-6">
-              <MediaSlider
-                media={media.map((m) => ({
-                  id: m.id,
-                  mediaType: m.media_type,
-                  filePath: m.file_path,
-                }))}
-              />
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 40 }}>
+        {/* 날짜 헤더 */}
+        <FadeInView delay={100} style={{ marginHorizontal: 16, marginTop: 16 }}>
+          <View style={{
+            backgroundColor: themeColors.surface,
+            borderRadius: 12,
+            padding: 16,
+            marginBottom: 16,
+            shadowColor: themeColors.shadow,
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: isDark ? 0.2 : 0.1,
+            shadowRadius: 2,
+            elevation: 2,
+          }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <View>
+                <Text style={{
+                  color: themeColors.textSecondary,
+                  fontSize: 14,
+                }}>
+                  {formatDateTimeString(diary.created_at || '')}
+                </Text>
+                {diary.is_favorite === 1 && (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+                    <Text style={{
+                      color: '#fbbf24',
+                      fontSize: 14,
+                    }}>⭐ {t.diary.favorite}</Text>
+                  </View>
+                )}
+              </View>
             </View>
-          )}
-        </View>
-
-        {/* 메타 정보 */}
-        <View className="mx-4 mt-4 rounded-xl bg-white p-6 shadow-sm">
-          <View className="mb-4 flex-row items-center">
-            <Text className="text-gray-600 text-sm">작성일: </Text>
-            <Text className="text-gray-800 text-sm font-medium">
-              {formatDateTimeString(diary.created_at || '')}
-            </Text>
           </View>
+        </FadeInView>
 
-          {mood && (
-            <View className="flex-row items-center">
-              <Text className="text-gray-600 text-sm">기분: </Text>
-              <Text className="mr-2 text-lg">{mood.emoji}</Text>
-              <Text className="text-gray-800 text-sm font-medium">{mood.label}</Text>
+        {/* 메인 콘텐츠 카드 */}
+        <FadeInView delay={200} style={{ marginHorizontal: 16 }}>
+          <View
+            style={{
+              borderRadius: 12,
+              padding: 24,
+              backgroundColor: diary.background_color || themeColors.surface,
+              shadowColor: themeColors.shadow,
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: isDark ? 0.3 : 0.15,
+              shadowRadius: 12,
+              elevation: 8,
+            }}
+          >
+            {/* 제목 */}
+            <Text
+              style={{
+                marginBottom: 24,
+                color: diary.text_color || themeColors.text,
+                fontFamily: diary.font === 'default' ? undefined : diary.font || undefined,
+                textAlign: diary.text_align as 'left' | 'center' | 'right',
+                fontSize: Math.max((diary.font_size || 16) + 8, 24),
+                fontWeight: 'bold',
+                lineHeight: Math.max((diary.font_size || 16) + 8, 24) * 1.3,
+              }}
+            >
+              {diary.title}
+            </Text>
+
+            {/* 내용 */}
+            <Text
+              style={{
+                marginBottom: 24,
+                color: diary.text_color || themeColors.text,
+                fontSize: diary.font_size || 16,
+                fontFamily: diary.font === 'default' ? undefined : diary.font || undefined,
+                textAlign: diary.text_align as 'left' | 'center' | 'right',
+                lineHeight: (diary.font_size || 16) * 1.6,
+              }}
+            >
+              {diary.body}
+            </Text>
+
+            {/* 미디어 */}
+            {media.length > 0 && (
+              <View className="mt-4">
+                <View className="mb-3">
+                  <Text className="text-sm font-medium text-gray-600">첨부된 미디어</Text>
+                </View>
+                <MediaSlider
+                  media={media.map((m) => ({
+                    id: m.id,
+                    mediaType: m.media_type,
+                    filePath: m.file_path,
+                  }))}
+                  height={320}
+                />
+              </View>
+            )}
+
+            {/* 기분 */}
+            {mood && (
+              <View style={{
+                marginTop: 24,
+                paddingTop: 16,
+                borderTopWidth: 1,
+                borderTopColor: themeColors.border,
+              }}>
+                <View style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: themeColors.backgroundSecondary,
+                  borderRadius: 20,
+                  paddingHorizontal: 16,
+                  paddingVertical: 12,
+                }}>
+                  <Text style={{ marginRight: 8, fontSize: 20 }}>{mood.emoji}</Text>
+                  <Text style={{
+                    color: themeColors.text,
+                    fontSize: 14,
+                    fontWeight: '500',
+                  }}>{t.diary.todayMood}: {mood.label}</Text>
+                </View>
+              </View>
+            )}
+          </View>
+        </FadeInView>
+
+        {/* 추가 정보 카드 */}
+        {diary.audio_uri && (
+          <FadeInView delay={300} style={{ marginHorizontal: 16, marginTop: 16 }}>
+            <View style={{
+              backgroundColor: themeColors.info + '20',
+              borderRadius: 12,
+              padding: 16,
+            }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={{
+                  color: themeColors.info,
+                  fontSize: 14,
+                  fontWeight: '500',
+                }}>🎵 {t.diary.voiceMemo}</Text>
+              </View>
             </View>
-          )}
-        </View>
+          </FadeInView>
+        )}
+
       </ScrollView>
 
       <ExportModal
@@ -260,7 +429,13 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
       />
 
       {/* 메뉴 닫기용 오버레이 */}
-      {showMenu && <Pressable className="absolute inset-0" onPress={() => setShowMenu(false)} />}
+      {showMenu && <Pressable style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+      }} onPress={() => setShowMenu(false)} />}
     </SafeAreaView>
   );
 };

@@ -1,12 +1,24 @@
 import { ReactNode } from 'react';
 import { Text } from 'react-native';
 
+import { useThemeColors } from '../../../components/providers/theme-provider';
+
 type AddressBookNameProps = {
   children: ReactNode;
 };
 
 const AddressBookName = ({ children }: AddressBookNameProps) => {
-  return <Text className="text-xl font-bold">{children}</Text>;
+  const { theme: themeColors } = useThemeColors();
+  
+  return (
+    <Text style={{
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: themeColors.text,
+    }}>
+      {children}
+    </Text>
+  );
 };
 
 export default AddressBookName;

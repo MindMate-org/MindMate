@@ -1,10 +1,17 @@
 import { useRouter } from 'expo-router';
+import { Calendar as CalendarIcon, Plus } from 'lucide-react-native';
 import React, { useState, useCallback } from 'react';
-import { View, ScrollView, Text, ActivityIndicator } from 'react-native';
-import AddButton from '../../../src/components/ui/add-button';
+import { View, ScrollView, Text, TouchableOpacity, SafeAreaView } from 'react-native';
+
 import Calendar from '../../../src/components/ui/calendar';
+import { CustomAlertManager } from '../../../src/components/ui/custom-alert';
 import EnhancedCalendar from '../../../src/components/ui/enhanced-calendar';
+import ErrorState from '../../../src/components/ui/error-state';
+import FadeInView from '../../../src/components/ui/fade-in-view';
+import LoadingState from '../../../src/components/ui/loading-state';
 import Modal from '../../../src/components/ui/modal';
+import { useThemeColors } from '../../../src/components/providers/theme-provider';
+import { useI18n } from '../../../src/hooks/use-i18n';
 import RoutineListCard from '../../../src/features/routine/components/routine-list-card';
 import { useDeleteRoutine } from '../../../src/features/routine/hooks/use-routine-mutation';
 import { useRoutineQuery } from '../../../src/features/routine/hooks/use-routine-query';
@@ -12,6 +19,8 @@ import { toKSTDateString, formatTime, formatDate } from '../../../src/lib/date-u
 
 const RoutineMain = () => {
   const router = useRouter();
+  const { theme: themeColors, isDark } = useThemeColors();
+  const { t } = useI18n();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isCalendarModalVisible, setIsCalendarModalVisible] = useState(false);
 
@@ -48,12 +57,25 @@ const RoutineMain = () => {
   // 루틴 삭제
   const handleDeleteRoutine = useCallback(
     async (id: string) => {
-      const success = await deleteRoutine(id);
-      if (success) {
-        refetch();
+      const routine = routines.find(r => r.id === id);
+      const routineName = routine?.name || '루틴';
+      
+      const confirmed = await CustomAlertManager.confirm(
+        '루틴 삭제',
+        `"${routineName}"을(를) 정말 삭제하시겠습니까?`
+      );
+      
+      if (confirmed) {
+        const success = await deleteRoutine(id);
+        if (success) {
+          refetch();
+          CustomAlertManager.success('루틴이 삭제되었습니다.');
+        } else {
+          CustomAlertManager.error('루틴 삭제에 실패했습니다.');
+        }
       }
     },
-    [deleteRoutine, refetch],
+    [deleteRoutine, refetch, routines],
   );
 
   // 날짜 변경 시 루틴 목록 새로고침
@@ -104,66 +126,107 @@ const RoutineMain = () => {
   // 로딩 상태
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-turquoise">
-        <ActivityIndicator size="large" color="#0891b2" />
-        <Text className="text-gray-600 mt-4">루틴을 불러오는 중...</Text>
-      </View>
+      <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#a7f3d0' }}>
+        <LoadingState message={t.routine.loading} />
+      </SafeAreaView>
     );
   }
 
   // 에러 상태
   if (error) {
     return (
-      <View className="flex-1 items-center justify-center bg-turquoise px-4">
-        <Text className="mb-4 text-center text-red-500">{error}</Text>
-        <Text className="text-cyan-600 underline" onPress={refetch}>
-          다시 시도
-        </Text>
-      </View>
+      <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#a7f3d0' }}>
+        <ErrorState message={error} onRetry={refetch} />
+      </SafeAreaView>
     );
   }
 
   const selectedDateStr = toKSTDateString(selectedDate);
 
   return (
-    <View className="relative flex-1 bg-turquoise">
+    <SafeAreaView style={{ position: 'relative', flex: 1, backgroundColor: isDark ? themeColors.background : '#a7f3d0' }}>
+      {/* 헤더 */}
+      <FadeInView>
+        <View className="flex-row items-center justify-between px-4 pb-4 pt-2">
+          <Text className="text-xl font-bold text-paleCobalt">루틴</Text>
+          <TouchableOpacity
+            onPress={handleCalendarIconPress}
+            className="rounded-full bg-white/10 p-2"
+          >
+            <CalendarIcon size={20} color="#576BCD" />
+          </TouchableOpacity>
+        </View>
+      </FadeInView>
+
       {/* 상단 달력 */}
-      <View className="px-4 pb-4 pt-8">
-        <Calendar
-          selectedDate={selectedDate}
-          onChange={handleDateChange}
-          onCalendarIconPress={handleCalendarIconPress}
-        />
-      </View>
+      <FadeInView delay={200}>
+        <View className="px-4 pb-4">
+          <Calendar
+            selectedDate={selectedDate}
+            onChange={handleDateChange}
+            onCalendarIconPress={handleCalendarIconPress}
+          />
+        </View>
+      </FadeInView>
 
       {/* 루틴 리스트 */}
-      <ScrollView className="flex-1 px-4">
+      <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
         {routines.length === 0 ? (
-          <View className="flex-1 items-center justify-center py-20">
-            <Text className="text-gray-500 text-center">
-              {formatDate(selectedDate)}에 등록된 루틴이 없습니다.
-            </Text>
-            <Text className="text-gray-400 mt-2 text-sm">
-              + 버튼을 눌러 새로운 루틴을 추가해보세요!
-            </Text>
-          </View>
+          <FadeInView delay={400}>
+            <View className="flex-1 items-center justify-center py-20">
+              <CalendarIcon size={48} color="#576BCD" />
+              <Text className="mt-4 text-center text-lg text-paleCobalt">
+                {formatDate(selectedDate)}에 등록된 루틴이 없습니다.
+              </Text>
+              <Text className="text-gray-600 mt-2 text-center text-sm">
+                + 버튼을 눌러 새로운 루틴을 추가해보세요!
+              </Text>
+            </View>
+          </FadeInView>
         ) : (
-          routines.map((routine) => (
-            <RoutineListCard
-              key={routine.id}
-              title={routine.name}
-              time={getRoutineTime(routine)}
-              duration={getRoutineDuration(routine)}
-              onPress={() => handleViewRoutine(routine.id)}
-              onEdit={() => handleEditRoutine(routine.id)}
-              onDelete={() => handleDeleteRoutine(routine.id)}
-            />
+          routines.map((routine, index) => (
+            <FadeInView key={routine.id} delay={400 + index * 100}>
+              <RoutineListCard
+                title={routine.name}
+                time={getRoutineTime(routine)}
+                duration={getRoutineDuration(routine)}
+                onPress={() => handleViewRoutine(routine.id)}
+                onEdit={() => handleEditRoutine(routine.id)}
+                onDelete={() => handleDeleteRoutine(routine.id)}
+              />
+            </FadeInView>
           ))
         )}
+        <View className="h-20" />
       </ScrollView>
 
       {/* 플로팅 액션 버튼 */}
-      <AddButton onPress={handleCreateRoutine} />
+      <TouchableOpacity
+        onPress={handleCreateRoutine}
+        style={{
+          position: 'absolute',
+          bottom: 80,
+          right: 32,
+          height: 64,
+          width: 64,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 32,
+          backgroundColor: themeColors.primary,
+          shadowColor: themeColors.shadow,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: isDark ? 0.4 : 0.2,
+          shadowRadius: 8,
+          elevation: 8,
+        }}
+        activeOpacity={0.8}
+      >
+        <Text style={{
+          fontSize: 28,
+          fontWeight: '300',
+          color: themeColors.primaryText,
+        }}>+</Text>
+      </TouchableOpacity>
 
       {/* 월 단위 달력 모달 */}
       <Modal
@@ -180,7 +243,7 @@ const RoutineMain = () => {
           onClose={() => setIsCalendarModalVisible(false)}
         />
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 };
 

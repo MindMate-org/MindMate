@@ -9,7 +9,11 @@ import {
   Image,
   ActivityIndicator,
   Alert,
+  SafeAreaView,
 } from 'react-native';
+
+import { useThemeColors } from '../../src/components/providers/theme-provider';
+
 import {
   useUpdateRoutine,
   useUpdateSubTaskCompletion,
@@ -18,6 +22,7 @@ import { useRoutineDetailQuery } from '../../src/features/routine/hooks/use-rout
 
 const RoutineForm = () => {
   const router = useRouter();
+  const { theme: themeColors, isDark } = useThemeColors();
   const { id } = useLocalSearchParams();
   const [subTaskChecks, setSubTaskChecks] = useState<boolean[]>([]);
 
@@ -69,31 +74,62 @@ const RoutineForm = () => {
   // 로딩 상태
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-turquoise">
-        <ActivityIndicator size="large" color="#0891b2" />
-        <Text className="text-gray-600 mt-4">루틴을 불러오는 중...</Text>
-      </View>
+      <SafeAreaView style={{ 
+        flex: 1, 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        backgroundColor: isDark ? themeColors.background : '#a7f3d0' 
+      }}>
+        <ActivityIndicator size="large" color={themeColors.primary} />
+        <Text style={{ 
+          color: themeColors.textSecondary, 
+          marginTop: 16 
+        }}>루틴을 불러오는 중...</Text>
+      </SafeAreaView>
     );
   }
 
   // 에러 상태
   if (error) {
     return (
-      <View className="flex-1 items-center justify-center bg-turquoise px-4">
-        <Text className="mb-4 text-center text-red-500">{error}</Text>
-        <TouchableOpacity className="rounded-lg bg-cyan-600 px-4 py-2" onPress={refetch}>
-          <Text className="text-white">다시 시도</Text>
+      <SafeAreaView style={{ 
+        flex: 1, 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        backgroundColor: isDark ? themeColors.background : '#a7f3d0',
+        paddingHorizontal: 16 
+      }}>
+        <Text style={{ 
+          marginBottom: 16, 
+          textAlign: 'center', 
+          color: '#EF4444' 
+        }}>{error}</Text>
+        <TouchableOpacity 
+          style={{ 
+            borderRadius: 8, 
+            backgroundColor: themeColors.primary, 
+            paddingHorizontal: 16, 
+            paddingVertical: 8 
+          }} 
+          onPress={refetch}
+        >
+          <Text style={{ color: themeColors.primaryText }}>다시 시도</Text>
         </TouchableOpacity>
-      </View>
+      </SafeAreaView>
     );
   }
 
   // 루틴 데이터가 없는 경우
   if (!routine) {
     return (
-      <View className="flex-1 items-center justify-center bg-turquoise">
-        <Text className="text-gray-600">루틴을 찾을 수 없습니다.</Text>
-      </View>
+      <SafeAreaView style={{ 
+        flex: 1, 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        backgroundColor: isDark ? themeColors.background : '#a7f3d0' 
+      }}>
+        <Text style={{ color: themeColors.textSecondary }}>루틴을 찾을 수 없습니다.</Text>
+      </SafeAreaView>
     );
   }
 
@@ -124,21 +160,55 @@ const RoutineForm = () => {
   const totalCount = subTaskChecks.length;
 
   return (
-    <View className="flex-1 bg-[#F4F4F4]">
+    <SafeAreaView style={{ 
+      flex: 1, 
+      backgroundColor: isDark ? themeColors.background : '#a7f3d0' 
+    }}>
       {/* 상단 여백 */}
       <View style={{ height: 32 }} />
       <ScrollView
-        className="flex-1"
+        style={{ flex: 1 }}
         contentContainerStyle={{ alignItems: 'center', paddingBottom: 32 }}
       >
         {/* 카드 */}
-        <View className="w-[92%] rounded-2xl bg-white px-6 py-6 shadow-lg">
+        <View style={{
+          width: '92%',
+          borderRadius: 16,
+          backgroundColor: themeColors.surface,
+          paddingHorizontal: 24,
+          paddingVertical: 24,
+          shadowColor: themeColors.shadow,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: isDark ? 0.3 : 0.1,
+          shadowRadius: 8,
+          elevation: 8,
+        }}>
           {/* 제목/이미지 */}
-          <View className="mb-2 flex-row items-start justify-between">
-            <View className="flex-1">
-              <Text className="mb-1 text-[22px] font-extrabold text-[#222]">{routine.name}</Text>
-              <View className="mb-2 h-2 w-16 rounded-full bg-[#F7E6C4]" />
-              <Text className="mb-1 text-[14px] text-[#7B7FD6]">
+          <View style={{
+            marginBottom: 8,
+            flexDirection: 'row',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+          }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{
+                marginBottom: 4,
+                fontSize: 22,
+                fontWeight: '800',
+                color: themeColors.text,
+              }}>{routine.name}</Text>
+              <View style={{
+                marginBottom: 8,
+                height: 8,
+                width: 64,
+                borderRadius: 4,
+                backgroundColor: themeColors.accent,
+              }} />
+              <Text style={{
+                marginBottom: 4,
+                fontSize: 14,
+                color: themeColors.primary,
+              }}>
                 {routine.createdAt && routine.deadline
                   ? `${routine.createdAt.slice(0, 10)} ~ ${routine.deadline}`
                   : ''}
@@ -195,7 +265,7 @@ const RoutineForm = () => {
           </View>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 

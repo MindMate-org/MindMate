@@ -12,21 +12,18 @@ import {
   ChevronRight,
 } from 'lucide-react-native';
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  SafeAreaView,
-  ScrollView,
-  Alert,
-  Switch,
-} from 'react-native';
+import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Switch } from 'react-native';
 
+import { CustomAlertManager } from '../../src/components/ui/custom-alert';
+import { useThemeColors } from '../../src/components/providers/theme-provider';
+import { useI18n } from '../../src/hooks/use-i18n';
 import { useGlobalStore } from '../../src/store/global-store';
 
 const SettingsPage = () => {
   const router = useRouter();
   const { theme, language, setTheme, setLanguage } = useGlobalStore();
+  const { theme: themeColors, isDark } = useThemeColors();
+  const { t } = useI18n();
 
   const handleThemeChange = (value: boolean) => {
     setTheme(value ? 'dark' : 'light');
@@ -37,50 +34,51 @@ const SettingsPage = () => {
   };
 
   const handleDataExport = () => {
-    Alert.alert('데이터 내보내기', '모든 데이터를 백업 파일로 내보내시겠습니까?', [
-      { text: '취소', style: 'cancel' },
-      {
-        text: '내보내기',
-        onPress: () => {
-          // TODO: 데이터 내보내기 기능 구현
-          Alert.alert('알림', '데이터 내보내기 기능이 준비 중입니다.');
-        },
+    CustomAlertManager.confirm(
+      t.settings.dataExport,
+      t.settings.dataExportConfirm,
+      () => {
+        // TODO: 데이터 내보내기 기능 구현
+        CustomAlertManager.info(t.settings.dataExportPending);
       },
-    ]);
+    );
   };
 
   const handleDataClear = () => {
-    Alert.alert('데이터 초기화', '모든 데이터가 영구적으로 삭제됩니다. 계속하시겠습니까?', [
-      { text: '취소', style: 'cancel' },
-      {
-        text: '삭제',
-        style: 'destructive',
-        onPress: () => {
-          Alert.alert(
-            '최종 확인',
-            '정말로 모든 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.',
-            [
-              { text: '취소', style: 'cancel' },
-              {
-                text: '삭제',
-                style: 'destructive',
-                onPress: () => {
-                  // TODO: 데이터 초기화 기능 구현
-                  Alert.alert('알림', '데이터 초기화 기능이 준비 중입니다.');
-                },
-              },
-            ],
-          );
-        },
+    CustomAlertManager.confirm(
+      t.settings.deleteAllData,
+      t.settings.deleteAllDataConfirm,
+      () => {
+        CustomAlertManager.confirm(
+          t.settings.finalConfirm,
+          t.settings.deleteAllDataFinal,
+          async () => {
+            try {
+              // 데이터베이스 초기화
+              const { db } = await import('../../src/hooks/use-initialize-database');
+
+              // 모든 테이블 데이터 삭제
+              await db.runAsync('DELETE FROM diaries');
+              await db.runAsync('DELETE FROM media');
+              await db.runAsync('DELETE FROM schedules');
+              await db.runAsync('DELETE FROM routines');
+              await db.runAsync('DELETE FROM subtasks');
+              await db.runAsync('DELETE FROM address_book');
+
+              CustomAlertManager.success(t.settings.deleteAllDataSuccess);
+            } catch (error) {
+              console.error('데이터 초기화 실패:', error);
+              CustomAlertManager.error(t.settings.deleteAllDataError);
+            }
+          },
+        );
       },
-    ]);
+    );
   };
 
   const handleAbout = () => {
-    Alert.alert(
-      'MindMate 정보',
-      'Version 1.0.0\n\n일정, 루틴, 일기, 연락처, 검색을 통합 관리하는 개인 생산성 앱입니다.',
-      [{ text: '확인' }],
+    CustomAlertManager.info(
+      'MindMate 정보\n\nVersion 1.0.0\n\n일정, 루틴, 일기, 연락처, 검색을 통합 관리하는 개인 생산성 앱입니다.',
     );
   };
 
@@ -100,41 +98,87 @@ const SettingsPage = () => {
     danger?: boolean;
   }) => (
     <TouchableOpacity
-      className={`flex-row items-center bg-white p-4 ${danger ? '' : 'border-gray-100 border-b'}`}
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: themeColors.surface,
+        padding: 16,
+        borderBottomWidth: danger ? 0 : 1,
+        borderBottomColor: themeColors.border,
+      }}
       onPress={onPress}
       activeOpacity={0.7}
     >
-      <View className="mr-4">{icon}</View>
-      <View className="flex-1">
-        <Text className={`text-base font-medium ${danger ? 'text-red-500' : 'text-gray-800'}`}>
+      <View style={{ marginRight: 16 }}>{icon}</View>
+      <View style={{ flex: 1 }}>
+        <Text style={{
+          fontSize: 16,
+          fontWeight: '500',
+          color: danger ? themeColors.error : themeColors.text,
+        }}>
           {title}
         </Text>
-        {subtitle && <Text className="text-gray-500 mt-1 text-sm">{subtitle}</Text>}
+        {subtitle && (
+          <Text style={{
+            color: themeColors.textSecondary,
+            marginTop: 4,
+            fontSize: 14,
+          }}>
+            {subtitle}
+          </Text>
+        )}
       </View>
-      {rightElement || <ChevronRight size={20} color="#9ca3af" />}
+      {rightElement || <ChevronRight size={20} color={themeColors.textMuted} />}
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-turquoise">
+    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
       {/* 헤더 */}
-      <View className="pt-safe flex-row items-center bg-turquoise px-4 py-3">
-        <TouchableOpacity onPress={() => router.back()} className="flex-row items-center">
-          <ArrowLeft size={24} color="#576bcd" />
-          <Text className="ml-2 text-lg font-medium text-paleCobalt">설정</Text>
+      <View style={{ 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        backgroundColor: themeColors.surface, 
+        paddingHorizontal: 16, 
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: themeColors.border
+      }}>
+        <TouchableOpacity onPress={() => router.back()} style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <ArrowLeft size={24} color={themeColors.primary} />
+          <Text style={{ 
+            marginLeft: 8, 
+            fontSize: 18, 
+            fontWeight: '600', 
+            color: themeColors.text 
+          }}>{t.settings.title}</Text>
         </TouchableOpacity>
       </View>
 
-      <ScrollView className="flex-1">
-        <View className="pb-safe px-4">
+      <ScrollView style={{ flex: 1 }}>
+        <View style={{ paddingHorizontal: 16, paddingBottom: 40 }}>
           {/* 계정 섹션 */}
-          <View className="mt-6">
-            <Text className="text-gray-600 mb-3 px-4 text-sm font-medium">계정</Text>
-            <View className="overflow-hidden rounded-xl bg-white shadow-sm">
+          <View style={{ marginTop: 24 }}>
+            <Text style={{
+              color: themeColors.textSecondary,
+              marginBottom: 12,
+              paddingHorizontal: 16,
+              fontSize: 14,
+              fontWeight: '500'
+            }}>{t.settings.account}</Text>
+            <View style={{
+              borderRadius: 12,
+              backgroundColor: themeColors.surface,
+              shadowColor: themeColors.shadow,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: isDark ? 0.3 : 0.1,
+              shadowRadius: 4,
+              elevation: 3,
+            }}>
               <SettingItem
-                icon={<User size={24} color="#576BCD" />}
-                title="프로필"
-                subtitle="개인 정보 관리"
+                icon={<User size={24} color={themeColors.primary} />}
+                title={t.settings.profile}
+                subtitle={t.settings.personalInfo}
                 onPress={() => router.push('/address-book')}
               />
             </View>
@@ -167,10 +211,10 @@ const SettingsPage = () => {
 
               <SettingItem
                 icon={<Bell size={24} color="#576BCD" />}
-                title="알림"
-                subtitle="푸시 알림 설정"
+                title={t.settings.notifications}
+                subtitle={t.settings.notificationSubtitle}
                 onPress={() => {
-                  Alert.alert('알림', '알림 설정 기능이 준비 중입니다.');
+                  CustomAlertManager.info(t.settings.notificationsPending);
                 }}
               />
             </View>
@@ -197,7 +241,7 @@ const SettingsPage = () => {
                 icon={<Shield size={24} color="#576BCD" />}
                 title="개인정보 처리방침"
                 onPress={() => {
-                  Alert.alert('개인정보 처리방침', '개인정보 처리방침 페이지가 준비 중입니다.');
+                  CustomAlertManager.info('개인정보 처리방침 페이지가 준비 중입니다.');
                 }}
               />
 

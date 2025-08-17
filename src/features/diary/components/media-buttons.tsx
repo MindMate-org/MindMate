@@ -2,6 +2,7 @@ import { Image as ImageIcon, Video, Mic } from 'lucide-react-native';
 import React from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
 
+import { useThemeColors } from '../../../components/providers/theme-provider';
 import { Colors } from '../../../constants/colors';
 import { RecordingStateType } from '../types';
 
@@ -20,44 +21,80 @@ const MediaButtons = ({
   onStylePress,
   recordingState,
 }: MediaButtonsProps) => {
+  const { theme: themeColors } = useThemeColors();
+  
   return (
-    <View className="mt-4 items-center justify-between gap-1 p-4">
+    <View style={{
+      marginTop: 16,
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 4,
+      padding: 16,
+    }}>
       {/* 이미지 버튼 */}
-      <View className="items-center">
+      <View style={{ alignItems: 'center' }}>
         <TouchableOpacity
           onPress={onImagePress}
-          className="h-16 w-16 items-center justify-center rounded-full border-2 border-paleCobalt"
+          style={{
+            height: 64,
+            width: 64,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 32,
+            borderWidth: 2,
+            borderColor: themeColors.primary,
+          }}
         >
-          <ImageIcon size={32} color={Colors.paleCobalt} />
+          <ImageIcon size={32} color={themeColors.primary} />
         </TouchableOpacity>
-        <View className="min-h-[16px]" />
+        <View style={{ minHeight: 16 }} />
       </View>
 
       {/* 비디오 버튼 */}
-      <View className="items-center">
+      <View style={{ alignItems: 'center' }}>
         <TouchableOpacity
           onPress={onVideoPress}
-          className="h-16 w-16 items-center justify-center rounded-full border-2 border-paleCobalt"
+          style={{
+            height: 64,
+            width: 64,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 32,
+            borderWidth: 2,
+            borderColor: themeColors.primary,
+          }}
         >
-          <Video size={32} color={Colors.paleCobalt} />
+          <Video size={32} color={themeColors.primary} />
         </TouchableOpacity>
-        <View className="min-h-[16px]" />
+        <View style={{ minHeight: 16 }} />
       </View>
 
       {/* 오디오 버튼 */}
-      <View className="items-center">
+      <View style={{ alignItems: 'center' }}>
         <TouchableOpacity
           onPress={onAudioPress}
-          className={`h-16 w-16 items-center justify-center rounded-full border-2 ${
-            recordingState.isRecording ? 'border-red-500 bg-red-100' : 'border-paleCobalt'
-          }`}
+          style={{
+            height: 64,
+            width: 64,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 32,
+            borderWidth: 2,
+            borderColor: recordingState.isRecording ? Colors.red : themeColors.primary,
+            backgroundColor: recordingState.isRecording ? '#FEE2E2' : 'transparent',
+          }}
         >
-          <Mic size={32} color={recordingState.isRecording ? Colors.red : Colors.paleCobalt} />
+          <Mic size={32} color={recordingState.isRecording ? Colors.red : themeColors.primary} />
         </TouchableOpacity>
-        <View className="min-h-[16px]">
+        <View style={{ minHeight: 16 }}>
           <Text
-            className="mt-1 text-xs font-light text-red-500"
-            style={{ opacity: recordingState.isRecording ? 1 : 0 }}
+            style={{
+              marginTop: 4,
+              fontSize: 12,
+              fontWeight: '300',
+              color: Colors.red,
+              opacity: recordingState.isRecording ? 1 : 0,
+            }}
           >
             {recordingState.duration}초
           </Text>
@@ -65,14 +102,26 @@ const MediaButtons = ({
       </View>
 
       {/* 스타일 버튼 */}
-      <View className="items-center">
+      <View style={{ alignItems: 'center' }}>
         <TouchableOpacity
           onPress={onStylePress}
-          className="h-16 w-16 items-center justify-center rounded-full border-2 border-paleCobalt"
+          style={{
+            height: 64,
+            width: 64,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 32,
+            borderWidth: 2,
+            borderColor: themeColors.primary,
+          }}
         >
-          <Text className="text-lg font-bold text-paleCobalt">Aa</Text>
+          <Text style={{
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: themeColors.primary,
+          }}>Aa</Text>
         </TouchableOpacity>
-        <View className="min-h-[16px]" />
+        <View style={{ minHeight: 16 }} />
       </View>
     </View>
   );

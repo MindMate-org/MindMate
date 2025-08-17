@@ -9,11 +9,12 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-  Alert,
   SafeAreaView,
 } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+
 import CheckBox from '../../src/components/ui/checkbox';
+import { CustomAlertManager } from '../../src/components/ui/custom-alert';
 import FormInput from '../../src/components/ui/form-input';
 import MediaPicker from '../../src/components/ui/media-picker';
 import { useMediaPicker } from '../../src/features/diary/hooks/use-media-picker';
@@ -76,7 +77,42 @@ const RoutineDetail = () => {
   );
 
   // 알람 훅
-  const { initializeAlarms, scheduleAlarm, cancelAlarm } = useAlarm();
+  const { initializeAlarms, scheduleAlarm, cancelAlarm, scheduleRecurringAlarm } = useAlarm();
+
+  // 알람 설정 함수
+  const setupAlarm = async (routineData: any) => {
+    if (!routineData.alarmTime) return;
+
+    try {
+      // 알람 초기화
+      await initializeAlarms();
+
+      // 시작 날짜 설정
+      const today = new Date();
+      const targetDate = new Date(today);
+
+      // 알람 시간 파싱
+      const [hours, minutes] = routineData.alarmTime.split(':').map(Number);
+      targetDate.setHours(hours, minutes, 0, 0);
+
+      // 현재 시간보다 이전이면 내일로 설정
+      if (targetDate <= today) {
+        targetDate.setDate(targetDate.getDate() + 1);
+      }
+
+      console.log('[루틴 알람 설정] 대상 시간:', targetDate.toLocaleString('ko-KR'));
+
+      // 반복 알람 설정
+      if (routineData.repeatCycle && routineData.repeatCycle !== '없음') {
+        await scheduleRecurringAlarm(routineData, targetDate);
+      } else {
+        // 단일 알람 설정
+        await scheduleAlarm(routineData, targetDate);
+      }
+    } catch (error) {
+      console.error('알람 설정 실패:', error);
+    }
+  };
 
   // 기존 루틴 데이터 로드 (수정 모드)
   useEffect(() => {
@@ -127,75 +163,16 @@ const RoutineDetail = () => {
     setSubTasks(newSubTasks);
   };
 
-  // 알람 설정
-  const setupAlarm = async (routineData: any) => {
-    try {
-      // 알람 초기화
-      const initialized = await initializeAlarms();
-      if (!initialized) {
-        console.log('알람 초기화 실패');
-        return false;
-      }
-
-      // 기존 알람 취소 (수정 모드)
-      if (isEdit) {
-        await cancelAlarm(id as string);
-      }
-
-      // 알람이 활성화되어 있고 알람 시간이 설정된 경우에만 알람 설정
-      if (isAlarmEnabled && routineData.alarmTime) {
-        // 현재 날짜의 로컬 시간으로 알람 시간 설정
-        const now = new Date();
-        const [hours, minutes] = routineData.alarmTime.split(':');
-        const alarmDate = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate(),
-          parseInt(hours),
-          parseInt(minutes),
-          0,
-          0,
-        );
-
-        // 과거 시간이면 내일로 설정
-        if (alarmDate <= now) {
-          alarmDate.setDate(alarmDate.getDate() + 1);
-        }
-
-        console.log(
-          '[루틴 생성 알람] 설정 시간:',
-          `${hours}:${minutes}`,
-          '예약된 알람:',
-          alarmDate.toLocaleString('ko-KR'),
-        );
-
-        const success = await scheduleAlarm(routineData, alarmDate);
-        if (success) {
-          console.log('루틴 알람 설정 완료');
-          return true;
-        } else {
-          console.log('루틴 알람 설정 실패');
-          return false;
-        }
-      }
-
-      return true;
-    } catch (error) {
-      console.error('알람 설정 중 오류:', error);
-      return false;
-    }
-  };
-
   // 루틴 저장/수정
   const handleSave = async () => {
     // 유효성 검사
     if (!title.trim()) {
-      Alert.alert('오류', '루틴 이름을 입력해주세요.');
+      CustomAlertManager.error('루틴 이름을 입력해주세요.');
       return;
     }
 
     if (subTasks.length === 0 || subTasks.every((task) => !task.trim())) {
-      Alert.alert('오류', '최소 하나의 하위 작업을 입력해주세요.');
+      CustomAlertManager.error('최소 하나의 하위 작업을 입력해주세요.');
       return;
     }
 
@@ -246,9 +223,8 @@ const RoutineDetail = () => {
 
         await setupAlarm(routineData);
 
-        Alert.alert('성공', '루틴이 수정되었습니다.', [
-          { text: '확인', onPress: () => router.replace('/(tabs)/routine') },
-        ]);
+        await CustomAlertManager.success('루틴이 수정되었습니다.');
+        router.replace('/(tabs)/routine');
       }
     } else {
       const now = new Date();
@@ -282,9 +258,8 @@ const RoutineDetail = () => {
 
         await setupAlarm(routineData);
 
-        Alert.alert('성공', '루틴이 생성되었습니다.', [
-          { text: '확인', onPress: () => router.replace('/(tabs)/routine') },
-        ]);
+        await CustomAlertManager.success('루틴이 생성되었습니다.');
+        router.replace('/(tabs)/routine');
       }
     }
   };

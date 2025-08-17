@@ -2,7 +2,7 @@ import { Smile } from 'lucide-react-native';
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 
-import { Colors } from '../../../constants/colors';
+import { useThemeColors } from '../../../components/providers/theme-provider';
 import { MoodType, MOOD_OPTIONS } from '../types';
 import BaseModal from './base-modal';
 
@@ -23,20 +23,43 @@ type MoodPickerProps = {
  * @param onSelect - 기분 선택 콜백
  */
 const MoodPicker = ({ visible, onClose, onSelect }: MoodPickerProps) => {
+  const { theme: themeColors } = useThemeColors();
+  
   return (
     <BaseModal visible={visible} onClose={onClose} height="40%" preventOutsideTouch>
-      <Text className="mb-4 text-center text-lg font-bold">오늘의 기분을 선택하세요</Text>
-      <View className="flex-row flex-wrap justify-around">
+      <Text style={{
+        marginBottom: 16,
+        textAlign: 'center',
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: themeColors.text,
+      }}>오늘의 기분을 선택하세요</Text>
+      <View style={{
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-around',
+      }}>
         {MOOD_OPTIONS.map((mood) => (
           <TouchableOpacity
             key={mood.value}
             onPress={() => onSelect(mood.value)}
-            className="mb-6 items-center"
-            style={{ width: '30%' }}
+            style={{
+              marginBottom: 24,
+              alignItems: 'center',
+              width: '30%',
+            }}
           >
-            <Text className="text-4xl">{mood.emoji}</Text>
-            <Text className="mt-2 text-base">{mood.label}</Text>
-            <Text className="text-ellipsis text-center text-xs text-gray">{mood.description}</Text>
+            <Text style={{ fontSize: 36 }}>{mood.emoji}</Text>
+            <Text style={{
+              marginTop: 8,
+              fontSize: 16,
+              color: themeColors.text,
+            }}>{mood.label}</Text>
+            <Text style={{
+              textAlign: 'center',
+              fontSize: 12,
+              color: themeColors.textSecondary,
+            }}>{mood.description}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -52,11 +75,15 @@ const MoodPicker = ({ visible, onClose, onSelect }: MoodPickerProps) => {
  * @param mood - 표시할 기분 값
  */
 const MoodDisplay = ({ mood }: { mood: MoodType }) => {
+  const { theme: themeColors } = useThemeColors();
   const selectedMood = MOOD_OPTIONS.find((m) => m.value === mood);
   return (
     <>
-      <Text className="text-xl">{selectedMood?.emoji}</Text>
-      <Text className="text-sm text-black">{selectedMood?.label}</Text>
+      <Text style={{ fontSize: 20 }}>{selectedMood?.emoji}</Text>
+      <Text style={{
+        fontSize: 14,
+        color: themeColors.text,
+      }}>{selectedMood?.label}</Text>
     </>
   );
 };
@@ -67,10 +94,14 @@ const MoodDisplay = ({ mood }: { mood: MoodType }) => {
  * 기분이 선택되지 않았을 때 기본 안내 메시지를 표시합니다.
  */
 const EmptyMoodDisplay = () => {
+  const { theme: themeColors } = useThemeColors();
   return (
     <>
-      <Smile size={20} color={Colors.paleCobalt} />
-      <Text className="text-sm text-black">오늘의 기분</Text>
+      <Smile size={20} color={themeColors.primary} />
+      <Text style={{
+        fontSize: 14,
+        color: themeColors.text,
+      }}>오늘의 기분</Text>
     </>
   );
 };

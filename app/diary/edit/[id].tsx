@@ -2,8 +2,8 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView, Alert, ActivityIndicator } from 'react-native';
 
-import { Colors } from '../../../src/constants/colors';
 import { EntryForm, EntryFormDataType } from '../../../src/components/common/entry-form';
+import { Colors } from '../../../src/constants/colors';
 import { DiaryService } from '../../../src/features/diary/services';
 import { DiaryMediaType as FormMediaType } from '../../../src/features/diary/types';
 

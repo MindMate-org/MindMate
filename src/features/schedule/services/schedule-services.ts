@@ -1,4 +1,5 @@
 import { db } from '../../../hooks/use-initialize-database';
+import type { MediaTableType } from '../../diary/db/diary-db-types';
 import type {
   ScheduleType,
   CreateScheduleDataType,
@@ -142,5 +143,57 @@ export const fetchGetScheduleById = async (id: number): Promise<ScheduleType | n
   } catch (error) {
     console.error('Failed to get schedule by id:', error);
     return null;
+  }
+};
+
+// 특정 일정에 연결된 모든 미디어 파일을 조회합니다
+export const fetchGetMediaByScheduleId = async (scheduleId: number): Promise<MediaTableType[]> => {
+  try {
+    const result = await db.getAllAsync<MediaTableType>(
+      `SELECT 
+        id, 
+        owner_type, 
+        owner_id, 
+        media_type, 
+        file_path, 
+        created_at
+      FROM media 
+      WHERE owner_type = 'schedule' AND owner_id = ?`,
+      [scheduleId],
+    );
+    return result || [];
+  } catch (error) {
+    console.error('미디어 파일 조회 실패:', error);
+    throw error;
+  }
+};
+
+// 일정에 미디어 파일 추가
+export const fetchAddMediaToSchedule = async (input: {
+  owner_id: number;
+  media_type: string;
+  file_path: string;
+}): Promise<number> => {
+  try {
+    const result = await db.runAsync(
+      `INSERT INTO media (owner_type, owner_id, media_type, file_path) 
+       VALUES (?, ?, ?, ?)`,
+      ['schedule', input.owner_id, input.media_type, input.file_path],
+    );
+    return result.lastInsertRowId as number;
+  } catch (error) {
+    console.error('일정 미디어 추가 실패:', error);
+    throw error;
+  }
+};
+
+// 일정의 모든 미디어 삭제
+export const fetchDeleteAllMediaByScheduleId = async (scheduleId: number): Promise<boolean> => {
+  try {
+    await db.runAsync('DELETE FROM media WHERE owner_type = ? AND owner_id = ?', ['schedule', scheduleId]);
+    return true;
+  } catch (error) {
+    console.error('일정 미디어 삭제 실패:', error);
+    return false;
   }
 };

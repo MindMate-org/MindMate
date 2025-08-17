@@ -1,12 +1,14 @@
+import { useRouter } from 'expo-router';
 import { Plus, X } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { TouchableOpacity, View, Alert } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { Text } from 'react-native';
 
 import { MODE } from '../constants/address-book-constants';
 import { useContactEditState } from '../hooks/use-contact-edit-state';
 import { AddressBookService } from '../services';
 
+import { CustomAlertManager } from '@/src/components/ui/custom-alert';
 import FormInput from '@/src/components/ui/form-input';
 import MediaPicker, { MediaItem } from '@/src/components/ui/media-picker';
 import { pickMedia } from '@/src/lib/media-services';
@@ -38,6 +40,7 @@ const FIELD_OPTIONS = [
 ];
 
 const FormEditContact = ({ id }: { id: string }) => {
+  const router = useRouter();
   const {
     name,
     phoneNumber,
@@ -118,7 +121,8 @@ const FormEditContact = ({ id }: { id: string }) => {
           profile_image: image,
         });
         refetch();
-        Alert.alert('성공', '연락처가 수정되었습니다.');
+        await CustomAlertManager.success('연락처가 수정되었습니다.');
+        router.push('/address-book');
       } else if (mode === MODE.NEW) {
         await AddressBookService.fetchCreateContact({
           name,
@@ -130,11 +134,12 @@ const FormEditContact = ({ id }: { id: string }) => {
           updated_at: new Date().toISOString(),
           deleted_at: null,
         });
-        Alert.alert('성공', '연락처가 생성되었습니다.');
+        await CustomAlertManager.success('연락처가 생성되었습니다.');
+        router.push('/address-book');
       }
     } catch (error) {
       console.error('연락처 저장 실패:', error);
-      Alert.alert('오류', '연락처 저장 중 오류가 발생했습니다.');
+      CustomAlertManager.error('연락처 저장 중 오류가 발생했습니다.');
     }
   };
 
@@ -266,7 +271,7 @@ const FieldSelectionModal = ({
 
   const handleAddCustomField = () => {
     if (!customLabel.trim()) {
-      Alert.alert('오류', '필드 이름을 입력해주세요.');
+      CustomAlertManager.error('필드 이름을 입력해주세요.');
       return;
     }
     onSelectCustom(customLabel.trim(), customType);

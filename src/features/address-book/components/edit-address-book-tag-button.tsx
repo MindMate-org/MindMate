@@ -64,7 +64,10 @@ const SelectAddressBookTagModal = ({
   const getAllTagsUseCallback = useCallback(() => AddressBookService.fetchGetTags(), []);
   const { data: allTags, refetch: refetchAllTags } = useAsyncDataGet(getAllTagsUseCallback);
 
-  const getContactTagsUseCallback = useCallback(() => AddressBookService.fetchGetContactTags(contact.id), [contact.id]);
+  const getContactTagsUseCallback = useCallback(
+    () => AddressBookService.fetchGetContactTags(contact.id),
+    [contact.id],
+  );
   const { data: contactTags, refetch: refetchContactTags } =
     useAsyncDataGet(getContactTagsUseCallback);
 

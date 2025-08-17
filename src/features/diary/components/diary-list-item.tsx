@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, Image } from 'react-native';
 
+import { useThemeColors } from '../../../components/providers/theme-provider';
 import { MOOD_OPTIONS } from '../types';
 
 type DiaryListItemProps = {
@@ -13,6 +14,7 @@ type DiaryListItemProps = {
  * 일기 목록 아이템 컴포넌트
  */
 const DiaryListItem = ({ item, onPress, formatDateTime }: DiaryListItemProps) => {
+  const { theme: themeColors, isDark } = useThemeColors();
   // 수정 시간이 있으면 수정 시간 우선, 없으면 생성 시간
   const displayTime = item.updated_at ?? item.created_at ?? '';
   const date = new Date(displayTime);
@@ -31,34 +33,72 @@ const DiaryListItem = ({ item, onPress, formatDateTime }: DiaryListItemProps) =>
   return (
     <Pressable
       onPress={onPress}
-      className="mb-4 flex-row overflow-hidden rounded-2xl bg-white shadow-md"
+      style={{
+        marginBottom: 16,
+        flexDirection: 'row',
+        overflow: 'hidden',
+        borderRadius: 16,
+        backgroundColor: themeColors.surface,
+        shadowColor: themeColors.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: isDark ? 0.3 : 0.1,
+        shadowRadius: 4,
+        elevation: 4,
+      }}
     >
       {/* 날짜 */}
-      <View className="w-12 items-center justify-center bg-paleYellow">
-        <Text className="text-md font-bold leading-none text-paleCobalt">{day}</Text>
-        <Text className="mt-1 text-md font-bold leading-none text-paleCobalt">{weekday}</Text>
+      <View style={{
+        width: 48,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: themeColors.accent,
+      }}>
+        <Text style={{
+          fontSize: 14,
+          fontWeight: 'bold',
+          lineHeight: 16,
+          color: themeColors.primary,
+        }}>{day}</Text>
+        <Text style={{
+          marginTop: 4,
+          fontSize: 14,
+          fontWeight: 'bold',
+          lineHeight: 16,
+          color: themeColors.primary,
+        }}>{weekday}</Text>
       </View>
 
       {/* 콘텐츠 */}
-      <View className="flex-1 justify-between p-4">
-        <View className="flex-row items-start justify-between">
-          <View className="mr-3 flex-1">
-            <View className="flex-row items-center">
+      <View style={{ flex: 1, justifyContent: 'space-between', padding: 16 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+          <View style={{ marginRight: 12, flex: 1 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text
-                className="flex-1 text-lg font-bold leading-tight text-black"
+                style={{
+                  flex: 1,
+                  fontSize: 18,
+                  fontWeight: 'bold',
+                  lineHeight: 22,
+                  color: themeColors.text,
+                  marginRight: 8,
+                }}
                 numberOfLines={1}
-                style={{ marginRight: 8 }}
               >
                 {item.title}
               </Text>
               {moodOption && (
-                <Text className="text-lg" style={{ flexShrink: 0 }}>
+                <Text style={{ fontSize: 18, flexShrink: 0 }}>
                   {moodOption.emoji}
                 </Text>
               )}
             </View>
             {contentPreview && (
-              <Text className="text-gray-600 mt-1 text-sm leading-relaxed" numberOfLines={1}>
+              <Text style={{
+                marginTop: 4,
+                fontSize: 14,
+                lineHeight: 20,
+                color: themeColors.textSecondary,
+              }} numberOfLines={1}>
                 {contentPreview}
               </Text>
             )}
@@ -66,19 +106,38 @@ const DiaryListItem = ({ item, onPress, formatDateTime }: DiaryListItemProps) =>
           {item.thumbnailUri ? (
             <Image
               source={{ uri: item.thumbnailUri }}
-              className="h-20 w-20 rounded-md"
+              style={{
+                height: 80,
+                width: 80,
+                borderRadius: 8,
+              }}
               resizeMode="cover"
             />
           ) : (
             // 대체이미지: 배경색 + 첫글자 텍스트
-            <View className="h-20 w-20 items-center justify-center rounded-md bg-paleCobalt">
-              <Text className="text-2xl font-bold text-white">
+            <View style={{
+              height: 80,
+              width: 80,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 8,
+              backgroundColor: themeColors.primary,
+            }}>
+              <Text style={{
+                fontSize: 24,
+                fontWeight: 'bold',
+                color: themeColors.primaryText,
+              }}>
                 {item.title?.[0]?.toUpperCase() ?? 'D'}
               </Text>
             </View>
           )}
         </View>
-        <Text className="mt-2 text-sm text-paleCobalt">{formatted}</Text>
+        <Text style={{
+          marginTop: 8,
+          fontSize: 14,
+          color: themeColors.primary,
+        }}>{formatted}</Text>
       </View>
     </Pressable>
   );

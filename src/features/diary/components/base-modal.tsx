@@ -1,6 +1,8 @@
 import React from 'react';
 import { Modal, Pressable, StatusBar } from 'react-native';
 
+import { useThemeColors } from '../../../components/providers/theme-provider';
+
 /**
  * 기본 모달 컴포넌트의 props 타입
  */
@@ -38,6 +40,8 @@ const BaseModal: React.FC<BaseModalProps> = ({
   height = '40%',
   preventOutsideTouch = false,
 }) => {
+  const { theme: themeColors } = useThemeColors();
+  
   return (
     <Modal
       visible={visible}
@@ -59,7 +63,7 @@ const BaseModal: React.FC<BaseModalProps> = ({
           onPress={preventOutsideTouch ? (e) => e.stopPropagation() : undefined}
           onStartShouldSetResponder={() => true}
           style={{
-            backgroundColor: 'white',
+            backgroundColor: themeColors.surface,
             borderTopLeftRadius: 24,
             borderTopRightRadius: 24,
             paddingHorizontal: 24,

@@ -677,11 +677,11 @@ export class DiaryService {
       const result = await db.getAllAsync<MediaTableType>(
         `SELECT 
           id, 
-          owner_type as ownerType, 
-          owner_id as ownerId, 
-          media_type as mediaType, 
-          file_path as filePath, 
-          created_at as createdAt
+          owner_type, 
+          owner_id, 
+          media_type, 
+          file_path, 
+          created_at
         FROM media 
         WHERE owner_type = 'diary' AND owner_id = ?`,
         [diaryId],

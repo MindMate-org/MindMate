@@ -11,12 +11,13 @@ import {
   Alert,
 } from 'react-native';
 
+import { useThemeColors } from '../providers/theme-provider';
 import { Colors } from '../../constants/colors';
 import MediaButtons from '../../features/diary/components/media-buttons';
 import MediaPreview from '../../features/diary/components/media-preview';
 import MoodPicker from '../../features/diary/components/mood-picker';
 import StylePicker from '../../features/diary/components/style-picker';
-import { DEFAULT_DIARY_STYLE } from '../../features/diary/constants/style-options';
+import { getDefaultDiaryStyle } from '../../features/diary/constants/style-options';
 import { useAudioRecording } from '../../features/diary/hooks/use-audio-recording';
 import { useMediaPicker } from '../../features/diary/hooks/use-media-picker';
 import { MoodType } from '../../features/diary/types';
@@ -67,6 +68,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({
   alarmSection,
   isLoading = false,
 }) => {
+  const { theme: themeColors, isDark } = useThemeColors();
   const [currentDateTime, setCurrentDateTime] = useState('');
   const [showMoodPickerModal, setShowMoodPickerModal] = useState(false);
   const [showStylePickerModal, setShowStylePickerModal] = useState(false);
@@ -82,7 +84,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({
       title: initialData?.title || '',
       content: initialData?.content || '',
       media: initialData?.media || [],
-      style: initialData?.style || DEFAULT_DIARY_STYLE,
+      style: initialData?.style || getDefaultDiaryStyle(isDark),
       mood: initialData?.mood,
     },
   });
@@ -146,22 +148,39 @@ export const EntryForm: React.FC<EntryFormProps> = ({
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView className="mb-[100px] flex-1">
+    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
+      <ScrollView style={{ flex: 1 }}>
         {/* 헤더 */}
-        <View className="mt-8 flex-row items-center justify-between border-b-2 border-turquoise bg-white px-4 py-4">
+        <View style={{
+          marginTop: 32,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottomWidth: 2,
+          borderBottomColor: themeColors.accent,
+          backgroundColor: themeColors.background,
+          paddingHorizontal: 16,
+          paddingVertical: 16,
+        }}>
           <TouchableOpacity onPress={onCancel}>
-            <ChevronLeft size={24} color={Colors.paleCobalt} />
+            <ChevronLeft size={24} color={themeColors.primary} />
           </TouchableOpacity>
-          <Text className="text-lg font-bold text-paleCobalt">{title}</Text>
+          <Text style={{
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: themeColors.primary,
+          }}>{title}</Text>
           <View style={{ width: 24 }} />
         </View>
 
-        {/* 제목 + 내용 + 미디어 버튼 */}
+        {/* 통합된 폼 컨테이너 */}
         <View
-          className="h-auto rounded-xl"
-          style={{ backgroundColor: watchedStyle.backgroundColor || '#F5F7FF' }}
+          style={{ 
+            flex: 1,
+            backgroundColor: watchedStyle.backgroundColor || themeColors.surface,
+          }}
         >
+          {/* 제목 입력 */}
           <Controller
             control={control}
             name="title"
@@ -171,22 +190,27 @@ export const EntryForm: React.FC<EntryFormProps> = ({
                 value={value}
                 onChangeText={onChange}
                 placeholder="제목을 입력해주세요."
-                placeholderTextColor={Colors.black}
-                className="mb-4 px-4 py-4 text-xl font-medium"
+                placeholderTextColor={themeColors.textSecondary}
                 style={{
+                  marginBottom: 16,
+                  paddingHorizontal: 16,
+                  paddingVertical: 16,
+                  fontSize: 20,
+                  fontWeight: '500',
                   borderBottomWidth: 1,
-                  borderBottomColor: Colors.paleCobalt,
+                  borderBottomColor: '#576BCD',
                   fontFamily:
                     watchedStyle.fontFamily === 'default' ? undefined : watchedStyle.fontFamily,
-                  color: watchedStyle.textColor,
+                  color: watchedStyle.textColor || themeColors.text,
                   textAlign: watchedStyle.textAlign,
                 }}
               />
             )}
           />
 
-          <View className="w-full flex-row">
-            <View className="flex-1 p-4 pr-4">
+          {/* 내용 입력 + 미디어 버튼 */}
+          <View style={{ width: '100%', flexDirection: 'row' }}>
+            <View style={{ flex: 1, padding: 16, paddingRight: 16 }}>
               <Controller
                 control={control}
                 name="content"
@@ -196,16 +220,17 @@ export const EntryForm: React.FC<EntryFormProps> = ({
                     value={value}
                     onChangeText={onChange}
                     placeholder="내용을 입력해 주세요."
-                    placeholderTextColor={Colors.black}
+                    placeholderTextColor={themeColors.textSecondary}
                     multiline
                     textAlignVertical="top"
-                    className="min-h-[80px] text-md font-normal"
                     style={{
+                      minHeight: 80,
+                      fontSize: watchedStyle.fontSize || 16,
+                      fontWeight: 'normal',
                       borderWidth: 0,
-                      fontSize: watchedStyle.fontSize,
                       fontFamily:
                         watchedStyle.fontFamily === 'default' ? undefined : watchedStyle.fontFamily,
-                      color: watchedStyle.textColor,
+                      color: watchedStyle.textColor || themeColors.text,
                       textAlign: watchedStyle.textAlign,
                     }}
                   />
@@ -222,66 +247,116 @@ export const EntryForm: React.FC<EntryFormProps> = ({
             />
           </View>
 
+          {/* 미디어 미리보기 */}
           <MediaPreview
             media={watchedMedia}
             onRemove={handleRemoveMedia}
             isUploading={audioUploadState.isUploading || mediaUploadState.isUploading}
           />
-        </View>
 
-        {/* 날짜 및 기분 */}
-        <View className="bg-white px-4 py-4">
-          <View className="mb-4 flex-row items-center gap-2">
-            <Clock size={20} color={Colors.paleCobalt} />
-            <Text className="text-sm text-black">{currentDateTime}</Text>
+          {/* 날짜 및 기분 */}
+          <View style={{
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+            borderTopWidth: 1,
+            borderTopColor: '#576BCD',
+          }}>
+            <View style={{
+              marginBottom: showMoodPicker ? 16 : 0,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 8,
+            }}>
+              <Clock size={20} color={themeColors.primary} />
+              <Text style={{
+                fontSize: 14,
+                color: themeColors.text,
+              }}>{currentDateTime}</Text>
+            </View>
+
+            {showMoodPicker && (
+              <TouchableOpacity
+                onPress={() => setShowMoodPickerModal(true)}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 8,
+                }}
+              >
+                {watchedMood ? (
+                  <MoodPicker.MoodDisplay mood={watchedMood} />
+                ) : (
+                  <MoodPicker.EmptyMoodDisplay />
+                )}
+              </TouchableOpacity>
+            )}
           </View>
 
-          {showMoodPicker && (
-            <TouchableOpacity
-              onPress={() => setShowMoodPickerModal(true)}
-              className="flex-row items-center gap-2"
-            >
-              {watchedMood ? (
-                <MoodPicker.MoodDisplay mood={watchedMood} />
-              ) : (
-                <MoodPicker.EmptyMoodDisplay />
-              )}
-            </TouchableOpacity>
+          {/* 알림 섹션 (일정에서만 표시) */}
+          {showAlarmSection && (
+            <View style={{
+              borderTopWidth: 1,
+              borderTopColor: '#576BCD',
+            }}>
+              {alarmSection}
+            </View>
           )}
-        </View>
 
-        {/* 알림 섹션 (일정에서만 표시) */}
-        {showAlarmSection && alarmSection}
+          {/* 하단 버튼 */}
+          <View style={{
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+            paddingBottom: 32, // 갤럭시 네비게이션 바와 겹치지 않게
+            borderTopWidth: 1,
+            borderTopColor: '#576BCD',
+          }}>
+          <View style={{ flexDirection: 'row', gap: 16 }}>
+            <TouchableOpacity
+              onPress={handleSubmit(handleFormSubmit, handleSubmitError)}
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 8,
+                paddingVertical: 16,
+                backgroundColor:
+                  audioUploadState.isUploading || mediaUploadState.isUploading || isLoading
+                    ? themeColors.textSecondary
+                    : '#576BCD',
+              }}
+              disabled={audioUploadState.isUploading || mediaUploadState.isUploading || isLoading}
+            >
+              <Text style={{
+                fontSize: 16,
+                fontWeight: 'bold',
+                color: '#FFFFFF',
+              }}>
+                {audioUploadState.isUploading || mediaUploadState.isUploading || isLoading
+                  ? '업로드 중...'
+                  : '등록하기'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleCancel}
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 8,
+                backgroundColor: isDark ? themeColors.textSecondary : '#BDC7FF',
+                paddingVertical: 16,
+              }}
+            >
+              <Text style={{
+                fontSize: 16,
+                fontWeight: 'bold',
+                color: isDark ? themeColors.background : '#576BCD',
+              }}>취소</Text>
+            </TouchableOpacity>
+          </View>
+          </View>
+        </View>
       </ScrollView>
-
-      {/* 하단 버튼 */}
-      <View className="absolute bottom-10 left-0 right-0 bg-white px-4 pb-6 pt-4">
-        <View className="flex-row gap-4">
-          <TouchableOpacity
-            onPress={handleSubmit(handleFormSubmit, handleSubmitError)}
-            className="flex-1 items-center justify-center rounded-lg py-4"
-            style={{
-              backgroundColor:
-                audioUploadState.isUploading || mediaUploadState.isUploading || isLoading
-                  ? Colors.gray
-                  : Colors.paleCobalt,
-            }}
-            disabled={audioUploadState.isUploading || mediaUploadState.isUploading || isLoading}
-          >
-            <Text className="text-md font-bold text-white">
-              {audioUploadState.isUploading || mediaUploadState.isUploading || isLoading
-                ? '업로드 중...'
-                : '등록하기'}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={handleCancel}
-            className="flex-1 items-center justify-center rounded-lg bg-paleYellow py-4"
-          >
-            <Text className="text-md font-bold text-paleCobalt">취소</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
 
       {showMoodPicker && (
         <MoodPicker
