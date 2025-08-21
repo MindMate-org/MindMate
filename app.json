@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "MindMate",
-    "slug": "MindMate",
+    "name": "MindMate-Build",
+    "slug": "mindmate-build",
     "scheme": "mindmate",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -60,7 +60,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "49e12348-2203-4a9a-8826-bd82c1c839f7"
+        "projectId": "4184bbd7-58e2-498b-ac87-4bc062c6f6a3"
       }
     }
   }
