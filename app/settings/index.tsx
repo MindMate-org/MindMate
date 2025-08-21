@@ -159,8 +159,10 @@ const SettingsPage = () => {
     console.log('=== handleDataClear 호출됨 ===');
 
     CustomAlertManager.confirm(
-      '모든 데이터 삭제',
-      '정말로 모든 데이터를 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.',
+      t.locale.startsWith('en') ? 'Delete All Data' : '모든 데이터 삭제',
+      t.locale.startsWith('en')
+        ? 'Are you sure you want to delete all data?\n\nThis action cannot be undone.'
+        : '정말로 모든 데이터를 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.',
       () => {
         console.log('사용자가 삭제 확인함');
         performDataClear();

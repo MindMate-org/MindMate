@@ -85,7 +85,11 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
       await DiaryService.toggleFavorite(diary.id);
       setDiary({ ...diary, is_favorite: diary.is_favorite === 1 ? 0 : 1 });
     } catch (error) {
-      CustomAlertManager.error('즐겨찾기 상태 변경에 실패했습니다.');
+      CustomAlertManager.error(
+        t.locale.startsWith('en')
+          ? 'Failed to change favorite status.'
+          : '즐겨찾기 상태 변경에 실패했습니다.',
+      );
     }
   }, [diary]);
 
@@ -95,15 +99,23 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
   const handleDelete = () => {
     if (!diary) return;
 
-    CustomAlertManager.confirm('일기 삭제', '정말로 이 일기를 삭제하시겠습니까?', async () => {
-      try {
-        await DiaryService.deleteDiary(diary.id);
-        await CustomAlertManager.success('일기가 삭제되었습니다.');
-        router.back();
-      } catch (error) {
-        CustomAlertManager.error('일기 삭제에 실패했습니다.');
-      }
-    });
+    CustomAlertManager.confirm(
+      t.locale.startsWith('en') ? 'Delete Diary' : '일기 삭제',
+      t.locale.startsWith('en') ? 'Are you sure you want to delete this diary?' : '정말로 이 일기를 삭제하시겠습니까?',
+      async () => {
+        try {
+          await DiaryService.deleteDiary(diary.id);
+          await CustomAlertManager.success(
+            t.locale.startsWith('en') ? 'Diary has been deleted.' : '일기가 삭제되었습니다.',
+          );
+          router.back();
+        } catch (error) {
+          CustomAlertManager.error(
+            t.locale.startsWith('en') ? 'Failed to delete diary.' : '일기 삭제에 실패했습니다.',
+          );
+        }
+      },
+    );
   };
 
   /**

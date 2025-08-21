@@ -123,7 +123,7 @@ class NotificationService {
             repeatPattern,
           },
         },
-        trigger: null,
+        trigger: { date: scheduledTime } as any,
       });
 
       // 성공적으로 스케줄된 경우 추가

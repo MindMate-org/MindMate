@@ -12,6 +12,8 @@ import {
 import { RoutineType, CreateRoutinePayload, UpdateRoutinePayload } from './types';
 import { shouldRunOnDate } from './utils';
 import { db } from '../../hooks/use-initialize-database';
+import { notificationService } from '../../lib/notification-service';
+import { useGlobalStore } from '../../store/global-store';
 
 /**
  * DB 타입을 앱 타입으로 변환하는 헬퍼 함수
@@ -257,8 +259,15 @@ export const fetchCreateRoutine = async (payload: CreateRoutinePayload): Promise
 
     await db.runAsync('COMMIT');
 
-    // 생성된 루틴 반환
-    return await fetchGetRoutineById(routineId.toString());
+    // 생성된 루틴 조회
+    const createdRoutine = await fetchGetRoutineById(routineId.toString());
+    
+    // 알림 시간이 설정되어 있다면 알림 예약
+    if (createdRoutine.alarmTime) {
+      await scheduleRoutineNotifications(createdRoutine);
+    }
+
+    return createdRoutine;
   } catch (error) {
     await db.runAsync('ROLLBACK');
     throw error;
@@ -353,8 +362,18 @@ export const fetchUpdateRoutine = async (payload: UpdateRoutinePayload): Promise
 
     await db.runAsync('COMMIT');
 
-    // 수정된 루틴 반환
-    return await fetchGetRoutineById(payload.id);
+    // 수정된 루틴 조회
+    const updatedRoutine = await fetchGetRoutineById(payload.id);
+    
+    // 알림 시간이 설정되어 있다면 알림 재예약
+    if (updatedRoutine.alarmTime) {
+      await scheduleRoutineNotifications(updatedRoutine);
+    } else {
+      // 알림 시간이 제거된 경우 기존 알림 취소
+      await notificationService.cancelNotification(payload.id, 'routine');
+    }
+
+    return updatedRoutine;
   } catch (error) {
     await db.runAsync('ROLLBACK');
     throw error;
@@ -428,4 +447,52 @@ export const validateRepeatCycle = (repeatCycle: string): boolean => {
   ];
 
   return validPatterns.some((pattern) => pattern.test(repeatCycle));
+};
+
+/**
+ * 루틴 알림을 예약하는 함수
+ * @param routine - 알림을 예약할 루틴
+ */
+const scheduleRoutineNotifications = async (routine: RoutineType): Promise<void> => {
+  try {
+    if (!routine.alarmTime) return;
+
+    // 언어 설정 가져오기
+    const { language } = useGlobalStore.getState();
+    const isEnglish = language.startsWith('en');
+
+    // 기존 알림 취소
+    await notificationService.cancelNotification(routine.id, 'routine');
+
+    // 다음 7일간의 루틴 알림 예약 (iOS/Android의 알림 제한을 고려)
+    const today = new Date();
+    for (let i = 0; i < 7; i++) {
+      const targetDate = new Date(today);
+      targetDate.setDate(today.getDate() + i);
+
+      // 해당 날짜에 루틴이 실행되어야 하는지 확인
+      if (shouldRunOnDate(routine, targetDate)) {
+        // 알림 시간 설정 (HH:MM 형식을 Date 객체로 변환)
+        const [hours, minutes] = routine.alarmTime.split(':').map(Number);
+        const notificationDate = new Date(targetDate);
+        notificationDate.setHours(hours, minutes, 0, 0);
+
+        // 과거 시간이 아닌 경우에만 알림 예약
+        if (notificationDate > new Date()) {
+          await notificationService.scheduleNotification(
+            routine.id,
+            'routine',
+            isEnglish ? 'Routine Reminder' : '루틴 알림',
+            isEnglish 
+              ? `Time to start your "${routine.name}" routine!`
+              : `"${routine.name}" 루틴을 시작할 시간입니다!`,
+            notificationDate,
+            false // 개별 알림으로 처리
+          );
+        }
+      }
+    }
+  } catch (error) {
+    console.error('루틴 알림 예약 실패:', error);
+  }
 };

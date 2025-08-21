@@ -56,10 +56,10 @@ export default function RootLayout() {
 
   // 전역 에러 핸들러 설정
   useEffect(() => {
-    if (typeof global !== 'undefined' && global.ErrorUtils) {
-      const originalErrorHandler = global.ErrorUtils.getGlobalHandler();
+    if (typeof global !== 'undefined' && (global as any).ErrorUtils) {
+      const originalErrorHandler = (global as any).ErrorUtils.getGlobalHandler();
 
-      global.ErrorUtils.setGlobalHandler((error: Error, isFatal?: boolean) => {
+      (global as any).ErrorUtils.setGlobalHandler((error: Error, isFatal?: boolean) => {
         console.error('Global Error Handler:', error);
 
         if (isFatal) {
@@ -73,7 +73,7 @@ export default function RootLayout() {
       });
 
       return () => {
-        global.ErrorUtils.setGlobalHandler(originalErrorHandler);
+        (global as any).ErrorUtils.setGlobalHandler(originalErrorHandler);
       };
     }
   }, [recordError, recordCrash]);

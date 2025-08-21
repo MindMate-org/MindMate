@@ -46,11 +46,14 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
   variant = 'default',
   isLoading = false,
   className = '',
-  label = '사진 추가',
+  label = '',
   disabled = false,
 }) => {
   const { theme: themeColors, isDark } = useThemeColors();
   const { t } = useI18n();
+  
+  // 기본 라벨 설정
+  const displayLabel = label || (t.locale.startsWith('en') ? 'Add Photo' : '사진 추가');
   const getItemSize = () => {
     switch (variant) {
       case 'compact':
@@ -171,7 +174,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
 
   return (
     <View style={{ width: '100%' }}>
-      {label && (
+      {displayLabel && (
         <Text
           style={{
             marginBottom: 8,
@@ -180,7 +183,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
             color: themeColors.text,
           }}
         >
-          {label}
+          {displayLabel}
         </Text>
       )}
 

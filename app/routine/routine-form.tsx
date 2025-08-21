@@ -64,13 +64,19 @@ const RoutineForm = () => {
   // 루틴 완료 처리
   const handleCompleteRoutine = async () => {
     const confirmed = await CustomAlertManager.confirm(
-      '루틴 완료',
-      '모든 하위 작업이 완료되었습니다! 루틴을 완료 처리하시겠습니까?',
+      t.locale.startsWith('en') ? 'Complete Routine' : '루틴 완료',
+      t.locale.startsWith('en')
+        ? 'All sub-tasks have been completed! Would you like to mark the routine as completed?'
+        : '모든 하위 작업이 완료되었습니다! 루틴을 완료 처리하시겠습니까?',
     );
 
     if (confirmed) {
       // TODO: 루틴 완료 처리 로직 (루틴 실행 기록 저장)
-      CustomAlertManager.success('루틴을 성공적으로 완료했습니다.');
+      CustomAlertManager.success(
+        t.locale.startsWith('en')
+          ? 'Routine has been successfully completed.'
+          : '루틴을 성공적으로 완료했습니다.',
+      );
     }
   };
 

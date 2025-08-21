@@ -71,11 +71,17 @@ const SchedulePage = () => {
       if (success) {
         refetch();
       } else {
-        CustomAlertManager.error('일정 상태 변경에 실패했습니다.');
+        CustomAlertManager.error(
+          t.locale.startsWith('en') ? 'Failed to change schedule status.' : '일정 상태 변경에 실패했습니다.',
+        );
       }
     } catch (error) {
       console.error('Error toggling schedule completion:', error);
-      CustomAlertManager.error('일정 상태 변경 중 문제가 발생했습니다.');
+      CustomAlertManager.error(
+        t.locale.startsWith('en')
+          ? 'An error occurred while changing schedule status.'
+          : '일정 상태 변경 중 문제가 발생했습니다.',
+      );
     }
   };
 
