@@ -1,6 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
-import { Feather, AntDesign } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
 import {
   ArrowDownWideNarrow,
@@ -12,11 +10,17 @@ import {
   PenTool,
   Calendar,
 } from 'lucide-react-native';
-import { DiaryService } from '../../../src/features/diary/services';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import { View, Text, ScrollView, Pressable, ActivityIndicator, TouchableOpacity } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
+import { useThemeColors } from '../../../src/components/providers/theme-provider';
+import { useI18n } from '../../../src/hooks/use-i18n';
 import { DiaryListItem } from '../../../src/features/diary/components/diary-list-item';
 import SearchModal from '../../../src/features/diary/components/search-modal';
-import { formatDateTimeString } from '../../../src/lib/date-utils';
+import { DiaryService } from '../../../src/features/diary/services';
 import { groupDiariesByPeriod } from '../../../src/features/diary/utils/diary-grouping';
+import { formatDateTimeString } from '../../../src/lib/date-utils';
 
 type SortOrderType = 'asc' | 'desc';
 
@@ -42,7 +46,11 @@ type SortOrderType = 'asc' | 'desc';
  * ```
  */
 const DiaryListPage = () => {
+  const { theme: themeColors, isDark } = useThemeColors();
+  const { t } = useI18n();
   const [diaries, setDiaries] = useState<any[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [filteredDiaries, setFilteredDiaries] = useState<any[]>([]);
   const [sortOrder, setSortOrder] = useState<SortOrderType>('desc');
   const [showSearchModal, setShowSearchModal] = useState(false);
@@ -50,18 +58,7 @@ const DiaryListPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [errorCount, setErrorCount] = useState(0);
 
-  useEffect(() => {
-    fetchDiaries();
-  }, []);
-
-  // 페이지 포커스 시마다 데이터 새로고침
-  useFocusEffect(
-    useCallback(() => {
-      fetchDiaries();
-    }, []),
-  );
-
-  const fetchDiaries = async () => {
+  const fetchDiaries = useCallback(async () => {
     try {
       setIsLoading(true);
       setErrorCount(0);
@@ -76,25 +73,32 @@ const DiaryListPage = () => {
       setErrorCount((prev) => prev + 1);
 
       // 에러가 3번 이상 발생하면 사용자에게 알림
-      if (errorCount >= 2) {
-        console.warn('일기 조회 에러가 반복 발생:', err);
-      }
+      console.warn('일기 조회 에러가 반복 발생:', err);
 
-      // 에러 발생 시 기존 데이터 유지 (빈 배열로 초기화 안함)
-      if (diaries.length === 0) {
-        setDiaries([]);
-        setFilteredDiaries([]);
-      }
+      // 에러 발생 시 빈 배열로 설정
+      setDiaries([]);
+      setFilteredDiaries([]);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isSearchActive]);
+
+  useEffect(() => {
+    fetchDiaries();
+  }, [fetchDiaries]);
+
+  // 페이지 포커스 시마다 데이터 새로고침
+  useFocusEffect(
+    useCallback(() => {
+      fetchDiaries();
+    }, [fetchDiaries]),
+  );
 
   const handleSortToggle = () => {
     setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'));
   };
 
-  const handleSearch = async (filters: any) => {
+  const handleSearch = useCallback(async (filters: any) => {
     try {
       setIsLoading(true);
       const searchResult = await DiaryService.searchDiaries({
@@ -111,79 +115,216 @@ const DiaryListPage = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const handleResetSearch = () => {
+  const handleResetSearch = useCallback(() => {
     setFilteredDiaries(diaries);
     setIsSearchActive(false);
-  };
+  }, [diaries]);
 
-  // 썸네일 URI 설정 (DiaryService에서 이미 우선순위가 적용됨: 이미지 > 동영상)
-  const diariesWithThumbnail = filteredDiaries.map((item) => ({
-    ...item,
-    thumbnailUri: item.media_uri, // 이미 우선순위가 적용된 미디어 URI
-  }));
+  // 썸네일 URI 설정 및 정렬을 useMemo로 최적화
+  const sortedDiaries = useMemo(() => {
+    const diariesWithThumbnail = filteredDiaries.map((item) => ({
+      ...item,
+      thumbnailUri: item.media_uri,
+    }));
 
-  // 정렬 (수정 시간 우선, 없으면 생성 시간)
-  const sortedDiaries = [...diariesWithThumbnail].sort((a, b) => {
-    const dateA = new Date(a.updated_at ?? a.created_at ?? '').getTime();
-    const dateB = new Date(b.updated_at ?? b.created_at ?? '').getTime();
-    return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
-  });
+    return [...diariesWithThumbnail].sort((a, b) => {
+      const dateA = new Date(a.updated_at ?? a.created_at ?? '').getTime();
+      const dateB = new Date(b.updated_at ?? b.created_at ?? '').getTime();
+      return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+    });
+  }, [filteredDiaries, sortOrder]);
 
-  // 그룹화
-  const grouped = groupDiariesByPeriod(sortedDiaries);
+  // 그룹화를 useMemo로 최적화
+  const grouped = useMemo(() => 
+    groupDiariesByPeriod(sortedDiaries, t.locale.startsWith('en') ? 'en' : 'ko', selectedDate), 
+    [sortedDiaries, t.locale, selectedDate]
+  );
 
   return (
-    <View className="flex-1 bg-turquoise">
+    <View style={{ flex: 1, backgroundColor: themeColors.background }}>
       <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ 
-          paddingHorizontal: 12, 
-          paddingTop: 12, 
-          paddingBottom: 80 
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          paddingHorizontal: 12,
+          paddingTop: 24,
+          paddingBottom: 80,
         }}
-        contentContainerClassName="sm:px-4 sm:pt-4 sm:pb-24 lg:px-6 lg:pt-6"
       >
         {/* 기능 버튼들 */}
-        <View className="mb-4">
-          <View className="flex-row gap-1 sm:gap-2">
+        <View style={{ marginBottom: 16 }}>
+          <View style={{ flexDirection: 'row', marginBottom: 8 }}>
+            <Pressable
+              onPress={() => setShowDatePicker(true)}
+              style={{
+                minHeight: 40,
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 8,
+                backgroundColor: selectedDate ? themeColors.primary : themeColors.surface,
+                paddingHorizontal: 8,
+                paddingVertical: 8,
+                shadowColor: themeColors.shadow,
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: isDark ? 0.3 : 0.1,
+                shadowRadius: 2,
+                elevation: 2,
+                marginRight: 8,
+              }}
+            >
+              <Calendar color={selectedDate ? themeColors.primaryText : themeColors.primary} size={14} />
+              <Text style={{ 
+                fontSize: 12, 
+                fontWeight: '500', 
+                color: selectedDate ? themeColors.primaryText : themeColors.text,
+                marginLeft: 4,
+              }}>
+                {selectedDate ? selectedDate.toLocaleDateString(t.locale) : t.diary.filterByDate || '날짜 선택'}
+              </Text>
+            </Pressable>
+            {selectedDate && (
+              <Pressable
+                onPress={() => setSelectedDate(undefined)}
+                style={{
+                  minHeight: 40,
+                  paddingHorizontal: 12,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 8,
+                  backgroundColor: themeColors.surface,
+                  shadowColor: themeColors.shadow,
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: isDark ? 0.3 : 0.1,
+                  shadowRadius: 2,
+                  elevation: 2,
+                }}
+              >
+                <Text style={{ 
+                  fontSize: 12, 
+                  fontWeight: '500', 
+                  color: themeColors.text,
+                }}>{t.diary.reset}</Text>
+              </Pressable>
+            )}
+          </View>
+          <View style={{ flexDirection: 'row' }}>
             <Pressable
               onPress={() => router.push('/diary/trash')}
-              className="flex-1 flex-row items-center justify-center gap-1 rounded-lg bg-white px-1 sm:px-2 py-2 sm:py-2.5 shadow-sm min-h-[40px] sm:min-h-[44px]"
+              style={{
+                minHeight: 40,
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 8,
+                backgroundColor: themeColors.surface,
+                paddingHorizontal: 8,
+                paddingVertical: 8,
+                shadowColor: themeColors.shadow,
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: isDark ? 0.3 : 0.1,
+                shadowRadius: 2,
+                elevation: 2,
+                marginRight: 8,
+              }}
             >
-              <Trash2 color={'#576bcd'} size={14} className="sm:w-4 sm:h-4" />
-              <Text className="text-xs sm:text-sm font-medium text-paleCobalt">휴지통</Text>
+              <Trash2 color={themeColors.primary} size={14} />
+              <Text style={{ 
+                fontSize: 12, 
+                fontWeight: '500', 
+                color: themeColors.text,
+                marginLeft: 4,
+              }}>{t.diary.trash}</Text>
             </Pressable>
             <Pressable
               onPress={() => router.push('/diary/stats')}
-              className="flex-1 flex-row items-center justify-center gap-1 rounded-lg bg-white px-1 sm:px-2 py-2 sm:py-2.5 shadow-sm min-h-[40px] sm:min-h-[44px]"
+              style={{
+                minHeight: 40,
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 8,
+                backgroundColor: themeColors.surface,
+                paddingHorizontal: 8,
+                paddingVertical: 8,
+                shadowColor: themeColors.shadow,
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: isDark ? 0.3 : 0.1,
+                shadowRadius: 2,
+                elevation: 2,
+                marginRight: 8,
+              }}
             >
-              <BarChart3 color={'#576bcd'} size={14} className="sm:w-4 sm:h-4" />
-              <Text className="text-xs sm:text-sm font-medium text-paleCobalt">통계</Text>
+              <BarChart3 color={themeColors.primary} size={14} />
+              <Text style={{ fontSize: 12, fontWeight: '500', color: themeColors.text, marginLeft: 4 }}>{t.diary.stats}</Text>
             </Pressable>
             <Pressable
               onPress={() => router.push('/diary/favorites')}
-              className="flex-1 flex-row items-center justify-center gap-1 rounded-lg bg-white px-1 sm:px-2 py-2 sm:py-2.5 shadow-sm min-h-[40px] sm:min-h-[44px]"
+              style={{
+                minHeight: 40,
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 8,
+                backgroundColor: themeColors.surface,
+                paddingHorizontal: 8,
+                paddingVertical: 8,
+                shadowColor: themeColors.shadow,
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: isDark ? 0.3 : 0.1,
+                shadowRadius: 2,
+                elevation: 2,
+                marginRight: 8,
+              }}
             >
-              <Star color={'#FFD700'} size={14} fill={'#FFD700'} className="sm:w-4 sm:h-4" />
-              <Text className="text-xs sm:text-sm font-medium text-paleCobalt">북마크</Text>
+              <Star color={'#FFD700'} size={14} fill={'#FFD700'} />
+              <Text style={{ fontSize: 12, fontWeight: '500', color: themeColors.text, marginLeft: 4 }}>{t.diary.bookmarks}</Text>
             </Pressable>
             <Pressable
               onPress={() => setShowSearchModal(true)}
-              className="flex-1 flex-row items-center justify-center gap-1 rounded-lg bg-white px-1 sm:px-2 py-2 sm:py-2.5 shadow-sm min-h-[40px] sm:min-h-[44px]"
+              style={{
+                minHeight: 40,
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 8,
+                backgroundColor: themeColors.surface,
+                paddingHorizontal: 8,
+                paddingVertical: 8,
+                shadowColor: themeColors.shadow,
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: isDark ? 0.3 : 0.1,
+                shadowRadius: 2,
+                elevation: 2,
+              }}
             >
-              <Search color={'#576bcd'} size={14} className="sm:w-4 sm:h-4" />
-              <Text className="text-xs sm:text-sm font-medium text-paleCobalt">검색</Text>
+              <Search color={themeColors.primary} size={14} />
+              <Text style={{ fontSize: 12, fontWeight: '500', color: themeColors.text, marginLeft: 4 }}>{t.common.search}</Text>
             </Pressable>
           </View>
           {isSearchActive && (
-            <View className="mt-2 px-2">
+            <View style={{ marginTop: 8, paddingHorizontal: 8 }}>
               <Pressable
                 onPress={handleResetSearch}
-                className="rounded-lg bg-paleYellow px-4 py-2.5"
+                style={{
+                  borderRadius: 8,
+                  backgroundColor: themeColors.accent,
+                  paddingHorizontal: 16,
+                  paddingVertical: 10,
+                }}
               >
-                <Text className="text-center text-sm font-medium text-paleCobalt">전체보기</Text>
+                <Text style={{
+                  textAlign: 'center',
+                  fontSize: 14,
+                  fontWeight: '500',
+                  color: themeColors.primary,
+                }}>{t.common.showAll}</Text>
               </Pressable>
             </View>
           )}
@@ -192,103 +333,243 @@ const DiaryListPage = () => {
         {/* 섹션별 목록, 로딩 상태, 또는 빈 상태 */}
         {isLoading ? (
           // 로딩 상태
-          <View className="flex-1 items-center justify-center" style={{ marginTop: 100 }}>
-            <ActivityIndicator size="large" color="#576bcd" />
-            <Text className="mt-4 text-center text-base text-paleCobalt">
-              일기를 불러오는 중...
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 100 }}>
+            <ActivityIndicator size="large" color={themeColors.primary} />
+            <Text style={{
+              marginTop: 16,
+              textAlign: 'center',
+              fontSize: 16,
+              color: themeColors.primary,
+            }}>
+              {t.diary.loading}
             </Text>
           </View>
         ) : Object.keys(grouped).length === 0 ? (
           // 빈 상태 UI
-          <View className="flex-1 items-center justify-center px-8" style={{ marginTop: 0 }}>
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32, marginTop: 0 }}>
             {isSearchActive ? (
               // 검색 결과 없음
-              <View className="items-center">
-                <View className="mb-6 rounded-full bg-white p-6 shadow-lg">
-                  <Search size={48} color="#9CA3AF" />
+              <View style={{ alignItems: 'center' }}>
+                <View style={{
+                  marginBottom: 24,
+                  borderRadius: 48,
+                  backgroundColor: themeColors.surface,
+                  padding: 24,
+                  shadowColor: themeColors.shadow,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: isDark ? 0.3 : 0.1,
+                  shadowRadius: 8,
+                  elevation: 8,
+                }}>
+                  <Search size={48} color={themeColors.textSecondary} />
                 </View>
-                <Text className="text-gray-600 mb-3 text-center text-xl font-bold">
-                  검색 결과가 없습니다
+                <Text style={{
+                  color: themeColors.text,
+                  marginBottom: 12,
+                  textAlign: 'center',
+                  fontSize: 20,
+                  fontWeight: 'bold',
+                }}>
+                  {t.diary.noSearchResults}
                 </Text>
-                <Text className="text-gray-500 mb-6 text-center text-base leading-6">
-                  다른 검색어로 시도해보시거나{'\n'}
-                  필터를 조정해보세요
+                <Text style={{
+                  color: themeColors.textSecondary,
+                  marginBottom: 24,
+                  textAlign: 'center',
+                  fontSize: 16,
+                  lineHeight: 24,
+                }}>
+                  {t.diary.searchSuggestion}
                 </Text>
                 <Pressable
                   onPress={handleResetSearch}
-                  className="items-center justify-center rounded-xl bg-paleCobalt px-6 py-3"
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 12,
+                    backgroundColor: themeColors.primary,
+                    paddingHorizontal: 24,
+                    paddingVertical: 12,
+                  }}
                 >
-                  <Text className="text-base font-semibold text-white">전체 일기 보기</Text>
+                  <Text style={{
+                    fontSize: 16,
+                    fontWeight: '600',
+                    color: themeColors.primaryText,
+                  }}>{t.diary.showAll}</Text>
                 </Pressable>
               </View>
             ) : (
               // 일기 없음
-              <View className="items-center">
-                <View className="mb-6 rounded-full bg-white p-6 shadow-lg">
-                  <PenTool size={48} color="#576bcd" />
+              <View style={{ alignItems: 'center' }}>
+                <View style={{
+                  marginBottom: 24,
+                  borderRadius: 48,
+                  backgroundColor: themeColors.surface,
+                  padding: 24,
+                  shadowColor: themeColors.shadow,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: isDark ? 0.3 : 0.1,
+                  shadowRadius: 8,
+                  elevation: 8,
+                }}>
+                  <PenTool size={48} color={themeColors.primary} />
                 </View>
-                <Text className="mb-3 text-center text-xl font-bold text-paleCobalt">
-                  첫 번째 일기를 작성해보세요
+                <Text style={{
+                  marginBottom: 12,
+                  textAlign: 'center',
+                  fontSize: 20,
+                  fontWeight: 'bold',
+                  color: themeColors.primary,
+                }}>
+                  {t.diary.writeFirst}
                 </Text>
-                <Text className="text-gray-600 mb-6 text-center text-base leading-6">
-                  오늘 하루는 어떠셨나요?{'\n'}
-                  소중한 순간들을 기록해보세요
+                <Text style={{
+                  color: themeColors.text,
+                  marginBottom: 24,
+                  textAlign: 'center',
+                  fontSize: 16,
+                  lineHeight: 24,
+                }}>
+                  {t.diary.howWasToday}
                 </Text>
                 <Pressable
                   onPress={() => router.push('/diary/create')}
-                  className="items-center justify-center rounded-xl bg-paleCobalt px-8 py-4 shadow-md"
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 12,
+                    backgroundColor: themeColors.primary,
+                    paddingHorizontal: 32,
+                    paddingVertical: 16,
+                    shadowColor: themeColors.shadow,
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: isDark ? 0.3 : 0.1,
+                    shadowRadius: 4,
+                    elevation: 4,
+                  }}
                 >
-                  <View className="flex-row items-center gap-2">
-                    <PenTool size={20} color="white" />
-                    <Text className="text-lg font-semibold text-white">일기 작성하기</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <PenTool size={20} color={themeColors.primaryText} />
+                    <Text style={{
+                      fontSize: 18,
+                      fontWeight: '600',
+                      color: themeColors.primaryText,
+                    }}>{t.diary.startWriting}</Text>
                   </View>
                 </Pressable>
 
                 {/* 추가 안내 */}
-                <View className="mt-4 w-full">
-                  <Text className="mb-4 text-center text-sm font-semibold text-paleCobalt">
-                    일기 작성 팁
+                <View style={{ marginTop: 16, width: '100%' }}>
+                  <Text style={{
+                    marginBottom: 16,
+                    textAlign: 'center',
+                    fontSize: 14,
+                    fontWeight: '600',
+                    color: themeColors.primary,
+                  }}>
+                    {t.diary.writingTips}
                   </Text>
-                  <View className="items-center justify-center">
-                    <View className="flex-row gap-4" style={{ maxWidth: 320 }}>
+                  <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                    <View style={{ flexDirection: 'row', maxWidth: 320, gap: 12 }}>
                       <View
-                        className="flex-1 items-center rounded-xl bg-white/90 px-4 py-5 shadow-sm"
-                        style={{ minHeight: 130, minWidth: 120 }}
+                        style={{
+                          flex: 1,
+                          alignItems: 'center',
+                          borderRadius: 12,
+                          backgroundColor: isDark ? `${themeColors.surface}E0` : 'rgba(255,255,255,0.9)',
+                          paddingHorizontal: 16,
+                          paddingVertical: 20,
+                          shadowColor: themeColors.shadow,
+                          shadowOffset: { width: 0, height: 1 },
+                          shadowOpacity: isDark ? 0.2 : 0.1,
+                          shadowRadius: 2,
+                          elevation: 2,
+                          minHeight: 130,
+                          minWidth: 120,
+                        }}
                       >
-                        <View className="mb-3 h-16 w-16 items-center justify-center rounded-full bg-blue-50">
-                          <Calendar size={22} color="#576bcd" />
+                        <View style={{
+                          marginBottom: 12,
+                          height: 64,
+                          width: 64,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: 32,
+                          backgroundColor: isDark ? `${themeColors.primary}20` : '#f3f4f6',
+                        }}>
+                          <Calendar size={22} color={themeColors.primary} />
                         </View>
                         <Text
-                          className="text-center font-semibold text-paleCobalt"
-                          style={{ fontSize: 16 }}
+                          style={{
+                            textAlign: 'center',
+                            fontWeight: '600',
+                            color: themeColors.primary,
+                            fontSize: 16,
+                          }}
                         >
-                          꾸준한 기록
+                          {t.diary.consistentRecord}
                         </Text>
                         <Text
-                          className="text-gray-600 mt-2 text-center leading-4"
-                          style={{ fontSize: 12 }}
+                          style={{
+                            color: themeColors.text,
+                            marginTop: 8,
+                            textAlign: 'center',
+                            lineHeight: 16,
+                            fontSize: 12,
+                          }}
                         >
-                          매일 조금씩{'\n'}작성해보세요
+                          {t.diary.writeDaily}
                         </Text>
                       </View>
                       <View
-                        className="flex-1 items-center rounded-xl bg-white/90 px-4 py-5 shadow-sm"
-                        style={{ minHeight: 130, minWidth: 120 }}
+                        style={{
+                          flex: 1,
+                          alignItems: 'center',
+                          borderRadius: 12,
+                          backgroundColor: isDark ? `${themeColors.surface}E0` : 'rgba(255,255,255,0.9)',
+                          paddingHorizontal: 16,
+                          paddingVertical: 20,
+                          shadowColor: themeColors.shadow,
+                          shadowOffset: { width: 0, height: 1 },
+                          shadowOpacity: isDark ? 0.2 : 0.1,
+                          shadowRadius: 2,
+                          elevation: 2,
+                          minHeight: 130,
+                          minWidth: 120,
+                        }}
                       >
-                        <View className="mb-3 h-16 w-16 items-center justify-center rounded-full bg-yellow-50">
+                        <View style={{
+                          marginBottom: 12,
+                          height: 64,
+                          width: 64,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: 32,
+                          backgroundColor: '#fef3c7',
+                        }}>
                           <Star size={22} color="#FFD700" fill="#FFD700" />
                         </View>
                         <Text
-                          className="text-center font-semibold text-paleCobalt"
-                          style={{ fontSize: 16 }}
+                          style={{
+                            textAlign: 'center',
+                            fontWeight: '600',
+                            color: themeColors.primary,
+                            fontSize: 16,
+                          }}
                         >
-                          생생한 추억
+                          {t.diary.vividMemories}
                         </Text>
                         <Text
-                          className="text-gray-600 mt-2 text-center leading-4"
-                          style={{ fontSize: 12 }}
+                          style={{
+                            color: themeColors.text,
+                            marginTop: 8,
+                            textAlign: 'center',
+                            lineHeight: 16,
+                            fontSize: 12,
+                          }}
                         >
-                          사진과 영상으로{'\n'}기록하세요
+                          {t.diary.recordWithMedia}
                         </Text>
                       </View>
                     </View>
@@ -300,26 +581,48 @@ const DiaryListPage = () => {
         ) : (
           // 기존 일기 목록
           Object.keys(grouped).map((section, index) => (
-            <View key={section} className="mb-6">
-              <View className="mb-3 flex-row items-center justify-between">
-                <View className="flex-row items-center gap-2" style={{ marginBottom: 4 }}>
-                  <Feather name="calendar" size={18} color="#576bcd" />
-                  <Text className="text-sm font-bold text-paleCobalt">{section}</Text>
+            <View key={section} style={{ marginBottom: 24 }}>
+              <View style={{
+                marginBottom: 12,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}>
+                <View style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginLeft: 8,
+                  marginBottom: 4,
+                }}>
+                  <Feather name="calendar" size={18} color={themeColors.primary} />
+                  <Text style={{
+                    fontSize: 14,
+                    fontWeight: 'bold',
+                    color: themeColors.primary,
+                    marginLeft: 8,
+                  }}>{section}</Text>
                 </View>
                 {/* 첫 번째 섹션에만 정렬 버튼 표시 */}
                 {index === 0 && (
                   <Pressable
                     onPress={handleSortToggle}
-                    className="flex-row items-center gap-1"
-                    style={{ marginBottom: 4 }}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginBottom: 4,
+                    }}
                   >
-                    <Text className="text-sm font-bold text-paleCobalt">
-                      {sortOrder === 'desc' ? '최신순' : '오래된순'}
+                    <Text style={{
+                      fontSize: 14,
+                      fontWeight: 'bold',
+                      color: themeColors.primary,
+                    }}>
+                      {sortOrder === 'desc' ? t.common.newest : t.common.oldest}
                     </Text>
                     {sortOrder === 'desc' ? (
-                      <ArrowDownWideNarrow color={'#576bcd'} size={18} />
+                      <ArrowDownWideNarrow color={themeColors.primary} size={18} />
                     ) : (
-                      <ArrowUpWideNarrow color={'#576bcd'} size={18} />
+                      <ArrowUpWideNarrow color={themeColors.primary} size={18} />
                     )}
                   </Pressable>
                 )}
@@ -329,7 +632,7 @@ const DiaryListPage = () => {
                   key={item.id}
                   item={item}
                   onPress={() => router.push(`/diary/${item.id}`)}
-                  formatDateTime={formatDateTimeString}
+                  formatDateTime={(datetime: string) => formatDateTimeString(datetime, t.locale.startsWith('en') ? 'en' : 'ko')}
                 />
               ))}
             </View>
@@ -340,9 +643,28 @@ const DiaryListPage = () => {
       {/* + 버튼 */}
       <Pressable
         onPress={() => router.push('/diary/create')}
-        className="absolute bottom-20 sm:bottom-24 right-8 sm:right-12 w-16 h-16 sm:w-20 sm:h-20 items-center justify-center rounded-full bg-paleCobalt shadow-lg"
+        style={{
+          position: 'absolute',
+          bottom: 80,
+          right: 32,
+          height: 64,
+          width: 64,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 32,
+          backgroundColor: themeColors.primary,
+          shadowColor: themeColors.shadow,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: isDark ? 0.4 : 0.2,
+          shadowRadius: 8,
+          elevation: 8,
+        }}
       >
-        <AntDesign name="plus" size={32} color="white" className="sm:text-5xl" />
+        <Text style={{
+          fontSize: 28,
+          fontWeight: '300',
+          color: themeColors.primaryText,
+        }}>+</Text>
       </Pressable>
 
       {/* 검색 모달 */}
@@ -351,6 +673,23 @@ const DiaryListPage = () => {
         onClose={() => setShowSearchModal(false)}
         onSearch={handleSearch}
       />
+
+      {/* 날짜 선택기 */}
+      {showDatePicker && (
+        <DateTimePicker
+          value={selectedDate || new Date()}
+          mode="date"
+          display="default"
+          locale={t.locale.startsWith('en') ? 'en_US' : 'ko_KR'}
+          onChange={(event, date) => {
+            setShowDatePicker(false);
+            // 사용자가 취소한 경우에는 아무것도 하지 않음
+            if (event.type === 'set' && date) {
+              setSelectedDate(date);
+            }
+          }}
+        />
+      )}
     </View>
   );
 };

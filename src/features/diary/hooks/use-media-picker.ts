@@ -1,7 +1,9 @@
-import { Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { DiaryMediaType } from '../types';
 import { UseFormSetValue } from 'react-hook-form';
+
+import { CustomAlertManager } from '../../../components/ui/custom-alert';
+import { useI18n } from '../../../hooks/use-i18n';
+import { DiaryMediaType } from '../types';
 import { useMediaUpload } from './use-media-upload';
 
 /**
@@ -11,18 +13,27 @@ import { useMediaUpload } from './use-media-upload';
  * 업로드 상태를 관리합니다.
  */
 export const useMediaPicker = (watchedMedia: DiaryMediaType[], setValue: UseFormSetValue<any>) => {
+  const { t } = useI18n();
   const { uploadState, startUpload, finishUpload, setError } = useMediaUpload();
   /**
    * 이미지 선택/촬영
    */
   const handleImagePicker = async () => {
     if (uploadState.isUploading) {
-      Alert.alert('업로드 중', '미디어 업로드가 완료될 때까지 기다려주세요.');
+      CustomAlertManager.info(
+        t.locale.startsWith('en') ? 'Please wait for media upload to complete.' : '미디어 업로드가 완료될 때까지 기다려주세요.',
+        t.locale.startsWith('en') ? 'Uploading' : '업로드 중'
+      );
       return;
     }
 
-    const options = ['카메라로 촬영', '앨범에서 선택(5개)', '취소'];
-    Alert.alert('이미지 추가', '방법을 선택하세요', [
+    const options = t.locale.startsWith('en') 
+      ? ['Take with camera', 'Select from album (5)', 'Cancel']
+      : ['카메라로 촬영', '앨범에서 선택(5개)', '취소'];
+    CustomAlertManager.alert(
+      t.locale.startsWith('en') ? 'Add Image' : '이미지 추가',
+      t.locale.startsWith('en') ? 'Select method' : '방법을 선택하세요', 
+      [
       {
         text: options[0],
         onPress: async () => {
@@ -46,9 +57,8 @@ export const useMediaPicker = (watchedMedia: DiaryMediaType[], setValue: UseForm
             }
             finishUpload();
           } catch (error) {
-            setError('이미지 선택 실패');
-            console.error('이미지 선택 실패:', error);
-          }
+            setError(t.locale.startsWith('en') ? 'Image selection failed' : '이미지 선택 실패');
+            }
         },
       },
       {
@@ -76,9 +86,8 @@ export const useMediaPicker = (watchedMedia: DiaryMediaType[], setValue: UseForm
             }
             finishUpload();
           } catch (error) {
-            setError('이미지 선택 실패');
-            console.error('이미지 선택 실패:', error);
-          }
+            setError(t.locale.startsWith('en') ? 'Image selection failed' : '이미지 선택 실패');
+            }
         },
       },
       { text: options[2], style: 'cancel' },
@@ -90,12 +99,20 @@ export const useMediaPicker = (watchedMedia: DiaryMediaType[], setValue: UseForm
    */
   const handleVideoPicker = async () => {
     if (uploadState.isUploading) {
-      Alert.alert('업로드 중', '미디어 업로드가 완료될 때까지 기다려주세요.');
+      CustomAlertManager.info(
+        t.locale.startsWith('en') ? 'Please wait for media upload to complete.' : '미디어 업로드가 완료될 때까지 기다려주세요.',
+        t.locale.startsWith('en') ? 'Uploading' : '업로드 중'
+      );
       return;
     }
 
-    const options = ['카메라로 촬영', '앨범에서 선택(3개)', '취소'];
-    Alert.alert('동영상 추가', '방법을 선택하세요', [
+    const options = t.locale.startsWith('en') 
+      ? ['Take with camera', 'Select from album (3)', 'Cancel']
+      : ['카메라로 촬영', '앨범에서 선택(3개)', '취소'];
+    CustomAlertManager.alert(
+      t.locale.startsWith('en') ? 'Add Video' : '동영상 추가',
+      t.locale.startsWith('en') ? 'Select method' : '방법을 선택하세요', 
+      [
       {
         text: options[0],
         onPress: async () => {
@@ -122,9 +139,8 @@ export const useMediaPicker = (watchedMedia: DiaryMediaType[], setValue: UseForm
             }
             finishUpload();
           } catch (error) {
-            setError('비디오 선택 실패');
-            console.error('비디오 선택 실패:', error);
-          }
+            setError(t.locale.startsWith('en') ? 'Video selection failed' : '비디오 선택 실패');
+            }
         },
       },
       {
@@ -158,9 +174,8 @@ export const useMediaPicker = (watchedMedia: DiaryMediaType[], setValue: UseForm
             }
             finishUpload();
           } catch (error) {
-            setError('비디오 선택 실패');
-            console.error('비디오 선택 실패:', error);
-          }
+            setError(t.locale.startsWith('en') ? 'Video selection failed' : '비디오 선택 실패');
+            }
         },
       },
       { text: options[2], style: 'cancel' },

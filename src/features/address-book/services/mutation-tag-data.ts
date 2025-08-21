@@ -1,9 +1,12 @@
-import { db } from '../../../hooks/use-initialize-database';
-import { Tag, ContactTag } from '../types/address-book-type';
 import { hasContactTag, getTagById } from './get-tag-data';
+import { db } from '../../../hooks/use-initialize-database';
+import { TagType, ContactTagType } from '../types/address-book-type';
 
 // 연락처에 태그 추가
-export const addTagToContact = async (contactId: number, tagId: number): Promise<ContactTag> => {
+export const addTagToContact = async (
+  contactId: number,
+  tagId: number,
+): Promise<ContactTagType> => {
   try {
     // 이미 연결된 태그인지 확인
     const alreadyHasTag = await hasContactTag(contactId, tagId);
@@ -22,9 +25,8 @@ export const addTagToContact = async (contactId: number, tagId: number): Promise
       result.lastInsertRowId,
     ]);
 
-    return newConnection as ContactTag;
+    return newConnection as ContactTagType;
   } catch (error) {
-    console.error('연락처에 태그 추가 실패:', error);
     throw error;
   }
 };
@@ -39,7 +41,6 @@ export const removeTagFromContact = async (contactId: number, tagId: number): Pr
 
     return result.changes > 0;
   } catch (error) {
-    console.error('연락처에서 태그 제거 실패:', error);
     throw error;
   }
 };
@@ -51,13 +52,12 @@ export const removeAllTagsFromContact = async (contactId: number): Promise<boole
 
     return result.changes > 0;
   } catch (error) {
-    console.error('연락처의 모든 태그 제거 실패:', error);
     throw error;
   }
 };
 
 // 새 태그 생성
-export const createTag = async (tagData: Omit<Tag, 'id'>): Promise<Tag> => {
+export const createTag = async (tagData: Omit<TagType, 'id'>): Promise<TagType> => {
   try {
     const result = await db.runAsync('INSERT INTO tag (name, color) VALUES (?, ?)', [
       tagData.name,
@@ -68,15 +68,17 @@ export const createTag = async (tagData: Omit<Tag, 'id'>): Promise<Tag> => {
       result.lastInsertRowId,
     ]);
 
-    return newTag as Tag;
+    return newTag as TagType;
   } catch (error) {
-    console.error('태그 생성 실패:', error);
     throw error;
   }
 };
 
 // 태그 수정
-export const updateTag = async (tagId: number, tagData: Partial<Omit<Tag, 'id'>>): Promise<Tag> => {
+export const updateTag = async (
+  tagId: number,
+  tagData: Partial<Omit<TagType, 'id'>>,
+): Promise<TagType> => {
   try {
     const updateFields: string[] = [];
     const updateValues: any[] = [];
@@ -106,7 +108,6 @@ export const updateTag = async (tagId: number, tagData: Partial<Omit<Tag, 'id'>>
 
     return updatedTag;
   } catch (error) {
-    console.error('태그 수정 실패:', error);
     throw error;
   }
 };
@@ -117,7 +118,6 @@ export const deleteTag = async (tagId: number): Promise<boolean> => {
     const result = await db.runAsync('DELETE FROM tag WHERE id = ?', [tagId]);
     return result.changes > 0;
   } catch (error) {
-    console.error('태그 삭제 실패:', error);
     throw error;
   }
 };

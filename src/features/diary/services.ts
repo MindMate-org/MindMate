@@ -1,4 +1,3 @@
-import { db } from '../../hooks/use-initialize-database';
 import {
   DiaryTableType,
   MediaTableType,
@@ -8,6 +7,7 @@ import {
   DiaryWithMediaType,
   DiarySearchDbFilterType,
 } from './db/diary-db-types';
+import { db } from '../../hooks/use-initialize-database';
 
 /**
  * 일기 관련 데이터베이스 작업을 처리하는 서비스 클래스
@@ -38,19 +38,29 @@ export class DiaryService {
    * @example
    * ```typescript
    * const diaries = await DiaryService.getAllDiaries();
-   * console.log(`총 ${diaries.length}개의 일기가 있습니다`);
-   * ```
+   * * ```
    */
-  static async getAllDiaries(): Promise<DiaryTableType[]> {
+  /**
+   * 모든 일기를 최신순으로 조회합니다
+   * @returns Promise<DiaryTableType[]> 일기 목록 배열 (최신순 정렬)
+   * @throws {Error} 데이터베이스 조회 실패 시
+   */
+  static async fetchGetDiaries(): Promise<DiaryTableType[]> {
     try {
       const result = await db.getAllAsync<DiaryTableType>(
         `SELECT * FROM diaries WHERE deleted_at IS NULL ORDER BY created_at DESC`,
       );
       return result || [];
     } catch (error) {
-      console.error('일기 목록 조회 실패:', error);
       throw error;
     }
+  }
+
+  /**
+   * @deprecated Use fetchGetDiaries instead
+   */
+  static async getAllDiaries(): Promise<DiaryTableType[]> {
+    return this.fetchGetDiaries();
   }
 
   /**
@@ -64,10 +74,8 @@ export class DiaryService {
    * ```typescript
    * const diary = await DiaryService.getDiaryById(123);
    * if (diary) {
-   *   console.log(diary.title);
-   * } else {
-   *   console.log('일기를 찾을 수 없습니다');
-   * }
+   *   * } else {
+   *   * }
    * ```
    */
   static async getDiaryById(id: number): Promise<DiaryTableType | null> {
@@ -78,7 +86,6 @@ export class DiaryService {
       );
       return result || null;
     } catch (error) {
-      console.error('일기 조회 실패:', error);
       throw error;
     }
   }
@@ -117,9 +124,9 @@ export class DiaryService {
    * });
    * ```
    */
-  static async searchDiaries(filter: DiarySearchDbFilterType): Promise<
-    (DiaryTableType & { media_uri: string | null; media_type: string | null })[]
-  > {
+  static async searchDiaries(
+    filter: DiarySearchDbFilterType,
+  ): Promise<(DiaryTableType & { media_uri: string | null; media_type: string | null })[]> {
     try {
       let query = `SELECT DISTINCT d.*, 
                   COALESCE(img.file_path, vid.file_path) as media_uri,
@@ -137,7 +144,7 @@ export class DiaryService {
              WHERE owner_type = 'diary' AND media_type = 'video'
              GROUP BY owner_id
            ) vid ON vid.owner_id = d.id AND img.owner_id IS NULL`;
-      
+
       const conditions: string[] = [];
       const params: any[] = [];
 
@@ -203,7 +210,6 @@ export class DiaryService {
       >(query, params);
       return result || [];
     } catch (error) {
-      console.error('일기 검색 실패:', error);
       throw error;
     }
   }
@@ -232,8 +238,7 @@ export class DiaryService {
    *   mood: 'happy',
    *   backgroundColor: '#FFE4E1'
    * });
-   * console.log(`새 일기가 생성되었습니다. ID: ${diaryId}`);
-   * ```
+   * * ```
    */
   static async createDiary(input: DiaryCreateDbPayloadType): Promise<number> {
     try {
@@ -242,8 +247,6 @@ export class DiaryService {
       if (!db) {
         throw new Error('데이터베이스가 초기화되지 않았습니다');
       }
-
-      console.log('일기 생성 시도:', { title: input.title, mood: input.mood });
 
       const result = await db.runAsync(
         `INSERT INTO diaries (
@@ -267,11 +270,8 @@ export class DiaryService {
         ],
       );
 
-      console.log('일기 생성 성공:', result.lastInsertRowId);
       return result.lastInsertRowId;
     } catch (error) {
-      console.error('일기 생성 실패:', error);
-      console.error('Input data:', input);
       throw error;
     }
   }
@@ -290,8 +290,7 @@ export class DiaryService {
    * ```typescript
    * const diariesWithMedia = await DiaryService.getAllDiariesWithMedia();
    * diariesWithMedia.forEach(diary => {
-   *   console.log(`${diary.title}: ${diary.media_uri ? '미디어 있음' : '미디어 없음'}`);
-   * });
+   *   * });
    * ```
    */
   static async getAllDiariesWithMedia(): Promise<
@@ -300,36 +299,42 @@ export class DiaryService {
     try {
       if (!db) {
         const errorMsg = '데이터베이스가 초기화되지 않았습니다';
-        console.error(errorMsg);
         throw new Error(errorMsg);
       }
 
-      console.log('일기+미디어 조회 시작');
-      
-      const result = await db.getAllAsync<
-        DiaryTableType & { media_uri: string | null; media_type: string | null }
-      >(
-        `SELECT d.*, 
-                COALESCE(img.file_path, vid.file_path) as media_uri,
-                COALESCE(img.media_type, vid.media_type) as media_type
-         FROM diaries d
-         LEFT JOIN (
-           SELECT owner_id, file_path, media_type, MIN(id) as min_id
-           FROM media
-           WHERE owner_type = 'diary' AND media_type = 'image'
-           GROUP BY owner_id
-         ) img ON img.owner_id = d.id
-         LEFT JOIN (
-           SELECT owner_id, file_path, media_type, MIN(id) as min_id
-           FROM media
-           WHERE owner_type = 'diary' AND media_type = 'video'
-           GROUP BY owner_id
-         ) vid ON vid.owner_id = d.id AND img.owner_id IS NULL
-         WHERE d.deleted_at IS NULL
-         ORDER BY d.created_at DESC`,
+      // 먼저 모든 일기를 가져옴
+      const diaries = await db.getAllAsync<DiaryTableType>(
+        `SELECT * FROM diaries 
+         WHERE deleted_at IS NULL
+         ORDER BY 
+           CASE WHEN updated_at IS NOT NULL THEN updated_at ELSE created_at END DESC`
       );
+
+      // 각 일기에 대해 첫 번째 미디어를 찾아서 추가
+      const result: (DiaryTableType & { media_uri: string | null; media_type: string | null })[] = [];
       
-      console.log(`일기+미디어 조회 완료: ${result?.length || 0}개`);
+      for (const diary of diaries) {
+        // 각 일기의 첫 번째 미디어 찾기 (이미지 우선)
+        const media = await db.getFirstAsync<{ file_path: string; media_type: string }>(
+          `SELECT file_path, media_type FROM media 
+           WHERE owner_id = ? AND owner_type = 'diary'
+           ORDER BY 
+             CASE media_type 
+               WHEN 'image' THEN 1 
+               WHEN 'video' THEN 2 
+               ELSE 3 
+             END, id
+           LIMIT 1`,
+          [diary.id]
+        );
+
+        result.push({
+          ...diary,
+          media_uri: media?.file_path || null,
+          media_type: media?.media_type || null,
+        });
+      }
+
       return result || [];
     } catch (error) {
       console.error('일기+미디어 조회 실패 - 상세 정보:', {
@@ -337,7 +342,7 @@ export class DiaryService {
         stack: error instanceof Error ? error.stack : undefined,
         timestamp: new Date().toISOString(),
       });
-      
+
       // 에러를 상위로 던져서 UI에서 적절히 처리할 수 있도록 함
       throw error;
     }
@@ -423,7 +428,6 @@ export class DiaryService {
 
       await db.runAsync(`UPDATE diaries SET ${updateFields.join(', ')} WHERE id = ?`, params);
     } catch (error) {
-      console.error('일기 수정 실패:', error);
       throw error;
     }
   }
@@ -441,15 +445,13 @@ export class DiaryService {
    * @example
    * ```typescript
    * await DiaryService.deleteDiary(123);
-   * console.log('일기가 휴지통으로 이동되었습니다');
-   * ```
+   * * ```
    */
   static async deleteDiary(id: number): Promise<void> {
     try {
       const now = new Date().toISOString();
       await db.runAsync(`UPDATE diaries SET deleted_at = ? WHERE id = ?`, [now, id]);
     } catch (error) {
-      console.error('일기 삭제 실패:', error);
       throw error;
     }
   }
@@ -469,7 +471,6 @@ export class DiaryService {
       // media 테이블의 관련 데이터도 CASCADE로 자동 삭제됨
       await db.runAsync(`DELETE FROM diaries WHERE id = ?`, [id]);
     } catch (error) {
-      console.error('일기 영구 삭제 실패:', error);
       throw error;
     }
   }
@@ -486,14 +487,12 @@ export class DiaryService {
    * @example
    * ```typescript
    * await DiaryService.restoreDiary(123);
-   * console.log('일기가 복원되었습니다');
-   * ```
+   * * ```
    */
   static async restoreDiary(id: number): Promise<void> {
     try {
       await db.runAsync(`UPDATE diaries SET deleted_at = NULL WHERE id = ?`, [id]);
     } catch (error) {
-      console.error('일기 복원 실패:', error);
       throw error;
     }
   }
@@ -510,8 +509,7 @@ export class DiaryService {
    * @example
    * ```typescript
    * const deletedDiaries = await DiaryService.getDeletedDiaries();
-   * console.log(`휴지통에 ${deletedDiaries.length}개의 일기가 있습니다`);
-   * ```
+   * * ```
    */
   static async getDeletedDiaries(): Promise<DiaryTableType[]> {
     try {
@@ -520,7 +518,6 @@ export class DiaryService {
       );
       return result || [];
     } catch (error) {
-      console.error('휴지통 일기 조회 실패:', error);
       throw error;
     }
   }
@@ -531,7 +528,7 @@ export class DiaryService {
    * deleted_at이 NULL이 아닌 일기들과 해당 미디어를 반환합니다.
    * 삭제된 순서대로 정렬하여 반환합니다.
    *
-   * @returns Promise<(DiaryTableType & { media_uri: string | null; media_type: string | null })[]> 
+   * @returns Promise<(DiaryTableType & { media_uri: string | null; media_type: string | null })[]>
    * 삭제된 일기 목록 (미디어 정보 포함)
    * @throws {Error} 데이터베이스 조회 실패 시
    */
@@ -565,10 +562,9 @@ export class DiaryService {
          WHERE d.deleted_at IS NOT NULL
          ORDER BY d.deleted_at DESC`,
       );
-      
+
       return result || [];
     } catch (error) {
-      console.error('휴지통 일기+미디어 조회 실패:', error);
       throw error;
     }
   }
@@ -585,8 +581,7 @@ export class DiaryService {
    * @example
    * ```typescript
    * const isFavorite = await DiaryService.toggleFavorite(123);
-   * console.log(`일기가 ${isFavorite ? '북마크에 추가' : '북마크에서 제거'}되었습니다`);
-   * ```
+   * * ```
    */
   static async toggleFavorite(id: number): Promise<boolean> {
     try {
@@ -606,7 +601,6 @@ export class DiaryService {
 
       return newFavoriteState === 1;
     } catch (error) {
-      console.error('북마크 토글 실패:', error);
       throw error;
     }
   }
@@ -623,8 +617,7 @@ export class DiaryService {
    * @example
    * ```typescript
    * const favoriteDiaries = await DiaryService.getFavoriteDiaries();
-   * console.log(`${favoriteDiaries.length}개의 북마크 일기가 있습니다`);
-   * ```
+   * * ```
    */
   static async getFavoriteDiaries(): Promise<DiaryTableType[]> {
     try {
@@ -633,7 +626,6 @@ export class DiaryService {
       );
       return result || [];
     } catch (error) {
-      console.error('북마크 일기 조회 실패:', error);
       throw error;
     }
   }
@@ -648,26 +640,24 @@ export class DiaryService {
    * @example
    * ```typescript
    * const media = await DiaryService.getMediaByDiaryId(123);
-   * console.log(`${media.length}개의 미디어 파일이 있습니다`);
-   * ```
+   * * ```
    */
   static async getMediaByDiaryId(diaryId: number): Promise<MediaTableType[]> {
     try {
       const result = await db.getAllAsync<MediaTableType>(
         `SELECT 
           id, 
-          owner_type as ownerType, 
-          owner_id as ownerId, 
-          media_type as mediaType, 
-          file_path as filePath, 
-          created_at as createdAt
+          owner_type, 
+          owner_id, 
+          media_type, 
+          file_path, 
+          created_at
         FROM media 
         WHERE owner_type = 'diary' AND owner_id = ?`,
         [diaryId],
       );
       return result || [];
     } catch (error) {
-      console.error('미디어 파일 조회 실패:', error);
       throw error;
     }
   }
@@ -683,9 +673,7 @@ export class DiaryService {
    * ```typescript
    * const diaryWithMedia = await DiaryService.getDiaryWithMedia(123);
    * if (diaryWithMedia) {
-   *   console.log(`제목: ${diaryWithMedia.title}`);
-   *   console.log(`미디어 개수: ${diaryWithMedia.media.length}`);
-   * }
+   *   *   * }
    * ```
    */
   static async getDiaryWithMedia(id: number): Promise<DiaryWithMediaType | null> {
@@ -696,7 +684,6 @@ export class DiaryService {
       const media = await this.getMediaByDiaryId(id);
       return { ...diary, media };
     } catch (error) {
-      console.error('일기 상세 조회 실패:', error);
       throw error;
     }
   }
@@ -727,11 +714,10 @@ export class DiaryService {
       const result = await db.runAsync(
         `INSERT INTO media (owner_type, owner_id, media_type, file_path) 
          VALUES (?, ?, ?, ?)`,
-        [input.ownerType, input.ownerId, input.mediaType, input.filePath],
+        [input.owner_type, input.owner_id, input.media_type, input.file_path],
       );
       return result.lastInsertRowId;
     } catch (error) {
-      console.error('미디어 추가 실패:', error);
       throw error;
     }
   }
@@ -748,14 +734,12 @@ export class DiaryService {
    * @example
    * ```typescript
    * await DiaryService.deleteMedia(456);
-   * console.log('미디어가 삭제되었습니다');
-   * ```
+   * * ```
    */
   static async deleteMedia(id: number): Promise<void> {
     try {
       await db.runAsync(`DELETE FROM media WHERE id = ?`, [id]);
     } catch (error) {
-      console.error('미디어 삭제 실패:', error);
       throw error;
     }
   }
@@ -770,10 +754,7 @@ export class DiaryService {
    * @example
    * ```typescript
    * const stats = await DiaryService.getDiaryStats();
-   * console.log(`전체 일기: ${stats.total}개`);
-   * console.log(`행복한 일기: ${stats.byMood.happy || 0}개`);
-   * console.log(`미디어 포함 일기: ${stats.withMedia}개`);
-   * ```
+   * * * * ```
    */
   static async getDiaryStats(): Promise<{
     total: number;
@@ -810,7 +791,6 @@ export class DiaryService {
         withMedia: mediaResult?.count || 0,
       };
     } catch (error) {
-      console.error('일기 통계 조회 실패:', error);
       throw error;
     }
   }

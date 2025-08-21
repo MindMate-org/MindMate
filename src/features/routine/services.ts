@@ -2,8 +2,6 @@
  * 루틴 관련 SQLite DB CRUD 서비스
  */
 
-import { db } from '../../hooks/use-initialize-database';
-import { RoutineType, CreateRoutinePayload, UpdateRoutinePayload } from './types';
 import {
   RoutineDbType,
   SubTaskDbType,
@@ -11,7 +9,9 @@ import {
   RoutineWithSubTasksType,
   RoutineQueryOptions,
 } from './db/routine-db-types';
+import { RoutineType, CreateRoutinePayload, UpdateRoutinePayload } from './types';
 import { shouldRunOnDate } from './utils';
+import { db } from '../../hooks/use-initialize-database';
 
 /**
  * DB 타입을 앱 타입으로 변환하는 헬퍼 함수
@@ -78,9 +78,9 @@ export const fetchGetRoutines = async (
     const params: any[] = [];
     const conditions: string[] = [];
 
-    // 날짜 필터링 (해당 날짜 이전에 생성된 루틴만 - 반복 설정에 따라 해당 날짜에 실행될 수 있음)
+    // 날짜 필터링 (해당 날짜에 생성된 루틴 또는 이전에 생성된 루틴 중 해당 날짜에 실행되어야 하는 루틴)
     if (options.date) {
-      conditions.push("DATE(r.created_at, '+9 hours') <= DATE(?, '+9 hours')");
+      conditions.push("DATE(r.created_at) <= DATE(?)");
       params.push(options.date); // 'YYYY-MM-DD'만 전달
     }
 
@@ -168,8 +168,7 @@ export const fetchGetRoutines = async (
 
     return allRoutines;
   } catch (error) {
-    console.error('Error fetching routines:', error);
-    throw new Error('루틴 목록을 가져오는데 실패했습니다.');
+    throw error;
   }
 };
 
@@ -185,7 +184,7 @@ export const fetchGetRoutineById = async (id: string): Promise<RoutineType> => {
     const routineResult = (await db.getFirstAsync(routineQuery, [id])) as RoutineDbType | null;
 
     if (!routineResult) {
-      throw new Error('루틴을 찾을 수 없습니다.');
+      throw new Error('ROUTINE_NOT_FOUND');
     }
 
     // 해당 루틴의 하위 작업들을 순서대로 조회
@@ -194,8 +193,7 @@ export const fetchGetRoutineById = async (id: string): Promise<RoutineType> => {
 
     return mapDbToRoutineType(routineResult, subTasksResult);
   } catch (error) {
-    console.error('Error fetching routine by id:', error);
-    throw new Error('루틴 상세 정보를 가져오는데 실패했습니다.');
+    throw error;
   }
 };
 
@@ -209,23 +207,14 @@ export const fetchCreateRoutine = async (payload: CreateRoutinePayload): Promise
     await db.runAsync('BEGIN TRANSACTION');
 
     // 시작 날짜가 있으면 해당 날짜를, 없으면 현재 시간을 사용
-    const startDate = payload.startDate
+    const startDateTime = payload.startDate
       ? (() => {
-          const date = new Date(payload.startDate);
-          const year = date.getFullYear();
-          const month = (date.getMonth() + 1).toString().padStart(2, '0');
-          const day = date.getDate().toString().padStart(2, '0');
-          const pureDate = `${year}-${month}-${day}`;
-          return pureDate;
+          // payload.startDate는 'YYYY-MM-DD' 형식이므로 직접 파싱하여 로컬 시간대의 해당 날짜로 설정
+          const [year, month, day] = payload.startDate.split('-').map(Number);
+          const date = new Date(year, month - 1, day, 0, 0, 0, 0); // 로컬 시간대의 해당 날짜 00:00:00
+          return date.toISOString();
         })()
-      : (() => {
-          const now = new Date();
-          const year = now.getFullYear();
-          const month = (now.getMonth() + 1).toString().padStart(2, '0');
-          const day = now.getDate().toString().padStart(2, '0');
-          const pureDate = `${year}-${month}-${day}`;
-          return pureDate;
-        })();
+      : new Date().toISOString();
     const routineData = mapToCreateRoutineDbType(payload);
 
     // 루틴 기본 정보 삽입
@@ -241,8 +230,8 @@ export const fetchCreateRoutine = async (payload: CreateRoutinePayload): Promise
       routineData.repeat_cycle,
       routineData.alarm_time,
       routineData.deadline,
-      startDate,
-      startDate,
+      startDateTime,
+      startDateTime,
     ]);
 
     const routineId = routineResult.lastInsertRowId;
@@ -260,8 +249,8 @@ export const fetchCreateRoutine = async (payload: CreateRoutinePayload): Promise
           subTask.title,
           subTask.order,
           0, // is_completed = false (미완료 상태로 시작)
-          startDate,
-          startDate,
+          startDateTime,
+          startDateTime,
         ]);
       }
     }
@@ -272,8 +261,7 @@ export const fetchCreateRoutine = async (payload: CreateRoutinePayload): Promise
     return await fetchGetRoutineById(routineId.toString());
   } catch (error) {
     await db.runAsync('ROLLBACK');
-    console.error('Error creating routine:', error);
-    throw new Error('루틴 생성에 실패했습니다.');
+    throw error;
   }
 };
 
@@ -369,8 +357,7 @@ export const fetchUpdateRoutine = async (payload: UpdateRoutinePayload): Promise
     return await fetchGetRoutineById(payload.id);
   } catch (error) {
     await db.runAsync('ROLLBACK');
-    console.error('Error updating routine:', error);
-    throw new Error('루틴 수정에 실패했습니다.');
+    throw error;
   }
 };
 
@@ -400,8 +387,7 @@ export const fetchDeleteRoutine = async (id: string): Promise<void> => {
     await db.runAsync('COMMIT');
   } catch (error) {
     await db.runAsync('ROLLBACK');
-    console.error('Error deleting routine:', error);
-    throw new Error('루틴 삭제에 실패했습니다.');
+    throw error;
   }
 };
 
@@ -420,8 +406,7 @@ export const updateSubTaskCompletion = async (
     const query = 'UPDATE subtasks SET is_completed = ?, updated_at = ? WHERE id = ?';
     await db.runAsync(query, [isCompleted ? 1 : 0, now, subTaskId]);
   } catch (error) {
-    console.error('Error updating sub task completion:', error);
-    throw new Error('하위 작업 상태 변경에 실패했습니다.');
+    throw error;
   }
 };
 

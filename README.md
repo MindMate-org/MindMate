@@ -29,6 +29,7 @@ MindMate는 React Native 기반의 프로젝트로, 일상 생활에서 까먹�
 ## 📢 **프로젝트 개요**
 
 ### 프레임워크: React Native + Expo
+
 - React Native: 크로스 플랫폼 네이티브 앱 개발
 - Expo SDK: React Native 개발환경
   - 개발 환경 설정의 복잡성 제거
@@ -37,22 +38,27 @@ MindMate는 React Native 기반의 프로젝트로, 일상 생활에서 까먹�
 ### 언어: TypeScript
 
 ### 스타일링: NativeWind (Tailwind CSS)
+
 - 유틸리티 퍼스트 접근법
 - 번들 크기 최적화: 사용된 클래스만 번들에 포함
 
 ### 데이터베이스: SQLite
+
 - 로컬 데이터 저장: 오프라인 환경에서도 데이터 접근 가능
 - 성능: 빠른 읽기/쓰기 속도로 모바일 앱에 최적화
 
 ### 상태 관리: Zustand
+
 - 간단한 API: Redux 대비 학습 곡선이 낮음
 - 번들 크기: 2KB 미만의 가벼운 라이브러리
 
 ### 네비게이션: Expo Router
+
 - 파일 기반 라우팅
 - 딥링킹
 
 ### 폼 관리: React Hook Form + Zod
+
 - React Hook Form
   - 성능 최적화
     - 최소 리렌더링: uncontrolled 컴포넌트를 사용하여 `useState` 기반의 controlled 폼에 비해 성능 우수

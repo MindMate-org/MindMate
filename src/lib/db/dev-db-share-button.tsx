@@ -1,5 +1,5 @@
-import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import { Button } from 'react-native';
 
 const shareDb = async () => {
@@ -9,8 +9,7 @@ const shareDb = async () => {
     await FileSystem.copyAsync({ from: dbUri, to: copyUri });
     await Sharing.shareAsync(copyUri);
   } catch (err) {
-    console.log(err);
-  }
+    }
 };
 
 export const DevDbShareButton = () => {

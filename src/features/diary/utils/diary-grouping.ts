@@ -1,3 +1,5 @@
+import { getTranslations, SupportedLanguage } from '../../../lib/i18n';
+
 /**
  * 두 날짜가 같은 주인지 확인
  * @param d1 - 첫 번째 날짜
@@ -14,22 +16,42 @@ const isSameWeek = (d1: Date, d2: Date) => {
 /**
  * 일기를 기간별로 그룹화
  * @param diaries - 일기 목록
+ * @param language - 언어 설정
+ * @param selectedDate - 선택된 날짜 (필터용)
  * @returns 기간별로 그룹화된 일기 객체
  */
-export const groupDiariesByPeriod = (diaries: any[]) => {
-  return diaries.reduce((acc: any, item) => {
+export const groupDiariesByPeriod = (
+  diaries: any[], 
+  language: SupportedLanguage = 'ko', 
+  selectedDate?: Date
+) => {
+  const t = getTranslations(language);
+  
+  // 선택된 날짜가 있으면 해당 날짜의 일기만 필터링
+  const filteredDiaries = selectedDate 
+    ? diaries.filter(item => {
+        const itemDate = new Date(item.created_at ?? '');
+        return (
+          itemDate.getFullYear() === selectedDate.getFullYear() &&
+          itemDate.getMonth() === selectedDate.getMonth() &&
+          itemDate.getDate() === selectedDate.getDate()
+        );
+      })
+    : diaries;
+
+  return filteredDiaries.reduce((acc: any, item) => {
     const date = new Date(item.created_at ?? '');
     const now = new Date();
-    let section = '과거';
+    let section = t.diary.timeGroups.past;
 
     if (isSameWeek(date, now)) {
-      section = '이번 주';
+      section = t.diary.timeGroups.thisWeek;
     } else if (date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth() - 1) {
-      section = '지난 달';
+      section = t.diary.timeGroups.lastMonth;
     } else if (date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth()) {
-      section = '이번 달';
+      section = t.diary.timeGroups.thisMonth;
     } else {
-      section = '과거';
+      section = t.diary.timeGroups.past;
     }
 
     if (!acc[section]) {

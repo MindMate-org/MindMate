@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Image, TouchableOpacity, Dimensions, Text, StyleSheet } from 'react-native';
-import { ChevronLeft, ChevronRight, Mic, Play, Pause } from 'lucide-react-native';
 import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
 import { Audio } from 'expo-av';
+import { ChevronLeft, ChevronRight, Play, Pause } from 'lucide-react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Image, TouchableOpacity, Dimensions, Text, StyleSheet } from 'react-native';
+
 import { Colors } from '../../../constants/colors';
 
 type MediaSliderProps = {
@@ -11,11 +12,12 @@ type MediaSliderProps = {
     mediaType: string;
     filePath: string;
   }>;
+  height?: number;
 };
 
 const { width: screenWidth } = Dimensions.get('window');
 
-const MediaSlider = ({ media }: MediaSliderProps) => {
+const MediaSlider = ({ media, height = 200 }: MediaSliderProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
@@ -51,7 +53,6 @@ const MediaSlider = ({ media }: MediaSliderProps) => {
 
         newSound.setOnPlaybackStatusUpdate((status) => {
           if (!status.isLoaded) {
-            console.warn('오디오 로딩 실패:', status);
             return;
           }
 
@@ -67,14 +68,13 @@ const MediaSlider = ({ media }: MediaSliderProps) => {
         }
       }
     } catch (error) {
-      console.error('오디오 재생 오류:', error);
-    }
+      }
   };
 
   const handleVideoPress = async () => {
     try {
       setVideoError(null);
-      
+
       if (!isVideoPlaying) {
         setIsVideoLoading(true);
         await videoRef.current?.playAsync();
@@ -82,7 +82,6 @@ const MediaSlider = ({ media }: MediaSliderProps) => {
         await videoRef.current?.pauseAsync();
       }
     } catch (error) {
-      console.error('비디오 재생 오류:', error);
       setVideoError('비디오를 재생할 수 없습니다');
       setIsVideoLoading(false);
     }
@@ -92,12 +91,11 @@ const MediaSlider = ({ media }: MediaSliderProps) => {
     if (status.isLoaded) {
       setIsVideoPlaying(status.isPlaying);
       setIsVideoLoading(false);
-      
+
       if (status.didJustFinish) {
         setIsVideoPlaying(false);
       }
     } else if ('error' in status) {
-      console.error('비디오 로딩 오류:', status.error);
       setVideoError('비디오를 로드할 수 없습니다');
       setIsVideoLoading(false);
       setIsVideoPlaying(false);
@@ -110,12 +108,12 @@ const MediaSlider = ({ media }: MediaSliderProps) => {
     setIsVideoPlaying(false);
     setIsVideoLoading(false);
     setVideoError(null);
-    
+
     if (sound) {
       sound.unloadAsync();
       setSound(null);
     }
-    
+
     // 비디오 일시정지
     if (videoRef.current) {
       videoRef.current.pauseAsync();
@@ -134,7 +132,7 @@ const MediaSlider = ({ media }: MediaSliderProps) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.mediaContainer}>
+      <View style={[styles.mediaContainer, { height }]}>
         {currentMedia.mediaType === 'image' ? (
           <Image
             source={{ uri: currentMedia.filePath }}
@@ -153,7 +151,6 @@ const MediaSlider = ({ media }: MediaSliderProps) => {
               shouldPlay={false}
               onPlaybackStatusUpdate={onVideoPlaybackStatusUpdate}
               onError={(error) => {
-                console.error('Video error:', error);
                 setVideoError('비디오 파일을 재생할 수 없습니다');
                 setIsVideoLoading(false);
               }}
@@ -225,8 +222,8 @@ const styles = StyleSheet.create({
   },
   mediaContainer: {
     marginHorizontal: 0,
-    width: screenWidth,
-    height: screenWidth * 0.75,
+    width: '100%',
+    alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -253,27 +250,27 @@ const styles = StyleSheet.create({
   },
   prevButton: {
     position: 'absolute',
-    left: 24,
+    left: 8,
     top: '50%',
-    height: 40,
-    width: 40,
-    borderRadius: 20,
-    backgroundColor: '#CCD4FF',
+    height: 32,
+    width: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(204, 212, 255, 0.9)',
     alignItems: 'center',
     justifyContent: 'center',
-    transform: [{ translateY: -20 }],
+    transform: [{ translateY: -16 }],
   },
   nextButton: {
     position: 'absolute',
-    right: 24,
+    right: 8,
     top: '50%',
-    height: 40,
-    width: 40,
-    borderRadius: 20,
-    backgroundColor: '#CCD4FF',
+    height: 32,
+    width: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(204, 212, 255, 0.9)',
     alignItems: 'center',
     justifyContent: 'center',
-    transform: [{ translateY: -20 }],
+    transform: [{ translateY: -16 }],
   },
   indicatorContainer: {
     marginTop: 16,

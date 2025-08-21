@@ -1,5 +1,5 @@
-import { TouchableOpacity } from 'react-native';
 import { Check } from 'lucide-react-native';
+import { TouchableOpacity } from 'react-native';
 
 /**
  * 공통 체크박스 컴포넌트

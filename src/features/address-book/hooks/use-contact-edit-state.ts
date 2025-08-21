@@ -1,7 +1,9 @@
-import { Contact } from '../types/address-book-type';
 import { useCallback, useEffect, useState } from 'react';
+
+import { AddressBookService } from '../services';
+import { ContactType } from '../types/address-book-type';
+
 import { useAsyncDataGet } from '@/src/hooks/use-async-data-get';
-import { getContactById } from '../services/get-contact-data';
 
 export const useContactEditState = (id: string) => {
   const [name, setName] = useState('');
@@ -9,18 +11,29 @@ export const useContactEditState = (id: string) => {
   const [memo, setMemo] = useState('');
   const [image, setImage] = useState('');
   const getContactByIdCallback = useCallback(async () => {
-    const contact = await getContactById(id);
+    if (id === 'new') return null;
+    const contact = await AddressBookService.fetchGetContact(parseInt(id, 10));
     return contact;
   }, [id]);
-  const { data, refetch } = useAsyncDataGet<Contact>(getContactByIdCallback);
+  const { data, refetch } = useAsyncDataGet<ContactType | null>(getContactByIdCallback, false);
+  
+  // 데이터가 변경될 때만 상태 업데이트 (무한 루프 방지)
+  const [initialized, setInitialized] = useState(false);
+  
+  // id가 변경되면 초기화 상태 리셋
   useEffect(() => {
-    if (data) {
-      setName(data.name);
-      setPhoneNumber(data.phone_number);
-      setMemo(data.memo);
+    setInitialized(false);
+  }, [id]);
+  
+  useEffect(() => {
+    if (data && !initialized) {
+      setName(data.name || '');
+      setPhoneNumber(data.phone_number || '');
+      setMemo(data.memo || '');
       setImage(data.profile_image || '');
+      setInitialized(true);
     }
-  }, [data]);
+  }, [data, initialized]);
   return {
     name,
     phoneNumber,

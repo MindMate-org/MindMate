@@ -3,6 +3,8 @@
  */
 
 import { RepeatCycleType, RepeatCycleDetail, WeekOrderType, WeekdayType } from './types';
+import { getTranslations } from '../../lib/i18n';
+type Translations = ReturnType<typeof getTranslations>;
 
 /**
  * 반복 설정 문자열을 파싱하는 함수
@@ -100,19 +102,14 @@ export const formatRepeatCycle = (detail: RepeatCycleDetail): RepeatCycleType =>
   }
 };
 
-// KST(UTC+9)로 변환하는 함수
-function toKSTDate(date: Date) {
-  return new Date(date.getTime() + 9 * 60 * 60 * 1000);
-}
-
 /**
  * 특정 날짜에 루틴이 실행되어야 하는지 확인하는 함수
- * @param routine - 루틴 정보 (생성 날짜 포함)
+ * @param routine - 루틴 정보 (생성 날짜, 기한 포함)
  * @param targetDate - 확인할 날짜 (Date 객체)
  * @returns 해당 날짜에 루틴이 실행되어야 하면 true
  */
 export const shouldRunOnDate = (
-  routine: { id: string; name: string; repeatCycle: RepeatCycleType; createdAt: string },
+  routine: { id: string; name: string; repeatCycle: RepeatCycleType; createdAt: string; deadline?: string },
   targetDate: Date,
 ): boolean => {
   const detail = parseRepeatCycle(routine.repeatCycle);
@@ -131,6 +128,9 @@ export const shouldRunOnDate = (
 
   // 생성일 이전은 무조건 false
   if (targetStr < createdStr) return false;
+
+  // 기한이 설정되어 있고 기한을 넘은 경우 false
+  if (routine.deadline && targetStr > routine.deadline) return false;
 
   // 반복 조건에 따라 정확히 판단
   switch (detail.type) {
@@ -368,5 +368,58 @@ export const getRepeatCycleDescription = (repeatCycle: RepeatCycleType): string 
       return `매달 ${detail.value.weekOrder} ${detail.value.weekday}요일 반복`;
     default:
       return '알 수 없는 반복 설정';
+  }
+};
+
+/**
+ * 반복 주기를 현지화된 문자열로 변환하는 함수
+ * @param repeatCycle - 반복 설정
+ * @param translations - i18n 번역 객체
+ * @returns 현지화된 반복 주기 문자열
+ */
+export const getLocalizedRepeatCycle = (repeatCycle: RepeatCycleType, translations: Translations): string => {
+  const detail = parseRepeatCycle(repeatCycle);
+  if (!detail) return translations.routine.repeatCycles.none;
+
+  const weekdayMap = {
+    '월': translations.routine.repeatCycles.weekdays.mon,
+    '화': translations.routine.repeatCycles.weekdays.tue,
+    '수': translations.routine.repeatCycles.weekdays.wed,
+    '목': translations.routine.repeatCycles.weekdays.thu,
+    '금': translations.routine.repeatCycles.weekdays.fri,
+    '토': translations.routine.repeatCycles.weekdays.sat,
+    '일': translations.routine.repeatCycles.weekdays.sun,
+  };
+
+  const weekOrderMap = {
+    '첫째주': translations.routine.repeatCycles.weekOrders.first,
+    '둘째주': translations.routine.repeatCycles.weekOrders.second,
+    '셋째주': translations.routine.repeatCycles.weekOrders.third,
+    '넷째주': translations.routine.repeatCycles.weekOrders.fourth,
+    '마지막주': translations.routine.repeatCycles.weekOrders.last,
+  };
+
+  switch (detail.type) {
+    case 'daily':
+      return translations.routine.repeatCycles.daily;
+    case 'interval':
+      return `${detail.value.interval}${translations.routine.repeatCycles.interval}`;
+    case 'weekly':
+      if (detail.value.weekday) {
+        const localizedWeekday = weekdayMap[detail.value.weekday as keyof typeof weekdayMap];
+        return `${translations.routine.repeatCycles.weekly} ${localizedWeekday}`;
+      }
+      return translations.routine.repeatCycles.weekly;
+    case 'monthly':
+      return `${translations.routine.repeatCycles.monthly} ${detail.value.day}`;
+    case 'monthlyWeek':
+      if (detail.value.weekOrder && detail.value.weekday) {
+        const localizedWeekOrder = weekOrderMap[detail.value.weekOrder as keyof typeof weekOrderMap];
+        const localizedWeekday = weekdayMap[detail.value.weekday as keyof typeof weekdayMap];
+        return `${translations.routine.repeatCycles.monthly} ${localizedWeekOrder} ${localizedWeekday}`;
+      }
+      return translations.routine.repeatCycles.monthly;
+    default:
+      return translations.routine.repeatCycles.none;
   }
 };

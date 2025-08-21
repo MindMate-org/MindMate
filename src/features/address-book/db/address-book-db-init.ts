@@ -11,8 +11,7 @@ export const addressBookDbInit = async () => {
       phone_number TEXT,
       profile_image TEXT,
       memo TEXT,
-      is_me INTEGER,
-      created_at TEXT
+      is_me INTEGER
     );
 
     -- tag
@@ -47,67 +46,40 @@ export const addressBookDbInit = async () => {
       content TEXT,
       FOREIGN KEY (group_id) REFERENCES note_group(group_id) ON DELETE CASCADE
     );
-    `);
+  `);
 
-  await insertAddressBookMockData();
+  // Add missing columns to existing tables
+  await addMissingColumns();
+
+  // Mock data insertion removed for production
   // console.log('✅ SQLite DB initialized (expo-sqlite/next)');
 };
 
-const insertAddressBookMockData = async () => {
+const addMissingColumns = async () => {
   try {
-    await db.execAsync(`
-      -- 기존 데이터 삭제 (개발용)
-      DELETE FROM contact_tag;
-      DELETE FROM note_item;
-      DELETE FROM note_group;
-      DELETE FROM tag;
-      DELETE FROM contact;
+    // Check if created_at column exists and add if missing
+    try {
+      await db.execAsync('ALTER TABLE contact ADD COLUMN created_at TEXT');
+    } catch (error) {
+      // Column already exists, ignore error
+    }
 
-      -- 연락처 데이터 삽입
-      INSERT INTO contact (name, phone_number, profile_image, memo, is_me, created_at) VALUES
-        ('김철수', '010-1234-5678', null, '대학교 동기', 0, '2024-01-15T10:30:00Z'),
-        ('이영희', '010-2345-6789', null, '회사 동료, 마케팅팀', 0, '2024-01-16T14:20:00Z'),
-        ('박민수', '010-3456-7890', null, '헬스장에서 만난 친구', 0, '2024-01-17T09:15:00Z'),
-        ('최지은', '010-4567-8901', null, '고등학교 친구, 카페 사장', 0, '2024-01-18T16:45:00Z'),
-        ('나', '010-9999-0000', null, '내 연락처', 1, '2024-01-01T00:00:00Z');
+    // Check if updated_at column exists and add if missing
+    try {
+      await db.execAsync('ALTER TABLE contact ADD COLUMN updated_at TEXT');
+    } catch (error) {
+      // Column already exists, ignore error
+    }
 
-      -- 태그 데이터 삽입
-      INSERT INTO tag (name, color) VALUES
-        ('친구', '#3B82F6'),
-        ('가족', '#EF4444'),
-        ('직장', '#10B981'),
-        ('학교', '#F59E0B'),
-        ('취미', '#8B5CF6');
+    // Check if deleted_at column exists and add if missing
+    try {
+      await db.execAsync('ALTER TABLE contact ADD COLUMN deleted_at TEXT');
+    } catch (error) {
+      // Column already exists, ignore error
+    }
 
-      -- 연락처-태그 연결
-      INSERT INTO contact_tag (contact_id, tag_id) VALUES
-        (1, 1), (1, 4),  -- 김철수: 친구, 학교
-        (2, 1), (2, 3),  -- 이영희: 친구, 직장
-        (3, 1), (3, 5),  -- 박민수: 친구, 취미
-        (4, 1), (4, 4),  -- 최지은: 친구, 학교
-        (5, 2);          -- 나: 가족
-
-      -- 메모 그룹 데이터
-      INSERT INTO note_group (contact_id, title) VALUES
-        (1, '생일 & 기념일'),
-        (1, '좋아하는 것들'),
-        (2, '업무 관련'),
-        (4, '카페 정보');
-
-      -- 메모 아이템 데이터
-      INSERT INTO note_item (group_id, title, content) VALUES
-        (1, '생일', '3월 15일'),
-        (2, '좋아하는 음식', '치킨, 피자'),
-        (2, '취미', '독서, 영화감상'),
-        (2, '싫어하는 것', '매운 음식'),
-        (3, '담당 업무', '소셜미디어 마케팅'),
-        (3, '회의 시간', '매주 화요일 2시'),
-        (4, '카페 위치', '강남역 2번 출구'),
-        (4, '운영시간', '평일 7시-22시, 주말 9시-23시');
-    `);
-
-    console.log('✅ 주소록 목 데이터 삽입 완료');
-  } catch (error) {
-    console.error('❌ 주소록 목 데이터 삽입 실패:', error);
-  }
+    } catch (error) {
+    }
 };
+
+// Mock data insertion function removed for production use

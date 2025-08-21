@@ -1,8 +1,11 @@
+import { Calendar as CalendarIcon } from 'lucide-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { Calendar as CalendarIcon } from 'lucide-react-native';
-import { WEEK_DAYS } from '@/src/constants/date';
-import { addDays, getWeekStart, isSameDay } from '@/src/utils/date';
+
+import { getWeekDays, formatDate } from '@/src/constants/date';
+import { getWeekStart, isSameDay } from '@/src/utils/date';
+import { useThemeColors } from '../providers/theme-provider';
+import { useI18n } from '../../hooks/use-i18n';
 
 /**
  * 1주 단위 가로 달력 컴포넌트
@@ -24,6 +27,8 @@ const Calendar = ({
   onCalendarIconPress,
   className = '',
 }: CalendarProps) => {
+  const { theme: themeColors, isDark } = useThemeColors();
+  const { t } = useI18n();
   const [viewDate, setViewDate] = useState(getWeekStart(selectedDate));
 
   useEffect(() => {
@@ -36,22 +41,46 @@ const Calendar = ({
     });
   }, [viewDate]);
 
-  // 날짜 포맷: 2025년 7월 4일
-  const dateText = `${selectedDate.getFullYear()}년 ${selectedDate.getMonth() + 1}월 ${selectedDate.getDate()}일`;
+  // 날짜 포맷 - 언어에 따라 동적으로 변경
+  const dateText = formatDate(selectedDate, t.locale);
+  const weekDays = getWeekDays(t.locale);
 
   return (
-    <View className={`rounded-xl bg-white px-4 py-3 shadow-dropShadow ${className}`}>
+    <View style={{
+      borderRadius: 12,
+      backgroundColor: themeColors.surface,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      shadowColor: themeColors.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: isDark ? 0.3 : 0.1,
+      shadowRadius: 4,
+      elevation: 4,
+    }}>
       {/* 상단: 날짜, 달력 아이콘 */}
-      <View className="mb-4 flex-row items-center justify-between">
-        <View className="flex-1 items-center">
-          <Text className="text-lg font-bold">{dateText}</Text>
+      <View style={{
+        marginBottom: 16,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}>
+        <View style={{ flex: 1, alignItems: 'center' }}>
+          <Text style={{
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: themeColors.text,
+          }}>{dateText}</Text>
         </View>
         <TouchableOpacity onPress={onCalendarIconPress || (() => {})}>
-          <CalendarIcon color="#576BCD" size={28} />
+          <CalendarIcon color={themeColors.primary} size={28} />
         </TouchableOpacity>
       </View>
       {/* 요일+날짜 */}
-      <View className="flex-row items-center justify-between">
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}>
         {weekDates.map((date) => {
           const isSelected = isSameDay(date, selectedDate);
           return (
@@ -60,12 +89,27 @@ const Calendar = ({
               onPress={() => {
                 onChange(date);
               }}
-              className={`w-7 items-center justify-center rounded-full py-1 ${isSelected ? 'bg-paleYellow' : ''}`}
+              style={{
+                width: 28,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 14,
+                paddingVertical: 4,
+                backgroundColor: isSelected ? themeColors.accent : 'transparent',
+              }}
             >
-              <Text className={`text-xs font-medium ${isSelected ? 'text-black' : 'text-gray'}`}>
-                {WEEK_DAYS[date.getDay()]}
+              <Text style={{
+                fontSize: 12,
+                fontWeight: '500',
+                color: isSelected ? themeColors.primary : themeColors.textSecondary,
+              }}>
+                {weekDays[date.getDay()]}
               </Text>
-              <Text className={`text-base font-medium ${isSelected ? 'text-black' : 'text-gray'}`}>
+              <Text style={{
+                fontSize: 16,
+                fontWeight: '500',
+                color: isSelected ? themeColors.primary : themeColors.textSecondary,
+              }}>
                 {date.getDate()}
               </Text>
             </TouchableOpacity>

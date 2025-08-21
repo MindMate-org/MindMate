@@ -1,7 +1,8 @@
+import { Audio, Video as ExpoVideo, ResizeMode } from 'expo-av';
+import { Mic, X, Volume2, Play } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { View, ScrollView, TouchableOpacity, Image, Text, ActivityIndicator } from 'react-native';
-import { Mic, X, Volume2, Play } from 'lucide-react-native';
-import { Audio, Video as ExpoVideo, ResizeMode } from 'expo-av';
+
 import { Colors } from '../../../constants/colors';
 import { DiaryMediaType } from '../types';
 
@@ -77,8 +78,7 @@ const MediaPreview = ({ media, onRemove, isUploading = false }: MediaPreviewProp
         }));
       }
     } catch (error) {
-      console.error('오디오 재생 실패:', error);
-    }
+      }
   };
 
   return (
@@ -95,10 +95,7 @@ const MediaPreview = ({ media, onRemove, isUploading = false }: MediaPreviewProp
           const isAudioPlaying = playingState[item.id]?.isPlaying || false;
 
           return (
-            <View
-              key={item.id}
-              className="relative mr-2 h-20 w-20"
-            >
+            <View key={item.id} className="relative mr-2 h-20 w-20">
               {item.type === 'image' ? (
                 <Image
                   source={{ uri: item.uri }}

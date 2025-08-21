@@ -1,10 +1,13 @@
+import { useRouter } from 'expo-router';
+import { ChevronLeft, BarChart3, Calendar, TrendingUp } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, Dimensions } from 'react-native';
-import { useRouter } from 'expo-router';
-import { ChevronLeft, BarChart3, Heart, Calendar, TrendingUp } from 'lucide-react-native';
-import { DiaryService } from '../../src/features/diary/services';
-import { MOOD_OPTIONS } from '../../src/features/diary/types';
+
 import { Colors } from '../../src/constants/colors';
+import { useThemeColors } from '../../src/components/providers/theme-provider';
+import { useI18n } from '../../src/hooks/use-i18n';
+import { DiaryService } from '../../src/features/diary/services';
+import { getMoodOptions } from '../../src/features/diary/types';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -21,6 +24,8 @@ type StatsData = {
  */
 const StatsPage = () => {
   const router = useRouter();
+  const { theme: themeColors, isDark } = useThemeColors();
+  const { t } = useI18n();
   const [stats, setStats] = useState<StatsData>({
     total: 0,
     byMood: {},
@@ -88,7 +93,8 @@ const StatsPage = () => {
 
   // 기분별 통계를 위한 데이터 처리
   const getMoodStats = () => {
-    return MOOD_OPTIONS.map((mood) => ({
+    const moodOptions = getMoodOptions(t.locale);
+    return moodOptions.map((mood) => ({
       ...mood,
       count: stats.byMood[mood.value] || 0,
       percentage: stats.total > 0 ? ((stats.byMood[mood.value] || 0) / stats.total) * 100 : 0,
@@ -102,7 +108,7 @@ const StatsPage = () => {
     for (let i = 5; i >= 0; i--) {
       const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
       const monthKey = date.toISOString().slice(0, 7);
-      const monthName = date.toLocaleDateString('ko-KR', { year: 'numeric', month: 'short' });
+      const monthName = date.toLocaleDateString(t.locale, { year: 'numeric', month: 'short' });
       months.push({
         key: monthKey,
         name: monthName,
@@ -117,63 +123,186 @@ const StatsPage = () => {
   const maxMonthlyCount = Math.max(...recentMonths.map((m) => m.count), 1);
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
       {/* 헤더 */}
-      <View className="mt-8 flex-row items-center justify-between border-b-2 border-turquoise bg-white px-4 py-4">
+      <View style={{
+        marginTop: 32, // 상태바 아래 여백
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderBottomWidth: 1,
+        borderBottomColor: themeColors.primary,
+        backgroundColor: themeColors.surface,
+        paddingHorizontal: 16,
+        paddingVertical: 16,
+      }}>
         <TouchableOpacity onPress={handleBack}>
-          <ChevronLeft size={24} color={Colors.paleCobalt} />
+          <ChevronLeft size={24} color={themeColors.primary} />
         </TouchableOpacity>
-        <Text className="text-lg font-bold text-paleCobalt">일기 통계</Text>
+        <Text style={{
+          fontSize: 18,
+          fontWeight: 'bold',
+          color: themeColors.primary,
+        }}>{t.diary.stats}</Text>
         <View style={{ width: 24 }} />
       </View>
 
-      <ScrollView className="flex-1 bg-turquoise px-4 pt-6">
+      <ScrollView style={{
+        flex: 1,
+        backgroundColor: themeColors.background,
+        paddingHorizontal: 16,
+        paddingTop: 24,
+      }}>
         {loading ? (
-          <View className="flex-1 items-center justify-center">
-            <Text className="text-gray">로딩 중...</Text>
+          <View style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            <Text style={{ color: themeColors.textSecondary }}>{t.diary.loading}</Text>
           </View>
         ) : (
-          <View className="pb-20">
+          <View style={{ paddingBottom: 80 }}>
             {/* 전체 통계 카드 */}
-            <View className="mb-6 flex-row gap-3">
-              <View className="flex-1 items-center rounded-2xl bg-white p-4 shadow-sm">
-                <Calendar size={24} color={Colors.paleCobalt} />
-                <Text className="mt-2 text-2xl font-bold text-paleCobalt">{stats.total}</Text>
-                <Text className="text-sm text-gray">총 일기</Text>
+            <View style={{
+              marginBottom: 24,
+              flexDirection: 'row',
+              gap: 12,
+            }}>
+              <View style={{
+                flex: 1,
+                alignItems: 'center',
+                borderRadius: 16,
+                backgroundColor: themeColors.surface,
+                padding: 16,
+                shadowColor: themeColors.shadow,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: isDark ? 0.3 : 0.1,
+                shadowRadius: 4,
+                elevation: 3,
+              }}>
+                <Calendar size={24} color={themeColors.primary} />
+                <Text style={{
+                  marginTop: 8,
+                  fontSize: 24,
+                  fontWeight: 'bold',
+                  color: themeColors.primary,
+                }}>{stats.total}</Text>
+                <Text style={{
+                  fontSize: 14,
+                  color: themeColors.textSecondary,
+                }}>{t.diary.totalDiaries}</Text>
               </View>
-              <View className="flex-1 items-center rounded-2xl bg-white p-4 shadow-sm">
-                <TrendingUp size={24} color={Colors.paleCobalt} />
-                <Text className="mt-2 text-2xl font-bold text-paleCobalt">
+              <View style={{
+                flex: 1,
+                alignItems: 'center',
+                borderRadius: 16,
+                backgroundColor: themeColors.surface,
+                padding: 16,
+                shadowColor: themeColors.shadow,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: isDark ? 0.3 : 0.1,
+                shadowRadius: 4,
+                elevation: 3,
+              }}>
+                <TrendingUp size={24} color={themeColors.primary} />
+                <Text style={{
+                  marginTop: 8,
+                  fontSize: 24,
+                  fontWeight: 'bold',
+                  color: themeColors.primary,
+                }}>
                   {stats.weeklyStreak}
                 </Text>
-                <Text className="text-sm text-gray">연속 작성일</Text>
+                <Text style={{
+                  fontSize: 14,
+                  color: themeColors.textSecondary,
+                }}>{t.diary.consecutiveDays}</Text>
               </View>
-              <View className="flex-1 items-center rounded-2xl bg-white p-4 shadow-sm">
-                <BarChart3 size={24} color={Colors.paleCobalt} />
-                <Text className="mt-2 text-2xl font-bold text-paleCobalt">{stats.withMedia}</Text>
-                <Text className="text-sm text-gray">미디어 포함</Text>
+              <View style={{
+                flex: 1,
+                alignItems: 'center',
+                borderRadius: 16,
+                backgroundColor: themeColors.surface,
+                padding: 16,
+                shadowColor: themeColors.shadow,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: isDark ? 0.3 : 0.1,
+                shadowRadius: 4,
+                elevation: 3,
+              }}>
+                <BarChart3 size={24} color={themeColors.primary} />
+                <Text style={{
+                  marginTop: 8,
+                  fontSize: 24,
+                  fontWeight: 'bold',
+                  color: themeColors.primary,
+                }}>{stats.withMedia}</Text>
+                <Text style={{
+                  fontSize: 14,
+                  color: themeColors.textSecondary,
+                }}>{t.diary.withMedia}</Text>
               </View>
             </View>
 
             {/* 기분별 통계 */}
-            <View className="mb-6 rounded-2xl bg-white p-4 shadow-sm">
-              <Text className="mb-4 text-lg font-bold text-paleCobalt">기분별 통계</Text>
+            <View style={{
+              marginBottom: 24,
+              borderRadius: 16,
+              backgroundColor: themeColors.surface,
+              padding: 16,
+              shadowColor: themeColors.shadow,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: isDark ? 0.3 : 0.1,
+              shadowRadius: 4,
+              elevation: 3,
+            }}>
+              <Text style={{
+                marginBottom: 16,
+                fontSize: 18,
+                fontWeight: 'bold',
+                color: themeColors.primary,
+              }}>{t.diary.moodStats}</Text>
               {moodStats.map((mood) => (
-                <View key={mood.value} className="mb-3 flex-row items-center">
-                  <Text className="text-xl">{mood.emoji}</Text>
-                  <View className="ml-3 flex-1">
-                    <View className="flex-row items-center justify-between">
-                      <Text className="font-medium text-black">{mood.label}</Text>
-                      <Text className="text-sm text-gray">
+                <View key={mood.value} style={{
+                  marginBottom: 12,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                  <Text style={{ fontSize: 20 }}>{mood.emoji}</Text>
+                  <View style={{
+                    marginLeft: 12,
+                    flex: 1,
+                  }}>
+                    <View style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}>
+                      <Text style={{
+                        fontWeight: '500',
+                        color: themeColors.text,
+                      }}>{mood.label}</Text>
+                      <Text style={{
+                        fontSize: 14,
+                        color: themeColors.textSecondary,
+                      }}>
                         {mood.count}회 ({mood.percentage.toFixed(1)}%)
                       </Text>
                     </View>
-                    <View className="bg-gray-200 mt-1 h-2 overflow-hidden rounded-full">
+                    <View style={{
+                      backgroundColor: themeColors.backgroundSecondary,
+                      marginTop: 4,
+                      height: 8,
+                      overflow: 'hidden',
+                      borderRadius: 4,
+                    }}>
                       <View
-                        className="h-full rounded-full"
                         style={{
+                          height: '100%',
+                          borderRadius: 4,
                           width: `${mood.percentage}%`,
-                          backgroundColor: Colors.paleCobalt,
+                          backgroundColor: themeColors.primary,
                         }}
                       />
                     </View>
@@ -183,57 +312,123 @@ const StatsPage = () => {
             </View>
 
             {/* 월별 작성 통계 */}
-            <View className="mb-6 rounded-2xl bg-white p-4 shadow-sm">
-              <Text className="mb-4 text-lg font-bold text-paleCobalt">최근 6개월 작성 현황</Text>
-              <View className="flex-row items-end justify-between" style={{ height: 120 }}>
+            <View style={{
+              marginBottom: 24,
+              borderRadius: 16,
+              backgroundColor: themeColors.surface,
+              padding: 16,
+              shadowColor: themeColors.shadow,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: isDark ? 0.3 : 0.1,
+              shadowRadius: 4,
+              elevation: 3,
+            }}>
+              <Text style={{
+                marginBottom: 16,
+                fontSize: 18,
+                fontWeight: 'bold',
+                color: themeColors.primary,
+              }}>{t.diary.recentSixMonths}</Text>
+              <View style={{
+                flexDirection: 'row',
+                alignItems: 'flex-end',
+                justifyContent: 'space-between',
+                height: 120,
+              }}>
                 {recentMonths.map((month) => (
-                  <View key={month.key} className="flex-1 items-center">
+                  <View key={month.key} style={{
+                    flex: 1,
+                    alignItems: 'center',
+                  }}>
                     <View
-                      className="w-6 rounded-t"
                       style={{
+                        width: 24,
+                        borderTopLeftRadius: 4,
+                        borderTopRightRadius: 4,
                         height: Math.max((month.count / maxMonthlyCount) * 80, 4),
-                        backgroundColor: month.count > 0 ? Colors.paleCobalt : '#E5E7EB',
+                        backgroundColor: month.count > 0 ? themeColors.primary : themeColors.backgroundSecondary,
                       }}
                     />
-                    <Text className="mt-2 text-xs text-gray" numberOfLines={1}>
+                    <Text style={{
+                      marginTop: 8,
+                      fontSize: 12,
+                      color: themeColors.textSecondary,
+                    }} numberOfLines={1}>
                       {month.name.replace('년 ', '.')}
                     </Text>
-                    <Text className="text-xs font-medium text-paleCobalt">{month.count}</Text>
+                    <Text style={{
+                      fontSize: 12,
+                      fontWeight: '500',
+                      color: themeColors.primary,
+                    }}>{month.count}</Text>
                   </View>
                 ))}
               </View>
             </View>
 
             {/* 인사이트 */}
-            <View className="rounded-2xl bg-white p-4 shadow-sm">
-              <Text className="mb-3 text-lg font-bold text-paleCobalt">인사이트</Text>
-              <View className="space-y-2">
+            <View style={{
+              borderRadius: 16,
+              backgroundColor: themeColors.surface,
+              padding: 16,
+              shadowColor: themeColors.shadow,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: isDark ? 0.3 : 0.1,
+              shadowRadius: 4,
+              elevation: 3,
+            }}>
+              <Text style={{
+                marginBottom: 12,
+                fontSize: 18,
+                fontWeight: 'bold',
+                color: themeColors.primary,
+              }}>{t.diary.insights}</Text>
+              <View>
                 {stats.total > 0 && (
                   <>
-                    <Text className="text-sm text-gray">
-                      • 가장 많이 느낀 감정:{' '}
+                    <Text style={{
+                      fontSize: 14,
+                      color: themeColors.textSecondary,
+                      marginBottom: 4,
+                    }}>
+                      • {t.diary.mostFrequentMood}: {' '}
                       {
                         moodStats.find(
                           (m) => m.count === Math.max(...moodStats.map((ms) => ms.count)),
                         )?.label
                       }
                     </Text>
-                    <Text className="text-sm text-gray">
-                      • 미디어 포함률: {((stats.withMedia / stats.total) * 100).toFixed(1)}%
+                    <Text style={{
+                      fontSize: 14,
+                      color: themeColors.textSecondary,
+                      marginBottom: 4,
+                    }}>
+                      • {t.diary.mediaInclusionRate}: {((stats.withMedia / stats.total) * 100).toFixed(1)}%
                     </Text>
-                    <Text className="text-sm text-gray">
-                      • 이번 달 작성: {recentMonths[recentMonths.length - 1]?.count || 0}개
+                    <Text style={{
+                      fontSize: 14,
+                      color: themeColors.textSecondary,
+                      marginBottom: 4,
+                    }}>
+                      • {t.diary.thisMonthWritten}: {recentMonths[recentMonths.length - 1]?.count || 0}{t.locale.startsWith('en') ? ' entries' : '개'}
                     </Text>
                     {stats.weeklyStreak > 0 && (
-                      <Text className="text-sm text-green-600">
-                        • 🔥 {stats.weeklyStreak}일 연속 작성 중!
+                      <Text style={{
+                        fontSize: 14,
+                        color: '#059669',
+                        marginBottom: 4,
+                      }}>
+                        • 🔥 {stats.weeklyStreak}{t.locale.startsWith('en') ? ' days' : '일'} {t.diary.consecutiveWriting}
                       </Text>
                     )}
                   </>
                 )}
                 {stats.total === 0 && (
-                  <Text className="text-sm text-gray">
-                    아직 작성된 일기가 없습니다. 첫 번째 일기를 작성해보세요!
+                  <Text style={{
+                    fontSize: 14,
+                    color: themeColors.textSecondary,
+                  }}>
+                    {t.diary.noEntriesYet}
                   </Text>
                 )}
               </View>

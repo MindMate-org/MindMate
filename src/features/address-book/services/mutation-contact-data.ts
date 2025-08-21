@@ -1,10 +1,12 @@
-import { Contact } from '@/src/features/address-book/types/address-book-type';
-import { db } from '@/src/hooks/use-initialize-database';
 import { getContactById } from '@/src/features/address-book/services/get-contact-data';
 import { getMyContact } from '@/src/features/address-book/services/get-contact-data';
+import { ContactType } from '@/src/features/address-book/types/address-book-type';
+import { db } from '@/src/hooks/use-initialize-database';
 
 //연락처 추가
-export const createContact = async (contactData: Omit<Contact, 'id'>): Promise<Contact> => {
+export const fetchCreateContact = async (
+  contactData: Omit<ContactType, 'id'>,
+): Promise<ContactType> => {
   try {
     const result = await db.runAsync(
       `INSERT INTO contact (name, phone_number, profile_image, memo, is_me, created_at) 
@@ -22,16 +24,15 @@ export const createContact = async (contactData: Omit<Contact, 'id'>): Promise<C
     const newContact = await getContactById(result.lastInsertRowId.toString());
     return newContact;
   } catch (error) {
-    console.error('연락처 생성 실패:', error);
     throw error;
   }
 };
 
 // 연락처 수정
-export const updateContact = async (
+export const fetchUpdateContact = async (
   id: string,
-  contactData: Partial<Contact>,
-): Promise<Contact> => {
+  contactData: Partial<ContactType>,
+): Promise<ContactType> => {
   try {
     // 수정할 필드들만 동적으로 SQL 생성
     const updateFields: string[] = [];
@@ -71,24 +72,22 @@ export const updateContact = async (
     const updatedContact = await getContactById(id);
     return updatedContact;
   } catch (error) {
-    console.error('연락처 수정 실패:', error);
     throw error;
   }
 };
 
 // 연락처 삭제 (CASCADE로 관련 데이터도 자동 삭제됨)
-export const deleteContact = async (id: string): Promise<boolean> => {
+export const fetchDeleteContact = async (id: string): Promise<boolean> => {
   try {
     const result = await db.runAsync('DELETE FROM contact WHERE id = ? AND is_me = 0', [id]);
     return result.changes > 0; // 삭제된 행이 있으면 true
   } catch (error) {
-    console.error('연락처 삭제 실패:', error);
     throw error;
   }
 };
 
 // 내 연락처 수정 (is_me = 1인 연락처 전용)
-export const updateMyContact = async (contactData: Partial<Contact>): Promise<Contact> => {
+export const updateMyContact = async (contactData: Partial<ContactType>): Promise<ContactType> => {
   try {
     const updateFields: string[] = [];
     const updateValues: any[] = [];
@@ -121,7 +120,6 @@ export const updateMyContact = async (contactData: Partial<Contact>): Promise<Co
     const myContact = await getMyContact();
     return myContact;
   } catch (error) {
-    console.error('내 연락처 수정 실패:', error);
     throw error;
   }
 };
@@ -132,7 +130,9 @@ export const deleteAllContacts = async (): Promise<boolean> => {
     const result = await db.runAsync('DELETE FROM contact WHERE is_me = 0');
     return result.changes > 0;
   } catch (error) {
-    console.error('전체 연락처 삭제 실패:', error);
     throw error;
   }
 };
+
+// Backward compatibility alias
+export const updateContact = fetchUpdateContact;
