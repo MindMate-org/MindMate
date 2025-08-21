@@ -50,7 +50,6 @@ const RoutineDetailPage: React.FC<RoutineDetailPageProps> = () => {
           CustomAlertManager.error(t.routine.deleteFailed);
         }
       } catch (error) {
-        console.error('루틴 삭제 실패:', error);
         CustomAlertManager.error(t.routine.deleteFailed);
       }
     });
@@ -91,8 +90,7 @@ const RoutineDetailPage: React.FC<RoutineDetailPageProps> = () => {
         refetch();
       }
     } catch (error) {
-      console.error('하위 작업 상태 변경 실패:', error);
-    }
+      }
   };
 
   if (isLoading) {

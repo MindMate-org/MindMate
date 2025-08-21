@@ -35,36 +35,25 @@ const EditContactDetailGroupModal = ({
     }
 
     try {
-      console.log('=== 그룹 저장 시작 ===');
-      console.log('group:', group);
-      console.log('id:', id);
       console.log('groupName:', groupName.trim());
       
       if (group) {
-        console.log('그룹 수정 모드');
         await updateNoteGroup(group.group_id.toString(), { title: groupName.trim() });
         CustomAlertManager.success(isEnglish ? 'List has been updated.' : '목록이 수정되었습니다.');
       } else if (id && id !== 'new') {
-        console.log('그룹 생성 모드');
         await createNoteGroup(id, groupName.trim());
         CustomAlertManager.success(isEnglish ? 'List has been added.' : '목록이 추가되었습니다.');
       } else if (id === 'new') {
-        console.error('Cannot create group for new contact');
         CustomAlertManager.error(isEnglish ? 'Please save the contact first before adding lists.' : '목록을 추가하기 전에 먼저 연락처를 저장해주세요.');
         return;
       } else {
-        console.error('Neither group nor valid id provided');
         CustomAlertManager.error(isEnglish ? 'Missing required parameters.' : '필수 매개변수가 누락되었습니다.');
         return;
       }
       
-      console.log('그룹 저장 완료, refetch 시작');
       await refetch();
       setIsModalVisible(false);
-      console.log('=== 그룹 저장 완료 ===');
-    } catch (error) {
-      console.error('=== 그룹 저장 실패 ===');
-      console.error('Error details:', error);
+      } catch (error) {
       console.error('Error message:', error instanceof Error ? error.message : String(error));
       CustomAlertManager.error(
         isEnglish 

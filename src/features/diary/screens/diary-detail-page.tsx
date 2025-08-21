@@ -70,7 +70,6 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
       setDiary(diaryData);
       setMedia(mediaData);
     } catch (error) {
-      console.error('일기 상세 정보 조회 실패:', error);
       setError(t.diary.loadFailed);
     } finally {
       setIsLoading(false);
@@ -87,7 +86,6 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
       await DiaryService.toggleFavorite(diary.id);
       setDiary({ ...diary, is_favorite: diary.is_favorite === 1 ? 0 : 1 });
     } catch (error) {
-      console.error('즐겨찾기 토글 실패:', error);
       CustomAlertManager.error('즐겨찾기 상태 변경에 실패했습니다.');
     }
   }, [diary]);
@@ -104,7 +102,6 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
         await CustomAlertManager.success('일기가 삭제되었습니다.');
         router.back();
       } catch (error) {
-        console.error('일기 삭제 실패:', error);
         CustomAlertManager.error('일기 삭제에 실패했습니다.');
       }
     });

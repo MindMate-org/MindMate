@@ -67,7 +67,6 @@ export abstract class BaseRepository<T extends BaseEntity> {
       
       return validated;
     } catch (error) {
-      console.error(`Error finding ${this.tableName} by id ${id}:`, error);
       throw new Error(`Failed to find ${this.tableName} by id`);
     }
   }
@@ -88,7 +87,6 @@ export abstract class BaseRepository<T extends BaseEntity> {
       this.setCache(cacheKey, validated);
       return validated;
     } catch (error) {
-      console.error(`Error finding ${this.tableName}:`, error);
       throw new Error(`Failed to find ${this.tableName} records`);
     }
   }
@@ -165,7 +163,6 @@ export abstract class BaseRepository<T extends BaseEntity> {
 
       return created;
     } catch (error) {
-      console.error(`Error creating ${this.tableName}:`, error);
       throw new Error(`Failed to create ${this.tableName}`);
     }
   }
@@ -205,7 +202,6 @@ export abstract class BaseRepository<T extends BaseEntity> {
 
       return results;
     } catch (error) {
-      console.error(`Error creating multiple ${this.tableName}:`, error);
       throw new Error(`Failed to create multiple ${this.tableName}`);
     }
   }
@@ -239,7 +235,6 @@ export abstract class BaseRepository<T extends BaseEntity> {
 
       return updated;
     } catch (error) {
-      console.error(`Error updating ${this.tableName} id ${id}:`, error);
       throw new Error(`Failed to update ${this.tableName}`);
     }
   }
@@ -259,7 +254,6 @@ export abstract class BaseRepository<T extends BaseEntity> {
 
       return result.changes > 0;
     } catch (error) {
-      console.error(`Error deleting ${this.tableName} id ${id}:`, error);
       throw new Error(`Failed to delete ${this.tableName}`);
     }
   }
@@ -401,7 +395,6 @@ export abstract class BaseRepository<T extends BaseEntity> {
       // expo-sqlite의 트랜잭션 사용
       return await this.db.withTransactionAsync(callback);
     } catch (error) {
-      console.error(`Transaction failed in ${this.tableName}:`, error);
       throw error;
     }
   }

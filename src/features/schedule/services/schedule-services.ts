@@ -12,7 +12,6 @@ export const fetchGetSchedules = async (): Promise<ScheduleType[]> => {
     const result = await db.getAllAsync<ScheduleType>('SELECT * FROM schedules ORDER BY time ASC');
     return result;
   } catch (error) {
-    console.error('Failed to get schedules:', error);
     return [];
   }
 };
@@ -31,7 +30,6 @@ export const fetchGetSchedulesByDate = async (date: string): Promise<ScheduleTyp
     );
     return result;
   } catch (error) {
-    console.error('Failed to get schedules by date:', error);
     return [];
   }
 };
@@ -54,7 +52,6 @@ export const fetchCreateSchedule = async (data: CreateScheduleDataType): Promise
     );
     return result.lastInsertRowId as number;
   } catch (error) {
-    console.error('Failed to create schedule:', error);
     return null;
   }
 };
@@ -99,7 +96,6 @@ export const fetchUpdateSchedule = async (
     await db.runAsync(`UPDATE schedules SET ${updates.join(', ')} WHERE id = ?`, values);
     return true;
   } catch (error) {
-    console.error('Failed to update schedule:', error);
     return false;
   }
 };
@@ -110,7 +106,6 @@ export const fetchDeleteSchedule = async (id: number): Promise<boolean> => {
     await db.runAsync('DELETE FROM schedules WHERE id = ?', [id]);
     return true;
   } catch (error) {
-    console.error('Failed to delete schedule:', error);
     return false;
   }
 };
@@ -128,7 +123,6 @@ export const toggleScheduleCompletion = async (id: number): Promise<boolean> => 
     await db.runAsync('UPDATE schedules SET is_completed = ? WHERE id = ?', [newStatus, id]);
     return true;
   } catch (error) {
-    console.error('Failed to toggle schedule completion:', error);
     return false;
   }
 };
@@ -141,7 +135,6 @@ export const fetchGetScheduleById = async (id: number): Promise<ScheduleType | n
     ]);
     return result || null;
   } catch (error) {
-    console.error('Failed to get schedule by id:', error);
     return null;
   }
 };
@@ -163,7 +156,6 @@ export const fetchGetMediaByScheduleId = async (scheduleId: number): Promise<Med
     );
     return result || [];
   } catch (error) {
-    console.error('미디어 파일 조회 실패:', error);
     throw error;
   }
 };
@@ -182,7 +174,6 @@ export const fetchAddMediaToSchedule = async (input: {
     );
     return result.lastInsertRowId as number;
   } catch (error) {
-    console.error('일정 미디어 추가 실패:', error);
     throw error;
   }
 };
@@ -193,7 +184,6 @@ export const fetchDeleteAllMediaByScheduleId = async (scheduleId: number): Promi
     await db.runAsync('DELETE FROM media WHERE owner_type = ? AND owner_id = ?', ['schedule', scheduleId]);
     return true;
   } catch (error) {
-    console.error('일정 미디어 삭제 실패:', error);
     return false;
   }
 };

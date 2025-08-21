@@ -12,7 +12,6 @@ export const getNoteGroupsByContactId = async (contactId: string): Promise<NoteG
 
     return result;
   } catch (error) {
-    console.error('❌ 메모 그룹 조회 실패:', error);
     throw error;
   }
 };
@@ -27,7 +26,6 @@ export const getNoteItemsByGroupId = async (groupId: string): Promise<NoteItemTy
 
     return result;
   } catch (error) {
-    console.error('❌ 노트 아이템 조회 실패:', error);
     throw error;
   }
 };
@@ -42,7 +40,6 @@ export const getNoteItemById = async (itemId: string): Promise<NoteItemType | nu
 
     return result || null;
   } catch (error) {
-    console.error('❌ 노트 아이템 조회 실패:', error);
     throw error;
   }
 };

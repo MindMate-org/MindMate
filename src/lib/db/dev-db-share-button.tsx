@@ -9,8 +9,7 @@ const shareDb = async () => {
     await FileSystem.copyAsync({ from: dbUri, to: copyUri });
     await Sharing.shareAsync(copyUri);
   } catch (err) {
-    console.log(err);
-  }
+    }
 };
 
 export const DevDbShareButton = () => {

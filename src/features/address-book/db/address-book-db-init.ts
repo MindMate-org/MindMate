@@ -78,10 +78,8 @@ const addMissingColumns = async () => {
       // Column already exists, ignore error
     }
 
-    console.log('✅ Missing columns added to contact table');
-  } catch (error) {
-    console.error('❌ Failed to add missing columns:', error);
-  }
+    } catch (error) {
+    }
 };
 
 // Mock data insertion function removed for production use

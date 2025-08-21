@@ -85,7 +85,6 @@ export const useAudioRecording = (
 
       finishUpload();
     } catch (error) {
-      console.error('음성 파일 선택 실패:', error);
       setError(t.locale.startsWith('en') ? 'An error occurred while selecting the audio file.' : '음성 파일 선택 중 오류가 발생했습니다.');
       CustomAlertManager.error(
         t.locale.startsWith('en') ? 'Error' : '오류',
@@ -150,7 +149,6 @@ export const useAudioRecording = (
       }, 1000);
       setRecordingInterval(interval);
     } catch (error) {
-      console.error('음성 녹음 실패:', error);
       setError(t.locale.startsWith('en') ? 'An error occurred during voice recording.' : '음성 녹음 중 오류가 발생했습니다.');
       CustomAlertManager.error(
         t.locale.startsWith('en') ? 'Error' : '오류',
@@ -209,7 +207,6 @@ export const useAudioRecording = (
         ]);
       }
     } catch (error) {
-      console.error('음성 처리 실패:', error);
       setError(t.locale.startsWith('en') ? 'An error occurred while processing audio.' : '음성 처리 중 오류가 발생했습니다.');
       CustomAlertManager.error(
         t.locale.startsWith('en') ? 'Error' : '오류',

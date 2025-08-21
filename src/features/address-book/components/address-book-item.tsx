@@ -30,13 +30,9 @@ const AddressBookItem = ({ contact, refetch }: { contact: ContactType; refetch: 
   const contactWithTags = contact as any;
   
   // Debug logging
-  console.log('AddressBookItem - fetchedTags:', fetchedTags, 'contactTags:', contactWithTags.tags);
-  
   const tags = Array.isArray(fetchedTags) ? fetchedTags : 
                Array.isArray(contactWithTags.tags) ? contactWithTags.tags : [];
                
-  console.log('AddressBookItem - final tags:', tags);
-
   const refetchForEditTags = useCallback(() => {
     refetchTags();
     refetch();
@@ -56,8 +52,7 @@ const AddressBookItem = ({ contact, refetch }: { contact: ContactType; refetch: 
         refetch();
       }
     } catch (error) {
-      console.error('연락처 삭제 실패:', error);
-    }
+      }
   };
 
   return (

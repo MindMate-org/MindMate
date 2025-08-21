@@ -78,8 +78,7 @@ const MediaPreview = ({ media, onRemove, isUploading = false }: MediaPreviewProp
         }));
       }
     } catch (error) {
-      console.error('오디오 재생 실패:', error);
-    }
+      }
   };
 
   return (

@@ -27,7 +27,6 @@ export const addTagToContact = async (
 
     return newConnection as ContactTagType;
   } catch (error) {
-    console.error('연락처에 태그 추가 실패:', error);
     throw error;
   }
 };
@@ -42,7 +41,6 @@ export const removeTagFromContact = async (contactId: number, tagId: number): Pr
 
     return result.changes > 0;
   } catch (error) {
-    console.error('연락처에서 태그 제거 실패:', error);
     throw error;
   }
 };
@@ -54,7 +52,6 @@ export const removeAllTagsFromContact = async (contactId: number): Promise<boole
 
     return result.changes > 0;
   } catch (error) {
-    console.error('연락처의 모든 태그 제거 실패:', error);
     throw error;
   }
 };
@@ -73,7 +70,6 @@ export const createTag = async (tagData: Omit<TagType, 'id'>): Promise<TagType> 
 
     return newTag as TagType;
   } catch (error) {
-    console.error('태그 생성 실패:', error);
     throw error;
   }
 };
@@ -112,7 +108,6 @@ export const updateTag = async (
 
     return updatedTag;
   } catch (error) {
-    console.error('태그 수정 실패:', error);
     throw error;
   }
 };
@@ -123,7 +118,6 @@ export const deleteTag = async (tagId: number): Promise<boolean> => {
     const result = await db.runAsync('DELETE FROM tag WHERE id = ?', [tagId]);
     return result.changes > 0;
   } catch (error) {
-    console.error('태그 삭제 실패:', error);
     throw error;
   }
 };

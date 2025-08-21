@@ -172,7 +172,6 @@ const FormEditContact = ({ id }: { id: string }) => {
         router.push('/address-book');
       }
     } catch (error) {
-      console.error('연락처 저장 실패:', error);
       CustomAlertManager.error(isEnglish ? 'An error occurred while saving the contact.' : '연락처 저장 중 오류가 발생했습니다.');
     }
   };

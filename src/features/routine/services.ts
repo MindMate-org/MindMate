@@ -168,7 +168,6 @@ export const fetchGetRoutines = async (
 
     return allRoutines;
   } catch (error) {
-    console.error('Error fetching routines:', error);
     throw error;
   }
 };
@@ -194,7 +193,6 @@ export const fetchGetRoutineById = async (id: string): Promise<RoutineType> => {
 
     return mapDbToRoutineType(routineResult, subTasksResult);
   } catch (error) {
-    console.error('Error fetching routine by id:', error);
     throw error;
   }
 };
@@ -263,7 +261,6 @@ export const fetchCreateRoutine = async (payload: CreateRoutinePayload): Promise
     return await fetchGetRoutineById(routineId.toString());
   } catch (error) {
     await db.runAsync('ROLLBACK');
-    console.error('Error creating routine:', error);
     throw error;
   }
 };
@@ -360,7 +357,6 @@ export const fetchUpdateRoutine = async (payload: UpdateRoutinePayload): Promise
     return await fetchGetRoutineById(payload.id);
   } catch (error) {
     await db.runAsync('ROLLBACK');
-    console.error('Error updating routine:', error);
     throw error;
   }
 };
@@ -391,7 +387,6 @@ export const fetchDeleteRoutine = async (id: string): Promise<void> => {
     await db.runAsync('COMMIT');
   } catch (error) {
     await db.runAsync('ROLLBACK');
-    console.error('Error deleting routine:', error);
     throw error;
   }
 };
@@ -411,7 +406,6 @@ export const updateSubTaskCompletion = async (
     const query = 'UPDATE subtasks SET is_completed = ?, updated_at = ? WHERE id = ?';
     await db.runAsync(query, [isCompleted ? 1 : 0, now, subTaskId]);
   } catch (error) {
-    console.error('Error updating sub task completion:', error);
     throw error;
   }
 };

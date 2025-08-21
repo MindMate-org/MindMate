@@ -24,7 +24,6 @@ export const fetchCreateContact = async (
     const newContact = await getContactById(result.lastInsertRowId.toString());
     return newContact;
   } catch (error) {
-    console.error('연락처 생성 실패:', error);
     throw error;
   }
 };
@@ -73,7 +72,6 @@ export const fetchUpdateContact = async (
     const updatedContact = await getContactById(id);
     return updatedContact;
   } catch (error) {
-    console.error('연락처 수정 실패:', error);
     throw error;
   }
 };
@@ -84,7 +82,6 @@ export const fetchDeleteContact = async (id: string): Promise<boolean> => {
     const result = await db.runAsync('DELETE FROM contact WHERE id = ? AND is_me = 0', [id]);
     return result.changes > 0; // 삭제된 행이 있으면 true
   } catch (error) {
-    console.error('연락처 삭제 실패:', error);
     throw error;
   }
 };
@@ -123,7 +120,6 @@ export const updateMyContact = async (contactData: Partial<ContactType>): Promis
     const myContact = await getMyContact();
     return myContact;
   } catch (error) {
-    console.error('내 연락처 수정 실패:', error);
     throw error;
   }
 };
@@ -134,7 +130,6 @@ export const deleteAllContacts = async (): Promise<boolean> => {
     const result = await db.runAsync('DELETE FROM contact WHERE is_me = 0');
     return result.changes > 0;
   } catch (error) {
-    console.error('전체 연락처 삭제 실패:', error);
     throw error;
   }
 };

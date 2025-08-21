@@ -12,7 +12,6 @@ export const useScheduleAlarm = () => {
 
       // 과거 시간이면 알림 설정하지 않음
       if (scheduleDateTime <= now) {
-        console.log(`⚠️ 과거 일정이므로 알림 설정하지 않음: ${schedule.title}`);
         return true; // 과거 시간도 정상 처리로 간주
       }
 
@@ -29,12 +28,10 @@ export const useScheduleAlarm = () => {
       if (success) {
         console.log(`✅ 일정 알림 설정 완료: ${schedule.title} - ${scheduleDateTime.toLocaleString('ko-KR')}`);
       } else {
-        console.error(`❌ 일정 알림 설정 실패: ${schedule.title}`);
-      }
+        }
 
       return success;
     } catch (error) {
-      console.error('❌ 일정 알림 설정 중 오류:', error);
       return false;
     }
   };
@@ -45,14 +42,11 @@ export const useScheduleAlarm = () => {
       const success = await notificationService.cancelNotification(scheduleId.toString(), 'schedule');
       
       if (success) {
-        console.log(`✅ 일정 알림 취소 완료: ${scheduleId}`);
-      } else {
-        console.error(`❌ 일정 알림 취소 실패: ${scheduleId}`);
-      }
+        } else {
+        }
 
       return success;
     } catch (error) {
-      console.error('❌ 일정 알림 취소 중 오류:', error);
       return false;
     }
   };
@@ -62,7 +56,6 @@ export const useScheduleAlarm = () => {
     try {
       return await notificationService.getScheduledNotifications(scheduleId.toString(), 'schedule');
     } catch (error) {
-      console.error('❌ 일정 알림 조회 중 오류:', error);
       return [];
     }
   };
@@ -82,10 +75,8 @@ export const useScheduleAlarm = () => {
         }
       }
 
-      console.log(`✅ ${successCount}개 일정 알림 취소 완료`);
       return true;
     } catch (error) {
-      console.error('❌ 모든 일정 알림 취소 중 오류:', error);
       return false;
     }
   };

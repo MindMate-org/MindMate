@@ -21,7 +21,11 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.joyounghyun.MindMate"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -36,14 +40,7 @@
           "cameraPermission": "This app uses the camera to take photos."
         }
       ],
-      [
-        "expo-notifications",
-        {
-          "icon": "./assets/notification-icon.png",
-          "color": "#ffffff",
-          "sounds": ["./assets/notification-sound.wav"]
-        }
-      ]
+      "expo-notifications"
     ],
     "extra": {
       "eas": {

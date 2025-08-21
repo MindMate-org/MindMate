@@ -53,7 +53,6 @@ const MediaSlider = ({ media, height = 200 }: MediaSliderProps) => {
 
         newSound.setOnPlaybackStatusUpdate((status) => {
           if (!status.isLoaded) {
-            console.warn('오디오 로딩 실패:', status);
             return;
           }
 
@@ -69,8 +68,7 @@ const MediaSlider = ({ media, height = 200 }: MediaSliderProps) => {
         }
       }
     } catch (error) {
-      console.error('오디오 재생 오류:', error);
-    }
+      }
   };
 
   const handleVideoPress = async () => {
@@ -84,7 +82,6 @@ const MediaSlider = ({ media, height = 200 }: MediaSliderProps) => {
         await videoRef.current?.pauseAsync();
       }
     } catch (error) {
-      console.error('비디오 재생 오류:', error);
       setVideoError('비디오를 재생할 수 없습니다');
       setIsVideoLoading(false);
     }
@@ -99,7 +96,6 @@ const MediaSlider = ({ media, height = 200 }: MediaSliderProps) => {
         setIsVideoPlaying(false);
       }
     } else if ('error' in status) {
-      console.error('비디오 로딩 오류:', status.error);
       setVideoError('비디오를 로드할 수 없습니다');
       setIsVideoLoading(false);
       setIsVideoPlaying(false);
@@ -155,7 +151,6 @@ const MediaSlider = ({ media, height = 200 }: MediaSliderProps) => {
               shouldPlay={false}
               onPlaybackStatusUpdate={onVideoPlaybackStatusUpdate}
               onError={(error) => {
-                console.error('Video error:', error);
                 setVideoError('비디오 파일을 재생할 수 없습니다');
                 setIsVideoLoading(false);
               }}

@@ -19,7 +19,6 @@ export const useAlarm = () => {
   // 루틴 알림 설정 (일정 형태로 변환)
   const scheduleRoutineAlarm = async (routine: RoutineType): Promise<boolean> => {
     if (!routine.alarmTime) {
-      console.log('⚠️ 알림 시간이 설정되지 않은 루틴:', routine.name);
       return true; // 알림 시간이 없는 것은 정상 상황
     }
 
@@ -54,12 +53,10 @@ export const useAlarm = () => {
       if (success) {
         console.log(`✅ 루틴 알림 설정 완료 (일정 시스템 사용): ${routine.name} - ${alarmTime.toLocaleString('ko-KR')}`);
       } else {
-        console.error(`❌ 루틴 알림 설정 실패: ${routine.name}`);
-      }
+        }
 
       return success;
     } catch (error) {
-      console.error('❌ 루틴 알림 설정 중 오류:', error);
       return false;
     }
   };
@@ -72,12 +69,10 @@ export const useAlarm = () => {
       if (success) {
         console.log(`✅ 루틴 알림 취소 완료 (일정 시스템 사용): ${routineId}`);
       } else {
-        console.error(`❌ 루틴 알림 취소 실패: ${routineId}`);
-      }
+        }
 
       return success;
     } catch (error) {
-      console.error('❌ 루틴 알림 취소 중 오류:', error);
       return false;
     }
   };
@@ -92,7 +87,6 @@ export const useAlarm = () => {
         return [];
       }
     } catch (error) {
-      console.error('❌ 루틴 알림 조회 중 오류:', error);
       return [];
     }
   };

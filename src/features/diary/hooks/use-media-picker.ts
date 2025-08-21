@@ -58,8 +58,7 @@ export const useMediaPicker = (watchedMedia: DiaryMediaType[], setValue: UseForm
             finishUpload();
           } catch (error) {
             setError(t.locale.startsWith('en') ? 'Image selection failed' : '이미지 선택 실패');
-            console.error('이미지 선택 실패:', error);
-          }
+            }
         },
       },
       {
@@ -88,8 +87,7 @@ export const useMediaPicker = (watchedMedia: DiaryMediaType[], setValue: UseForm
             finishUpload();
           } catch (error) {
             setError(t.locale.startsWith('en') ? 'Image selection failed' : '이미지 선택 실패');
-            console.error('이미지 선택 실패:', error);
-          }
+            }
         },
       },
       { text: options[2], style: 'cancel' },
@@ -142,8 +140,7 @@ export const useMediaPicker = (watchedMedia: DiaryMediaType[], setValue: UseForm
             finishUpload();
           } catch (error) {
             setError(t.locale.startsWith('en') ? 'Video selection failed' : '비디오 선택 실패');
-            console.error('비디오 선택 실패:', error);
-          }
+            }
         },
       },
       {
@@ -178,8 +175,7 @@ export const useMediaPicker = (watchedMedia: DiaryMediaType[], setValue: UseForm
             finishUpload();
           } catch (error) {
             setError(t.locale.startsWith('en') ? 'Video selection failed' : '비디오 선택 실패');
-            console.error('비디오 선택 실패:', error);
-          }
+            }
         },
       },
       { text: options[2], style: 'cancel' },

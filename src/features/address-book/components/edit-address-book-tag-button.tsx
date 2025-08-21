@@ -87,39 +87,27 @@ const SelectAddressBookTagModal = ({
       
       try {
         setIsInitializing(true);
-        console.log('모달 열림 - 태그 초기화 시작...');
-        
         // 1. 현재 언어의 기본 태그 목록
         const defaultTags = getDefaultTags();
-        console.log('필요한 기본 태그들:', defaultTags);
-        
         // 2. 현재 존재하는 태그들 확인
         const currentTags = await AddressBookService.fetchGetTags();
         const existingTagNames = currentTags.map(tag => tag.name.trim());
-        console.log('현재 존재하는 태그들:', existingTagNames);
-        
         // 3. 누락된 태그 찾기
         const missingTags = defaultTags.filter(tagName => 
           !existingTagNames.includes(tagName)
         );
-        console.log('누락된 태그들:', missingTags);
-        
         // 4. 누락된 태그 생성
         if (missingTags.length > 0) {
-          console.log(`Creating missing tags: ${missingTags.join(', ')}`);
           for (const tagName of missingTags) {
             try {
               await AddressBookService.fetchCreateTag({ name: tagName.trim(), color: '#576BCD' });
-              console.log(`태그 생성 완료: ${tagName}`);
-            } catch (error) {
-              console.error(`Error creating tag ${tagName}:`, error);
-            }
+              } catch (error) {
+              }
           }
           // 태그 목록 캐시 무효화 및 새로고침
           invalidateQueries('all-tags');
           await refetchAllTags();
-          console.log('태그 목록 새로고침 완료');
-        }
+          }
         
         // 5. 중복 태그 정리
         if (currentTags.length > 0) {
@@ -129,8 +117,7 @@ const SelectAddressBookTagModal = ({
         }
         
       } catch (error) {
-        console.error('태그 초기화 실패:', error);
-      } finally {
+        } finally {
         setIsInitializing(false);
       }
     };
@@ -156,8 +143,6 @@ const SelectAddressBookTagModal = ({
 
   const handleTag = async (tag: TagType) => {
     const isHasTag = contactTags?.some((t) => t.id === tag.id);
-    console.log('Contact has tag:', isHasTag, 'Tag:', tag.name);
-    
     try {
       if (contact?.id && tag?.id) {
         if (!isHasTag) {
@@ -171,8 +156,7 @@ const SelectAddressBookTagModal = ({
         await refetch();
       }
     } catch (error) {
-      console.error('태그 업데이트 실패:', error);
-    }
+      }
   };
 
   return (
@@ -210,11 +194,8 @@ const SelectAddressBookTagModal = ({
           marginBottom: 24,
         }}>
           {(() => {
-            console.log('allTags in modal:', allTags);
-            console.log('defaultTags for current language:', getDefaultTags());
             
             if (!allTags || !Array.isArray(allTags)) {
-              console.log('allTags is not an array or is null');
               return null;
             }
             
@@ -223,11 +204,8 @@ const SelectAddressBookTagModal = ({
             const filteredTags = allTags.filter(tag => {
               const tagName = tag.name.trim();
               const isDefaultTag = defaultTags.includes(tagName);
-              console.log(`Tag: ${tagName}, isDefault: ${isDefaultTag}`);
               return isDefaultTag;
             });
-            
-            console.log('Filtered tags:', filteredTags);
             
             // 중복 제거
             const uniqueTags = filteredTags.reduce((unique, tag) => {
@@ -237,8 +215,6 @@ const SelectAddressBookTagModal = ({
               }
               return unique;
             }, [] as TagType[]);
-            
-            console.log('Unique tags to display:', uniqueTags);
             
             if (uniqueTags.length === 0) {
               return (

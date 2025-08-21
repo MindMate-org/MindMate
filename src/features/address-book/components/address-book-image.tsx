@@ -96,7 +96,6 @@ const EditAddressBookImageModal = ({
         handleEditImage(selectedImageUri);
       }
     } catch (error) {
-      console.error('갤러리 열기 오류:', error);
       CustomAlertManager.error(
         t.locale.startsWith('en') ? 'Cannot open gallery.' : '갤러리를 열 수 없습니다.',
         t.locale.startsWith('en') ? 'Error' : '오류'
@@ -129,7 +128,6 @@ const EditAddressBookImageModal = ({
         handleEditImage(capturedImageUri);
       }
     } catch (error) {
-      console.error('카메라 열기 오류:', error);
       CustomAlertManager.error(
         t.locale.startsWith('en') ? 'Cannot open camera.' : '카메라를 열 수 없습니다.',
         t.locale.startsWith('en') ? 'Error' : '오류'

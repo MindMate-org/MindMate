@@ -66,7 +66,6 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
       setSchedule(scheduleData);
       setMedia(mediaData);
     } catch (error) {
-      console.error('일정 상세 정보 조회 실패:', error);
       setError(t.schedule.loadFailed);
     } finally {
       setIsLoading(false);
@@ -89,7 +88,6 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
           CustomAlertManager.error(t.schedule.deleteFailed);
         }
       } catch (error) {
-        console.error('일정 삭제 실패:', error);
         CustomAlertManager.error(t.schedule.deleteFailed);
       }
     });

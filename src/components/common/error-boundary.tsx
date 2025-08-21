@@ -31,8 +31,6 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: any) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
     this.setState({
       error,
       errorInfo,
@@ -198,8 +196,7 @@ export const FeatureErrorBoundary: React.FC<{
         </View>
       )}
       onError={(error) => {
-        console.error(`Error in ${featureName}:`, error);
-      }}
+        }}
     >
       {children}
     </ErrorBoundary>

@@ -23,7 +23,6 @@ export class AddressBookService {
       );
       return result || [];
     } catch (error) {
-      console.error('연락처 목록 조회 실패:', error);
       throw error;
     }
   }
@@ -41,7 +40,6 @@ export class AddressBookService {
       );
       return result || null;
     } catch (error) {
-      console.error('연락처 조회 실패:', error);
       throw error;
     }
   }
@@ -57,7 +55,6 @@ export class AddressBookService {
       );
       return result || null;
     } catch (error) {
-      console.error('내 연락처 조회 실패:', error);
       throw error;
     }
   }
@@ -73,7 +70,6 @@ export class AddressBookService {
       );
       return result || [];
     } catch (error) {
-      console.error('다른 연락처들 조회 실패:', error);
       throw error;
     }
   }
@@ -102,7 +98,6 @@ export class AddressBookService {
       );
       return result.lastInsertRowId;
     } catch (error) {
-      console.error('연락처 생성 실패:', error);
       throw error;
     }
   }
@@ -146,7 +141,6 @@ export class AddressBookService {
 
       await db.runAsync(`UPDATE contact SET ${fields.join(', ')} WHERE id = ?`, values);
     } catch (error) {
-      console.error('연락처 수정 실패:', error);
       throw error;
     }
   }
@@ -161,7 +155,6 @@ export class AddressBookService {
       const now = new Date().toISOString();
       await db.runAsync(`UPDATE contact SET deleted_at = ? WHERE id = ?`, [now, id]);
     } catch (error) {
-      console.error('연락처 삭제 실패:', error);
       throw error;
     }
   }
@@ -177,7 +170,6 @@ export class AddressBookService {
       const result = await db.getAllAsync<TagType>(`SELECT * FROM tag ORDER BY name ASC`);
       return result || [];
     } catch (error) {
-      console.error('태그 목록 조회 실패:', error);
       throw error;
     }
   }
@@ -195,7 +187,6 @@ export class AddressBookService {
       ]);
       return result.lastInsertRowId;
     } catch (error) {
-      console.error('태그 생성 실패:', error);
       throw error;
     }
   }
@@ -224,7 +215,6 @@ export class AddressBookService {
 
       await db.runAsync(`UPDATE tag SET ${fields.join(', ')} WHERE id = ?`, values);
     } catch (error) {
-      console.error('태그 수정 실패:', error);
       throw error;
     }
   }
@@ -241,7 +231,6 @@ export class AddressBookService {
       // 그다음 태그 자체를 삭제
       await db.runAsync(`DELETE FROM tag WHERE id = ?`, [id]);
     } catch (error) {
-      console.error('태그 삭제 실패:', error);
       throw error;
     }
   }
@@ -261,7 +250,6 @@ export class AddressBookService {
       );
       return result || [];
     } catch (error) {
-      console.error('연락처 태그 조회 실패:', error);
       throw error;
     }
   }
@@ -279,7 +267,6 @@ export class AddressBookService {
         tagId,
       ]);
     } catch (error) {
-      console.error('연락처에 태그 추가 실패:', error);
       throw error;
     }
   }
@@ -297,7 +284,6 @@ export class AddressBookService {
         tagId,
       ]);
     } catch (error) {
-      console.error('연락처에서 태그 제거 실패:', error);
       throw error;
     }
   }
@@ -317,7 +303,6 @@ export class AddressBookService {
       );
       return result || [];
     } catch (error) {
-      console.error('노트 그룹 조회 실패:', error);
       throw error;
     }
   }
@@ -337,7 +322,6 @@ export class AddressBookService {
       ]);
       return result.lastInsertRowId;
     } catch (error) {
-      console.error('노트 그룹 생성 실패:', error);
       throw error;
     }
   }
@@ -369,7 +353,6 @@ export class AddressBookService {
 
       await db.runAsync(`UPDATE note_group SET ${fields.join(', ')} WHERE group_id = ?`, values);
     } catch (error) {
-      console.error('노트 그룹 수정 실패:', error);
       throw error;
     }
   }
@@ -383,7 +366,6 @@ export class AddressBookService {
     try {
       await db.runAsync(`DELETE FROM note_group WHERE group_id = ?`, [id]);
     } catch (error) {
-      console.error('노트 그룹 삭제 실패:', error);
       throw error;
     }
   }

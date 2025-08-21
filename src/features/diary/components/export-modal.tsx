@@ -54,7 +54,6 @@ const ExportModal = ({ visible, onClose, diary, media = [] }: ExportModalProps) 
             });
             return `data:image/jpeg;base64,${base64}`;
           } catch (error) {
-            console.error('이미지 변환 실패:', error);
             return null;
           }
         });
@@ -170,7 +169,6 @@ const ExportModal = ({ visible, onClose, diary, media = [] }: ExportModalProps) 
         dialogTitle: isEnglish ? 'Share Diary PDF' : '일기 PDF 공유',
       });
     } catch (error) {
-      console.error('PDF 내보내기 실패:', error);
       CustomAlertManager.error(
         isEnglish ? 'An error occurred while creating PDF.' : 'PDF 생성 중 오류가 발생했습니다.',
         isEnglish ? 'Error' : '오류'
@@ -222,7 +220,6 @@ ${diary.body || (isEnglish ? 'No Content' : '내용 없음')}
         );
       }
     } catch (error) {
-      console.error('텍스트 공유 실패:', error);
       CustomAlertManager.error(
         isEnglish ? 'An error occurred while sharing.' : '공유 중 오류가 발생했습니다.',
         isEnglish ? 'Error' : '오류'

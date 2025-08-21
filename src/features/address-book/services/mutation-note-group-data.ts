@@ -6,13 +6,8 @@ import { db } from '@/src/hooks/use-initialize-database';
 // 노트 그룹 생성
 export const createNoteGroup = async (contactId: string, title: string): Promise<NoteGroupType> => {
   try {
-    console.log('=== createNoteGroup 시작 ===');
-    console.log('contactId:', contactId, 'title:', title);
-    
     // contactId를 정수로 변환
     const contactIdInt = parseInt(contactId, 10);
-    console.log('contactIdInt:', contactIdInt);
-    
     if (isNaN(contactIdInt)) {
       throw new Error(`Invalid contactId: ${contactId}`);
     }
@@ -22,25 +17,18 @@ export const createNoteGroup = async (contactId: string, title: string): Promise
       title,
     ]);
     
-    console.log('INSERT 성공, lastInsertRowId:', result.lastInsertRowId);
-
     // 생성된 note_group 반환 (방금 생성된 그룹 ID로 조회)
     const createdGroup = await db.getFirstAsync<NoteGroupType>(
       'SELECT * FROM note_group WHERE group_id = ?',
       [result.lastInsertRowId]
     );
     
-    console.log('조회된 그룹:', createdGroup);
-    
     if (!createdGroup) {
       throw new Error('Created group not found');
     }
     
-    console.log('=== createNoteGroup 완료 ===');
     return createdGroup;
   } catch (error) {
-    console.error('=== createNoteGroup 실패 ===');
-    console.error('노트 그룹 생성 실패:', error);
     console.error('Error details:', error instanceof Error ? error.message : String(error));
     throw error;
   }
@@ -86,7 +74,6 @@ export const updateNoteGroup = async (
     
     return updatedNoteGroup;
   } catch (error) {
-    console.error('노트 그룹 수정 실패:', error);
     throw error;
   }
 };
@@ -97,7 +84,6 @@ export const deleteNoteGroup = async (groupId: string): Promise<boolean> => {
     const result = await db.runAsync('DELETE FROM note_group WHERE group_id = ?', [groupId]);
     return result.changes > 0; // 삭제된 행이 있으면 true
   } catch (error) {
-    console.error('노트 그룹 삭제 실패:', error);
     throw error;
   }
 };
@@ -108,7 +94,6 @@ export const deleteNoteGroupsByContactId = async (contactId: string): Promise<bo
     const result = await db.runAsync('DELETE FROM note_group WHERE contact_id = ?', [contactId]);
     return result.changes > 0;
   } catch (error) {
-    console.error('연락처별 노트 그룹 삭제 실패:', error);
     throw error;
   }
 };
@@ -132,7 +117,6 @@ export const createNoteItem = async (
     }
     return newNoteItem;
   } catch (error) {
-    console.error('❌ 노트 아이템 생성 실패:', error);
     throw error;
   }
 };
@@ -176,7 +160,6 @@ export const updateNoteItem = async (
     }
     return updatedNoteItem;
   } catch (error) {
-    console.error('❌ 노트 아이템 수정 실패:', error);
     throw error;
   }
 };
@@ -187,7 +170,6 @@ export const deleteNoteItem = async (itemId: string): Promise<boolean> => {
     const result = await db.runAsync('DELETE FROM note_item WHERE item_id = ?', [itemId]);
     return result.changes > 0; // 삭제된 행이 있으면 true
   } catch (error) {
-    console.error('❌ 노트 아이템 삭제 실패:', error);
     throw error;
   }
 };
@@ -198,7 +180,6 @@ export const deleteNoteItemsByGroupId = async (groupId: string): Promise<boolean
     const result = await db.runAsync('DELETE FROM note_item WHERE group_id = ?', [groupId]);
     return result.changes > 0;
   } catch (error) {
-    console.error('❌ 그룹별 노트 아이템 삭제 실패:', error);
     throw error;
   }
 };
@@ -209,7 +190,6 @@ export const deleteAllNoteGroups = async (): Promise<boolean> => {
     const result = await db.runAsync('DELETE FROM note_group');
     return result.changes > 0;
   } catch (error) {
-    console.error('전체 노트 그룹 삭제 실패:', error);
     throw error;
   }
 };

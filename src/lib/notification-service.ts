@@ -51,7 +51,6 @@ class NotificationService {
       }
 
       if (finalStatus !== 'granted') {
-        console.warn('알림 권한이 거부되었습니다.');
         return false;
       }
 
@@ -70,10 +69,8 @@ class NotificationService {
       await this.loadScheduledNotifications();
 
       this.isInitialized = true;
-      console.log('✅ 알림 서비스 초기화 완료');
       return true;
     } catch (error) {
-      console.error('❌ 알림 서비스 초기화 실패:', error);
       return false;
     }
   }
@@ -102,7 +99,6 @@ class NotificationService {
       // 과거 시간인지 확인
       const now = new Date();
       if (scheduledTime <= now) {
-        console.warn('⚠️ 과거 시간으로는 알림을 설정할 수 없습니다:', scheduledTime);
         return false;
       }
 
@@ -111,7 +107,6 @@ class NotificationService {
 
       // 중복 체크
       if (this.scheduledNotifications.has(notificationId)) {
-        console.warn('⚠️ 이미 설정된 알림입니다:', notificationId);
         return false;
       }
 
@@ -137,11 +132,8 @@ class NotificationService {
       await this.saveScheduledNotifications();
 
       console.log(`✅ 알림 설정 완료: ${title} - ${scheduledTime.toLocaleString('ko-KR')}`);
-      console.log(`📋 알림 ID: ${notificationId}`);
-      
       return true;
     } catch (error) {
-      console.error('❌ 알림 설정 실패:', error);
       return false;
     }
   }
@@ -166,18 +158,15 @@ class NotificationService {
       for (const notification of targetNotifications) {
         await Notifications.cancelScheduledNotificationAsync(notification.identifier);
         this.scheduledNotifications.delete(notification.identifier);
-        console.log(`🗑️ 알림 취소: ${notification.identifier}`);
-      }
+        }
 
       await this.saveScheduledNotifications();
       
       if (targetNotifications.length > 0) {
-        console.log(`✅ ${targetNotifications.length}개 알림 취소 완료`);
-      }
+        }
       
       return true;
     } catch (error) {
-      console.error('❌ 알림 취소 실패:', error);
       return false;
     }
   }
@@ -190,10 +179,8 @@ class NotificationService {
       await Notifications.cancelAllScheduledNotificationsAsync();
       this.scheduledNotifications.clear();
       await this.saveScheduledNotifications();
-      console.log('🗑️ 모든 알림 취소 완료');
       return true;
     } catch (error) {
-      console.error('❌ 모든 알림 취소 실패:', error);
       return false;
     }
   }
@@ -221,7 +208,6 @@ class NotificationService {
         return false;
       });
     } catch (error) {
-      console.error('❌ 알림 조회 실패:', error);
       return [];
     }
   }
@@ -256,8 +242,7 @@ class NotificationService {
       const notificationsArray = Array.from(this.scheduledNotifications);
       await AsyncStorage.setItem('scheduledNotifications', JSON.stringify(notificationsArray));
     } catch (error) {
-      console.error('❌ 알림 목록 저장 실패:', error);
-    }
+      }
   }
 
   /**
@@ -271,8 +256,7 @@ class NotificationService {
         this.scheduledNotifications = new Set(notificationsArray);
       }
     } catch (error) {
-      console.error('❌ 알림 목록 로드 실패:', error);
-    }
+      }
   }
 
   /**
@@ -281,21 +265,13 @@ class NotificationService {
   async debugPrintScheduledNotifications(): Promise<void> {
     try {
       const notifications = await Notifications.getAllScheduledNotificationsAsync();
-      console.log('📋 현재 스케줄된 알림 목록:');
-      console.log(`총 ${notifications.length}개 알림`);
-      
       notifications.forEach((notification, index) => {
         const trigger = notification.trigger as any;
         const scheduledTime = trigger.date ? new Date(trigger.date) : '미정';
-        console.log(`${index + 1}. ${notification.identifier}`);
-        console.log(`   제목: ${notification.content.title}`);
         console.log(`   시간: ${scheduledTime instanceof Date ? scheduledTime.toLocaleString('ko-KR') : scheduledTime}`);
-        console.log(`   데이터:`, notification.content.data);
-        console.log('---');
-      });
+        });
     } catch (error) {
-      console.error('❌ 알림 목록 출력 실패:', error);
-    }
+      }
   }
 }
 

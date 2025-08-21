@@ -98,7 +98,6 @@ export const pickMedia = async () => {
               const uri = result.assets[0].uri;
               const type = result.assets[0].type;
               const newImage = { uri, type };
-              console.log(newImage);
               return resolve(newImage);
             }
           } catch (error) {

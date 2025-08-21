@@ -25,10 +25,8 @@ export const useInitializeDatabase = () => {
     (async () => {
       try {
         await createDb();
-        console.log('초기화 성공');
-      } catch (err) {
-        console.log('DB 초기화 실패', err);
-      }
+        } catch (err) {
+        }
     })();
   }, []);
 };

@@ -61,7 +61,6 @@ const AddressBookList = ({ searchText, onRefresh, isRefreshing }: AddressBookLis
             const tags = await AddressBookService.fetchGetContactTags(contact.id);
             return { ...contact, tags: tags || [] };
           } catch (error) {
-            console.error(`Failed to fetch tags for contact ${contact.id}:`, error);
             return { ...contact, tags: [] };
           }
         })

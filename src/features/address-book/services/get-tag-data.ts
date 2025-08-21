@@ -22,7 +22,6 @@ export const getContactTags = async (contactId: number): Promise<TagType[]> => {
 
     return result as TagType[];
   } catch (error) {
-    console.error('연락처 태그 조회 실패:', error);
     throw error;
   }
 };
@@ -47,7 +46,6 @@ export const getContactWithTags = async (contactId: number): Promise<ContactWith
       tags,
     };
   } catch (error) {
-    console.error('연락처와 태그 조회 실패:', error);
     throw error;
   }
 };
@@ -78,7 +76,6 @@ export const getContactsByTag = async (tagId: number): Promise<ContactWithTagsTy
 
     return contactsWithTags;
   } catch (error) {
-    console.error('태그별 연락처 조회 실패:', error);
     throw error;
   }
 };
@@ -94,7 +91,6 @@ export const getAllTags = async (): Promise<TagType[]> => {
 
     return result as TagType[];
   } catch (error) {
-    console.error('모든 태그 조회 실패:', error);
     throw error;
   }
 };
@@ -109,7 +105,6 @@ export const getTagUsageCount = async (tagId: number): Promise<number> => {
 
     return result.count;
   } catch (error) {
-    console.error('태그 사용 통계 조회 실패:', error);
     throw error;
   }
 };
@@ -124,7 +119,6 @@ export const hasContactTag = async (contactId: number, tagId: number): Promise<b
 
     return result !== null;
   } catch (error) {
-    console.error('연락처 태그 확인 실패:', error);
     throw error;
   }
 };
@@ -136,7 +130,6 @@ export const getTagById = async (tagId: number): Promise<TagType | null> => {
 
     return result as TagType | null;
   } catch (error) {
-    console.error('태그 ID로 조회 실패:', error);
     throw error;
   }
 };
@@ -144,8 +137,6 @@ export const getTagById = async (tagId: number): Promise<TagType | null> => {
 // 중복 태그 정리 함수 (강화 버전)
 export const cleanupDuplicateTags = async (): Promise<void> => {
   try {
-    console.log('중복 태그 정리 시작...');
-    
     // 모든 태그 조회
     const allTags = await db.getAllAsync('SELECT id, name FROM tag ORDER BY id') as TagType[];
     console.log('전체 태그:', allTags.map(tag => `${tag.name} (${tag.id})`));
@@ -190,14 +181,11 @@ export const cleanupDuplicateTags = async (): Promise<void> => {
           // 중복 태그 삭제
           await db.runAsync('DELETE FROM tag WHERE id = ?', [deleteId]);
           
-          console.log(`삭제 완료: 태그 ID ${deleteId}`);
-        }
+          }
       }
     }
 
-    console.log('중복 태그 정리 완료');
-  } catch (error) {
-    console.error('중복 태그 정리 실패:', error);
+    } catch (error) {
     throw error;
   }
 };

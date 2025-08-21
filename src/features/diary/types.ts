@@ -216,8 +216,7 @@ export const diaryFormSchema = z.object({
  * @example
  * ```typescript
  * const onSubmit = (data: DiaryFormDataType) => {
- *   console.log(data.title, data.content);
- * };
+ *   * };
  * ```
  */
 export type DiaryFormDataType = z.infer<typeof diaryFormSchema>;

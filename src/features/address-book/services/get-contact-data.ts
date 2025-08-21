@@ -7,7 +7,6 @@ export const getMyContact = async (): Promise<ContactType> => {
     const data = await db.getAllAsync<ContactType>('SELECT * FROM contact WHERE is_me = 1');
     return data[0] || null; // 내 연락처는 하나만 있을 것이므로 첫 번째 항목 반환
   } catch (error) {
-    console.error(error);
     throw error;
   }
 };
@@ -20,7 +19,6 @@ export const getOthersContacts = async (): Promise<ContactType[]> => {
     );
     return data;
   } catch (error) {
-    console.error(error);
     throw error;
   }
 };
@@ -31,7 +29,6 @@ export const getContactById = async (id: string): Promise<ContactType> => {
     const data = await db.getAllAsync<ContactType>('SELECT * FROM contact WHERE id = ?', [id]);
     return data[0] || null;
   } catch (error) {
-    console.error(error);
     throw error;
   }
 };

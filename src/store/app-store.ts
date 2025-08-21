@@ -443,9 +443,7 @@ export const initializeApp = async () => {
     // 리하이드레이션 완료
     setRehydrated(true);
     
-    console.log('✅ 앱 초기화 완료');
-  } catch (error) {
-    console.error('❌ 앱 초기화 실패:', error);
+    } catch (error) {
     setRehydrated(true); // 실패해도 앱은 실행되어야 함
   }
 };
@@ -467,8 +465,7 @@ const loadFeatureFlags = async () => {
       }));
     }
   } catch (error) {
-    console.warn('피처 플래그 로드 실패:', error);
-  }
+    }
 };
 
 /**
@@ -483,8 +480,7 @@ export const saveFeatureFlags = async (flags: Partial<AppFeatureFlags>) => {
     
     useAppStore.setState({ featureFlags: updatedFlags });
   } catch (error) {
-    console.error('피처 플래그 저장 실패:', error);
-  }
+    }
 };
 
 /**
