@@ -7,13 +7,13 @@
  */
 import { SQLiteDatabase } from 'expo-sqlite';
 import { z } from 'zod';
+
 import {
   BaseEntity,
   validateData,
   PaginatedResponse,
   PaginationParams,
   SortParams,
-  FilterParams,
 } from '../../types/api';
 
 export interface QueryOptions {
@@ -474,7 +474,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
    * 테이블의 모든 데이터 삭제 (개발용)
    */
   async truncate(): Promise<void> {
-    if (!__DEV__) {
+    if (process.env.NODE_ENV === 'production') {
       throw new Error('Truncate is only allowed in development mode');
     }
 

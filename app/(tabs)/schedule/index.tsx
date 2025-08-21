@@ -5,12 +5,11 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, Image } from 'react-native';
 
 import { useThemeColors } from '../../../src/components/providers/theme-provider';
-import { useI18n } from '../../../src/hooks/use-i18n';
 import { CustomAlertManager } from '../../../src/components/ui/custom-alert';
-import { Colors } from '../../../src/constants/colors';
 import { useSchedulesByDate } from '../../../src/features/schedule/hooks/use-schedule';
 import { toggleScheduleCompletion } from '../../../src/features/schedule/services/schedule-services';
 import type { ScheduleType } from '../../../src/features/schedule/types/schedule-types';
+import { useI18n } from '../../../src/hooks/use-i18n';
 
 type TaskItemProps = {
   schedule: ScheduleType;

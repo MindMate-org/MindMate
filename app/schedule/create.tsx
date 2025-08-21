@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 
 import { EntryForm, EntryFormDataType } from '../../src/components/common/entry-form';
 import { CustomAlertManager } from '../../src/components/ui/custom-alert';
-import { useI18n } from '../../src/hooks/use-i18n';
 import { AlarmSection } from '../../src/features/schedule/components/alarm-section';
 import { useScheduleAlarm } from '../../src/features/schedule/hooks/use-schedule-alarm';
 import {
@@ -12,6 +11,7 @@ import {
   fetchAddMediaToSchedule,
 } from '../../src/features/schedule/services/schedule-services';
 import type { CreateScheduleDataType } from '../../src/features/schedule/types/schedule-types';
+import { useI18n } from '../../src/hooks/use-i18n';
 import { notificationService } from '../../src/lib/notification-service';
 
 /**

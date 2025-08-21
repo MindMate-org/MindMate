@@ -10,8 +10,8 @@ import SearchItemCard from '@/src/features/search/components/search-item-card';
 import { getSearchCategories } from '@/src/features/search/constants/search-category-constants';
 import { SearchData } from '@/src/features/search/db/search-db-types';
 import { getCategoryData } from '@/src/features/search/utils/getCategoryData';
-import { db } from '@/src/hooks/use-initialize-database';
 import { useI18n } from '@/src/hooks/use-i18n';
+import { db } from '@/src/hooks/use-initialize-database';
 
 const HomeScreen = () => {
   const { t } = useI18n();

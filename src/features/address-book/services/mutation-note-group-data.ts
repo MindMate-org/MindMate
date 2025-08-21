@@ -1,4 +1,4 @@
-import { getNoteGroupsByContactId, getNoteItemById } from './get-note-group-data';
+import { getNoteItemById } from './get-note-group-data';
 
 import { NoteGroupType, NoteItemType } from '@/src/features/address-book/types/address-book-type';
 import { db } from '@/src/hooks/use-initialize-database';

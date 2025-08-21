@@ -2,8 +2,8 @@ import { Plus, X } from 'lucide-react-native';
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 
-import { useThemeColors } from '../providers/theme-provider';
 import { useI18n } from '../../hooks/use-i18n';
+import { useThemeColors } from '../providers/theme-provider';
 
 export type MediaItem = {
   uri: string;

@@ -1,7 +1,8 @@
 import { Mail } from 'lucide-react-native';
 import { TouchableOpacity, Text, Linking } from 'react-native';
-import { useI18n } from '../../../hooks/use-i18n';
+
 import { useThemeColors } from '../../../components/providers/theme-provider';
+import { useI18n } from '../../../hooks/use-i18n';
 
 const MessageButton = ({ phoneNumber }: { phoneNumber: string }) => {
   const { t } = useI18n();

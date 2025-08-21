@@ -1,5 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { ArrowLeft } from 'lucide-react-native';
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
@@ -11,18 +13,15 @@ import {
   SafeAreaView,
   BackHandler,
 } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
-import { ArrowLeft } from 'lucide-react-native';
 
 import { useThemeColors } from '../../src/components/providers/theme-provider';
-import { useI18n } from '../../src/hooks/use-i18n';
 import { CustomAlertManager } from '../../src/components/ui/custom-alert';
-
 import {
   useUpdateRoutine,
   useUpdateSubTaskCompletion,
 } from '../../src/features/routine/hooks/use-routine-mutation';
 import { useRoutineDetailQuery } from '../../src/features/routine/hooks/use-routine-query';
+import { useI18n } from '../../src/hooks/use-i18n';
 
 const RoutineForm = () => {
   const router = useRouter();

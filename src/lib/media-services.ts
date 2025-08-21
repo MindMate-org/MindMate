@@ -1,10 +1,10 @@
 import * as ImagePicker from 'expo-image-picker';
 
-import { db } from '../hooks/use-initialize-database';
-import { MediaType } from '../types/common-db-types';
 import { getTranslations } from './i18n';
-import { useGlobalStore } from '../store/global-store';
 import { CustomAlertManager } from '../components/ui/custom-alert';
+import { db } from '../hooks/use-initialize-database';
+import { useGlobalStore } from '../store/global-store';
+import { MediaType } from '../types/common-db-types';
 
 type fetchInsertMediaType = {
   media: MediaType[];

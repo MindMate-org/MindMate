@@ -3,10 +3,9 @@ import { router } from 'expo-router';
 import { ChevronRight } from 'lucide-react-native';
 import { Text, TouchableOpacity, View } from 'react-native';
 
+import SearchCategoryButton from './search-category-button';
 import { useThemeColors } from '../../../components/providers/theme-provider';
 import { useI18n } from '../../../hooks/use-i18n';
-
-import SearchCategoryButton from './search-category-button';
 import { getCategoryData } from '../utils/getCategoryData';
 
 const colorMap: Record<string, string> = {

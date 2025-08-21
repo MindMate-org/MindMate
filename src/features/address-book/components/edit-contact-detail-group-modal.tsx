@@ -4,11 +4,11 @@ import { Text, TextInput, View } from 'react-native';
 import { createNoteGroup, updateNoteGroup } from '../services/mutation-note-group-data';
 import { NoteGroupType } from '../types/address-book-type';
 
+import { useThemeColors } from '@/src/components/providers/theme-provider';
 import BottomModal from '@/src/components/ui/bottom-modal';
 import Button from '@/src/components/ui/button';
-import { useThemeColors } from '@/src/components/providers/theme-provider';
-import { useI18n } from '@/src/hooks/use-i18n';
 import { CustomAlertManager } from '@/src/components/ui/custom-alert';
+import { useI18n } from '@/src/hooks/use-i18n';
 
 const EditContactDetailGroupModal = ({
   isModalVisible,

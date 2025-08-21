@@ -4,10 +4,10 @@
 
 import { useState, useEffect } from 'react';
 
+import { useI18n } from '../../../hooks/use-i18n';
 import { RoutineQueryOptions } from '../db/routine-db-types';
 import { fetchGetRoutines, fetchGetRoutineById } from '../services';
 import { RoutineType } from '../types';
-import { useI18n } from '../../../hooks/use-i18n';
 
 /**
  * 루틴 목록 조회 훅

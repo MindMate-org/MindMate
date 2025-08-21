@@ -3,18 +3,17 @@ import { ChevronLeft, MoreVertical, Trash2, Edit3, Share2, Star } from 'lucide-r
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, Pressable } from 'react-native';
 
+import { useThemeColors } from '../../../components/providers/theme-provider';
 import { CustomAlertManager } from '../../../components/ui/custom-alert';
 import ErrorState from '../../../components/ui/error-state';
 import FadeInView from '../../../components/ui/fade-in-view';
 import LoadingState from '../../../components/ui/loading-state';
-import { useThemeColors } from '../../../components/providers/theme-provider';
 import { useI18n } from '../../../hooks/use-i18n';
-import { Colors } from '../../../constants/colors';
 import { formatDateTimeString } from '../../../lib/date-utils';
 import ExportModal from '../components/export-modal';
 import { MediaSlider } from '../components/media-slider';
 import { DiaryService } from '../services';
-import { MOOD_OPTIONS, getMoodOptions } from '../types';
+import { getMoodOptions } from '../types';
 
 type DiaryDetailType = Awaited<ReturnType<typeof DiaryService.getDiaryById>>;
 type DiaryMediaType = Awaited<ReturnType<typeof DiaryService.getMediaByDiaryId>>;

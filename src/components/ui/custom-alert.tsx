@@ -9,15 +9,14 @@ import {
   Animated,
   Alert as RNAlert,
   StatusBar,
-  Platform,
   Pressable,
 } from 'react-native';
-import { useThemeColors } from '../providers/theme-provider';
 
 import { Colors } from '../../constants/colors';
-import { HapticFeedback } from '../../utils/haptic-feedback';
 import { getTranslations } from '../../lib/i18n';
 import { useLanguage } from '../../store/app-store';
+import { HapticFeedback } from '../../utils/haptic-feedback';
+import { useThemeColors } from '../providers/theme-provider';
 
 export interface CustomAlertButton {
   text: string;

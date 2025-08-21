@@ -2,12 +2,12 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { View, SafeAreaView } from 'react-native';
 
+import { useThemeColors } from '../../../src/components/providers/theme-provider';
 import AddButton from '../../../src/components/ui/add-button';
 import SearchInput from '../../../src/components/ui/search-input';
-import { useThemeColors } from '../../../src/components/providers/theme-provider';
-import { useI18n } from '../../../src/hooks/use-i18n';
 import AddressBookList from '../../../src/features/address-book/components/address-book-list';
 import AddressBookSelfItem from '../../../src/features/address-book/components/address-book-self-item';
+import { useI18n } from '../../../src/hooks/use-i18n';
 
 const AddressBook = () => {
   const [searchText, setSearchText] = useState('');

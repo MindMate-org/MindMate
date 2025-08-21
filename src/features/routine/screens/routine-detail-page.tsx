@@ -9,7 +9,7 @@ import {
   CheckCircle2,
   Circle,
 } from 'lucide-react-native';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -20,15 +20,14 @@ import {
   Image,
 } from 'react-native';
 
+import { useThemeColors } from '../../../components/providers/theme-provider';
 import { CustomAlertManager } from '../../../components/ui/custom-alert';
 import ErrorState from '../../../components/ui/error-state';
 import FadeInView from '../../../components/ui/fade-in-view';
 import LoadingState from '../../../components/ui/loading-state';
-import { useThemeColors } from '../../../components/providers/theme-provider';
 import { useI18n } from '../../../hooks/use-i18n';
-import { formatDateTimeString } from '../../../lib/date-utils';
-import { useRoutineDetailQuery } from '../hooks/use-routine-query';
 import { useDeleteRoutine, useUpdateSubTaskCompletion } from '../hooks/use-routine-mutation';
+import { useRoutineDetailQuery } from '../hooks/use-routine-query';
 import { getLocalizedRepeatCycle } from '../utils';
 
 export interface RoutineDetailPageProps {

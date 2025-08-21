@@ -2,9 +2,9 @@ import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';
 import { Image, TouchableOpacity, View, Text } from 'react-native';
 
-import { updateContact } from '../services/mutation-contact-data';
-import { useI18n } from '../../../hooks/use-i18n';
 import { CustomAlertManager } from '../../../components/ui/custom-alert';
+import { useI18n } from '../../../hooks/use-i18n';
+import { updateContact } from '../services/mutation-contact-data';
 
 import BottomModal from '@/src/components/ui/bottom-modal';
 

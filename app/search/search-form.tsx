@@ -1,4 +1,6 @@
+import { Ionicons } from '@expo/vector-icons';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useFocusEffect } from '@react-navigation/native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState, useCallback } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -14,13 +16,9 @@ import {
   SafeAreaView,
   BackHandler,
 } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 
 import { useThemeColors } from '../../src/components/providers/theme-provider';
-import { useI18n } from '../../src/hooks/use-i18n';
-import { Ionicons } from '@expo/vector-icons';
 import { CustomAlertManager } from '../../src/components/ui/custom-alert';
-
 import FormInput from '../../src/components/ui/form-input';
 import MediaPicker, { MediaItem } from '../../src/components/ui/media-picker';
 import SearchCategoryPicker from '../../src/features/search/components/search-category-picker';
@@ -36,6 +34,7 @@ import {
   SearchFormSchema,
   createSearchFormSchema,
 } from '../../src/features/search/utils/search-form-schema';
+import { useI18n } from '../../src/hooks/use-i18n';
 import { db } from '../../src/hooks/use-initialize-database';
 import { fetchInsertMedia, pickMedia } from '../../src/lib/media-services';
 import { MediaType } from '../../src/types/common-db-types';

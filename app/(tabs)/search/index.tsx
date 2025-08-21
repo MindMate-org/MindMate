@@ -2,15 +2,15 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState, useEffect, useMemo } from 'react';
 import { ScrollView, Text, TouchableOpacity, View, SafeAreaView } from 'react-native';
 
+import { useThemeColors } from '../../../src/components/providers/theme-provider';
 import Button from '../../../src/components/ui/button';
 import SearchInput from '../../../src/components/ui/search-input';
-import { useThemeColors } from '../../../src/components/providers/theme-provider';
-import { useI18n } from '../../../src/hooks/use-i18n';
 import SearchCategoryButton from '../../../src/features/search/components/search-category-button';
 import SearchItemCard from '../../../src/features/search/components/search-item-card';
 import { getSearchCategories } from '../../../src/features/search/constants/search-category-constants';
 import { SearchData } from '../../../src/features/search/db/search-db-types';
 import { getCategoryData } from '../../../src/features/search/utils/getCategoryData';
+import { useI18n } from '../../../src/hooks/use-i18n';
 import { db } from '../../../src/hooks/use-initialize-database';
 
 const HomeScreen = () => {

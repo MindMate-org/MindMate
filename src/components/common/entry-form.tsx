@@ -1,3 +1,4 @@
+import { useFocusEffect } from '@react-navigation/native';
 import { ChevronLeft, Clock } from 'lucide-react-native';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -10,11 +11,7 @@ import {
   SafeAreaView,
   BackHandler,
 } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 
-import { useThemeColors } from '../providers/theme-provider';
-import { useI18n } from '../../hooks/use-i18n';
-import { CustomAlertManager } from '../ui/custom-alert';
 import MediaButtons from '../../features/diary/components/media-buttons';
 import MediaPreview from '../../features/diary/components/media-preview';
 import MoodPicker from '../../features/diary/components/mood-picker';
@@ -23,7 +20,10 @@ import { getDefaultDiaryStyle } from '../../features/diary/constants/style-optio
 import { useAudioRecording } from '../../features/diary/hooks/use-audio-recording';
 import { useMediaPicker } from '../../features/diary/hooks/use-media-picker';
 import { MoodType } from '../../features/diary/types';
+import { useI18n } from '../../hooks/use-i18n';
 import { formatDateTime } from '../../lib/date-utils';
+import { useThemeColors } from '../providers/theme-provider';
+import { CustomAlertManager } from '../ui/custom-alert';
 
 export interface EntryFormDataType {
   title: string;

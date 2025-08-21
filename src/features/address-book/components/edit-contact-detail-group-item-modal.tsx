@@ -4,9 +4,9 @@ import { Text, TextInput, View } from 'react-native';
 import { createNoteItem, updateNoteItem } from '../services/mutation-note-group-data';
 import { NoteItem } from '../types/address-book-type';
 
+import { useThemeColors } from '@/src/components/providers/theme-provider';
 import BottomModal from '@/src/components/ui/bottom-modal';
 import Button from '@/src/components/ui/button';
-import { useThemeColors } from '@/src/components/providers/theme-provider';
 
 const EditContactDetailGroupItemModal = ({
   isModalVisible,

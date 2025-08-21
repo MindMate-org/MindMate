@@ -21,10 +21,8 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import Button from '../../src/components/ui/button';
-import { CustomAlertManager } from '../../src/components/ui/custom-alert';
 import { useThemeColors } from '../../src/components/providers/theme-provider';
-import { useI18n } from '../../src/hooks/use-i18n';
+import { CustomAlertManager } from '../../src/components/ui/custom-alert';
 import { SearchData } from '../../src/features/search/db/search-db-types';
 import {
   fetchDeleteSearchById,
@@ -32,6 +30,7 @@ import {
   fetchGetSearchById,
 } from '../../src/features/search/search-services';
 import { getCategoryData } from '../../src/features/search/utils/getCategoryData';
+import { useI18n } from '../../src/hooks/use-i18n';
 import { deleteAlert } from '../../src/lib/common-alert';
 import { MediaFullType } from '../../src/lib/db/share-db-types';
 

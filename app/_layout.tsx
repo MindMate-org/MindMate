@@ -5,13 +5,13 @@ import { useFonts } from 'expo-font';
 import Toast from 'react-native-toast-message';
 import { StatusBar } from 'expo-status-bar';
 
+import { ErrorBoundary } from '../src/components/common/error-boundary';
 import AlertProvider from '../src/components/providers/alert-provider';
 import { ThemeProvider } from '../src/components/providers/theme-provider';
-import { ErrorBoundary } from '../src/components/common/error-boundary';
+import { ANIMATION_CONFIG } from '../src/constants/animations';
 import { useInitializeDatabase } from '../src/hooks/use-initialize-database';
 import { notificationService } from '../src/lib/notification-service';
 import { initializeApp, useRecordError, useRecordCrash } from '../src/store/app-store';
-import { ANIMATION_CONFIG } from '../src/constants/animations';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -56,24 +56,26 @@ export default function RootLayout() {
 
   // 전역 에러 핸들러 설정
   useEffect(() => {
-    const originalErrorHandler = ErrorUtils.getGlobalHandler();
+    if (typeof global !== 'undefined' && global.ErrorUtils) {
+      const originalErrorHandler = global.ErrorUtils.getGlobalHandler();
 
-    ErrorUtils.setGlobalHandler((error: Error, isFatal?: boolean) => {
-      console.error('Global Error Handler:', error);
+      global.ErrorUtils.setGlobalHandler((error: Error, isFatal?: boolean) => {
+        console.error('Global Error Handler:', error);
 
-      if (isFatal) {
-        recordCrash();
-      } else {
-        recordError();
-      }
+        if (isFatal) {
+          recordCrash();
+        } else {
+          recordError();
+        }
 
-      // 원래 핸들러 호출
-      originalErrorHandler?.(error, isFatal);
-    });
+        // 원래 핸들러 호출
+        originalErrorHandler?.(error, isFatal);
+      });
 
-    return () => {
-      ErrorUtils.setGlobalHandler(originalErrorHandler);
-    };
+      return () => {
+        global.ErrorUtils.setGlobalHandler(originalErrorHandler);
+      };
+    }
   }, [recordError, recordCrash]);
 
   if (!fontsLoaded) return null;

@@ -4,7 +4,6 @@ import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 
 import { useThemeColors } from '../../../components/providers/theme-provider';
 import { useI18n } from '../../../hooks/use-i18n';
-import { Colors } from '../../../constants/colors';
 
 interface AlarmSectionProps {
   location: string;

@@ -10,12 +10,11 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import { Colors } from '../../src/constants/colors';
 import { useThemeColors } from '../../src/components/providers/theme-provider';
-import { useI18n } from '../../src/hooks/use-i18n';
 import { CustomAlertManager } from '../../src/components/ui/custom-alert';
 import { DiaryListItem } from '../../src/features/diary/components/diary-list-item';
 import { DiaryService } from '../../src/features/diary/services';
+import { useI18n } from '../../src/hooks/use-i18n';
 import { formatDateTimeString } from '../../src/lib/date-utils';
 
 type DeletedDiary = {

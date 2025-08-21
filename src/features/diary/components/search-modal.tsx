@@ -2,11 +2,10 @@ import { Search, X } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 
+import BaseModal from './base-modal';
 import { useThemeColors } from '../../../components/providers/theme-provider';
 import { useI18n } from '../../../hooks/use-i18n';
-import { Colors } from '../../../constants/colors';
 import { getMoodOptions, MoodType } from '../types';
-import BaseModal from './base-modal';
 
 type SearchFilters = {
   keyword: string;

@@ -1,6 +1,5 @@
-import { CustomAlertManager } from '../components/ui/custom-alert';
 import { getTranslations } from './i18n';
-import { useLanguage } from '../store/app-store';
+import { CustomAlertManager } from '../components/ui/custom-alert';
 
 type AlertType = {
   type: 'delete' | 'confirm';

@@ -1,16 +1,15 @@
+import { useFocusEffect } from '@react-navigation/native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { CircleCheckBig, ArrowLeft } from 'lucide-react-native';
 import { useState, useCallback } from 'react';
 import { Text, TouchableOpacity, View, SafeAreaView, ScrollView, BackHandler } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 
 import { useThemeColors } from '../../../src/components/providers/theme-provider';
-import { useI18n } from '../../../src/hooks/use-i18n';
-
+import { CustomAlertManager } from '../../../src/components/ui/custom-alert';
 import ContactDetailGroupSectionList from '../../../src/features/address-book/components/contact-detail-group-section-list';
 import EditContactDetailGroupModal from '../../../src/features/address-book/components/edit-contact-detail-group-modal';
 import FormEditContact from '../../../src/features/address-book/components/form-edit-contact';
-import { CustomAlertManager } from '../../../src/components/ui/custom-alert';
+import { useI18n } from '../../../src/hooks/use-i18n';
 
 const Edit = () => {
   const { id } = useLocalSearchParams<{ id: string }>();

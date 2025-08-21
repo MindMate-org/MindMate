@@ -1,4 +1,5 @@
 import { Coffee, Key, Laptop, Package, Tablet } from 'lucide-react-native';
+
 import { getTranslations, SupportedLanguage } from '../../../lib/i18n';
 
 export const getSearchCategories = (language: SupportedLanguage) => {

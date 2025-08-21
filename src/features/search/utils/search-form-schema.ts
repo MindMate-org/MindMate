@@ -1,6 +1,6 @@
 import { z } from 'zod';
+
 import { getTranslations, SupportedLanguage } from '../../../lib/i18n';
-import { useLanguage } from '../../../store/app-store';
 
 export const createSearchFormSchema = (language: SupportedLanguage) => {
   const t = getTranslations(language);

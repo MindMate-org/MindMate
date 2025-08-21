@@ -1,5 +1,5 @@
-import { getSearchCategories } from '../constants/search-category-constants';
 import { SupportedLanguage } from '../../../lib/i18n';
+import { getSearchCategories } from '../constants/search-category-constants';
 
 // 한국어-영어 카테고리 매핑
 const categoryMapping: Record<string, string> = {

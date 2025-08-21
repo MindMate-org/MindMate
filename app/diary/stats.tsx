@@ -3,11 +3,10 @@ import { ChevronLeft, BarChart3, Calendar, TrendingUp } from 'lucide-react-nativ
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, Dimensions } from 'react-native';
 
-import { Colors } from '../../src/constants/colors';
 import { useThemeColors } from '../../src/components/providers/theme-provider';
-import { useI18n } from '../../src/hooks/use-i18n';
 import { DiaryService } from '../../src/features/diary/services';
 import { getMoodOptions } from '../../src/features/diary/types';
+import { useI18n } from '../../src/hooks/use-i18n';
 
 const { width: screenWidth } = Dimensions.get('window');
 

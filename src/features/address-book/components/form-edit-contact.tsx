@@ -4,19 +4,19 @@ import React, { useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { Text } from 'react-native';
 
+import { invalidateQueries } from '../../../hooks/use-query';
 import { MODE } from '../constants/address-book-constants';
 import { useContactEditState } from '../hooks/use-contact-edit-state';
 import { AddressBookService } from '../services';
-import { invalidateQueries } from '../../../hooks/use-query';
 
+import { useThemeColors } from '@/src/components/providers/theme-provider';
 import { CustomAlertManager } from '@/src/components/ui/custom-alert';
 import FormInput from '@/src/components/ui/form-input';
 import MediaPicker, { MediaItem } from '@/src/components/ui/media-picker';
-import { useThemeColors } from '@/src/components/providers/theme-provider';
-import { pickMedia } from '@/src/lib/media-services';
-import { MediaType } from '@/src/types/common-db-types';
-import { useSetUserName } from '@/src/store/global-store';
 import { useI18n } from '@/src/hooks/use-i18n';
+import { pickMedia } from '@/src/lib/media-services';
+import { useSetUserName } from '@/src/store/global-store';
+import { MediaType } from '@/src/types/common-db-types';
 
 // 업데이트된 폼 스타일 - FormInput 컴포넌트 사용으로 deprecated
 

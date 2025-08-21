@@ -6,10 +6,10 @@ import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, Image } from 'r
 
 import { CustomAlertManager } from '../../src/components/ui/custom-alert';
 import { Colors } from '../../src/constants/colors';
-import { useI18n } from '../../src/hooks/use-i18n';
 import { useSchedulesByDate } from '../../src/features/schedule/hooks/use-schedule';
 import { toggleScheduleCompletion } from '../../src/features/schedule/services/schedule-services';
 import type { ScheduleType } from '../../src/features/schedule/types/schedule-types';
+import { useI18n } from '../../src/hooks/use-i18n';
 
 type TaskItemProps = {
   schedule: ScheduleType;

@@ -4,12 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 
-import { Colors } from '../../src/constants/colors';
 import { useThemeColors } from '../../src/components/providers/theme-provider';
-import { useI18n } from '../../src/hooks/use-i18n';
 import { DiaryListItem } from '../../src/features/diary/components/diary-list-item';
 import { DiaryService } from '../../src/features/diary/services';
 import { groupDiariesByPeriod } from '../../src/features/diary/utils/diary-grouping';
+import { useI18n } from '../../src/hooks/use-i18n';
 import { formatDateTimeString } from '../../src/lib/date-utils';
 
 /**

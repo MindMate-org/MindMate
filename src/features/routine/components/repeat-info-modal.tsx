@@ -2,7 +2,6 @@ import { CheckCircle, AlertTriangle, X } from 'lucide-react-native';
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import Modal from 'src/components/ui/modal';
-import { useI18n } from '../../../hooks/use-i18n';
 
 /**
  * 반복 설정 안내 모달

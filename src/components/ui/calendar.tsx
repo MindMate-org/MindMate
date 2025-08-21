@@ -2,10 +2,11 @@ import { Calendar as CalendarIcon } from 'lucide-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 
+import { useI18n } from '../../hooks/use-i18n';
+import { useThemeColors } from '../providers/theme-provider';
+
 import { getWeekDays, formatDate } from '@/src/constants/date';
 import { getWeekStart, isSameDay } from '@/src/utils/date';
-import { useThemeColors } from '../providers/theme-provider';
-import { useI18n } from '../../hooks/use-i18n';
 
 /**
  * 1주 단위 가로 달력 컴포넌트

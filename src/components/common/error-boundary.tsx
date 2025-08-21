@@ -4,9 +4,9 @@
  * - 사용자 친화적 에러 화면
  * - 에러 리포팅 (향후 확장 가능)
  */
+import { AlertTriangle, RefreshCw } from 'lucide-react-native';
 import React, { Component, ReactNode } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import { AlertTriangle, RefreshCw } from 'lucide-react-native';
 
 interface Props {
   children: ReactNode;

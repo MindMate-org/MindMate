@@ -10,9 +10,9 @@ import { getNoteItemsByGroupId } from '../services/get-note-group-data';
 import { deleteNoteGroup, deleteNoteItem } from '../services/mutation-note-group-data';
 import { NoteGroupType, NoteItemType } from '../types/address-book-type';
 
+import { useThemeColors } from '@/src/components/providers/theme-provider';
 import Button from '@/src/components/ui/button';
 import CommonBox from '@/src/components/ui/common-box';
-import { useThemeColors } from '@/src/components/providers/theme-provider';
 import { useAsyncDataGet } from '@/src/hooks/use-async-data-get';
 
 const ContactDetailGroupSectionList = ({

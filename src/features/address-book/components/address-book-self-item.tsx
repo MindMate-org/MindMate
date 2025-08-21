@@ -1,17 +1,16 @@
 import { useRouter } from 'expo-router';
 import { User } from 'lucide-react-native';
 import React from 'react';
-import { useCallback } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import AddressBookImage from './address-book-image';
 import AddressBookName from './address-book-name';
 import { useThemeColors } from '../../../components/providers/theme-provider';
-import { useQuery } from '../../../hooks/use-query';
 import { useI18n } from '../../../hooks/use-i18n';
+import { useQuery } from '../../../hooks/use-query';
+import { useSetUserName, useUserName } from '../../../store/app-store';
 import { AddressBookService } from '../services';
 import { ContactType } from '../types/address-book-type';
-import { useSetUserName, useUserName } from '../../../store/app-store';
 
 /**
  * 내 정보 표시 컴포넌트

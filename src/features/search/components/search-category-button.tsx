@@ -1,9 +1,9 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 
-import { getCategoryData } from '../utils/getCategoryData';
-import { useI18n } from '../../../hooks/use-i18n';
 import { useThemeColors } from '../../../components/providers/theme-provider';
+import { useI18n } from '../../../hooks/use-i18n';
+import { getCategoryData } from '../utils/getCategoryData';
 
 type SearchCategoryButtonProps = {
   label: string;

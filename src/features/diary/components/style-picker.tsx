@@ -1,21 +1,18 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 
+import BaseModal from './base-modal';
 import { useThemeColors } from '../../../components/providers/theme-provider';
 import { useI18n } from '../../../hooks/use-i18n';
-import { Colors } from '../../../constants/colors';
-import { DiaryStyleType } from '../types';
-import BaseModal from './base-modal';
 import {
   FONT_SIZE_OPTIONS,
-  FONT_FAMILY_OPTIONS,
   getFontFamilyOptions,
   TEXT_ALIGN_OPTIONS,
-  TEXT_ALIGN_LABELS,
   getTextAlignLabels,
   TEXT_COLOR_OPTIONS,
   BACKGROUND_COLOR_OPTIONS,
 } from '../constants/style-options';
+import { DiaryStyleType } from '../types';
 
 type StylePickerProps = {
   visible: boolean;

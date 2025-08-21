@@ -2,18 +2,16 @@ import { Users } from 'lucide-react-native';
 import React, { useMemo, useCallback, memo } from 'react';
 import { FlatList, View, Text, RefreshControl, ListRenderItem } from 'react-native';
 
-import { useThemeColors } from '../../../components/providers/theme-provider';
-import { useI18n } from '../../../hooks/use-i18n';
-import { useQuery } from '../../../hooks/use-query';
-import { useDebouncedSearch } from '../../../hooks/use-debounced-search';
-
 import AddressBookItem from './address-book-item';
+import { useThemeColors } from '../../../components/providers/theme-provider';
+import ErrorState from '../../../components/ui/error-state';
 import FadeInView from '../../../components/ui/fade-in-view';
 import LoadingState from '../../../components/ui/loading-state';
-import ErrorState from '../../../components/ui/error-state';
-import { AddressBookService } from '../services';
-import { ContactType } from '../types/address-book-type';
+import { useDebouncedSearch } from '../../../hooks/use-debounced-search';
+import { useI18n } from '../../../hooks/use-i18n';
+import { useQuery } from '../../../hooks/use-query';
 import { ContactWithTagsType } from '../../../types/address-book-enhanced';
+import { AddressBookService } from '../services';
 
 interface AddressBookListProps {
   searchText?: string;

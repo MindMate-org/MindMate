@@ -3,8 +3,8 @@ import * as DocumentPicker from 'expo-document-picker';
 import { useState, useEffect } from 'react';
 import { UseFormSetValue } from 'react-hook-form';
 
-import { useI18n } from '../../../hooks/use-i18n';
 import { CustomAlertManager } from '../../../components/ui/custom-alert';
+import { useI18n } from '../../../hooks/use-i18n';
 import { DiaryMediaType, RecordingStateType } from '../types';
 import { useMediaUpload } from './use-media-upload';
 
@@ -123,18 +123,74 @@ export const useAudioRecording = (
         return;
       }
 
-      // 녹음 시작
-      const { status } = await Audio.requestPermissionsAsync();
-      if (status !== 'granted') {
+      // 권한 상태 확인
+      const { status: currentStatus } = await Audio.getPermissionsAsync();
+
+      if (currentStatus === 'undetermined') {
+        // 권한이 아직 요청되지 않았을 때, 사용자에게 설명 제공
+        return new Promise<void>((resolve) => {
+          CustomAlertManager.alert(
+            t.locale.startsWith('en') ? 'Microphone Permission' : '마이크 권한',
+            t.locale.startsWith('en')
+              ? 'This app needs access to your microphone to record voice memos for your diary entries. Your recordings are stored locally on your device.'
+              : '일기에 음성 메모를 녹음하기 위해 마이크 접근 권한이 필요합니다. 녹음된 내용은 기기에 안전하게 저장됩니다.',
+            [
+              {
+                text: t.locale.startsWith('en') ? 'Cancel' : '취소',
+                style: 'cancel',
+                onPress: () => resolve(),
+              },
+              {
+                text: t.locale.startsWith('en') ? 'Allow' : '허용',
+                onPress: async () => {
+                  const { status } = await Audio.requestPermissionsAsync();
+                  if (status === 'granted') {
+                    await proceedWithRecording();
+                  } else {
+                    CustomAlertManager.error(
+                      t.locale.startsWith('en') ? 'Permission Denied' : '권한 거부됨',
+                      t.locale.startsWith('en')
+                        ? 'Microphone permission is required for voice recording. Please enable it in your device settings.'
+                        : '음성 녹음을 위해 마이크 권한이 필요합니다. 기기 설정에서 권한을 허용해주세요.',
+                    );
+                  }
+                  resolve();
+                },
+              },
+            ],
+          );
+        });
+      } else if (currentStatus === 'granted') {
+        await proceedWithRecording();
+      } else {
         CustomAlertManager.error(
           t.locale.startsWith('en') ? 'Permission Required' : '권한 필요',
           t.locale.startsWith('en')
-            ? 'Microphone permission is required for voice recording.'
-            : '음성 녹음을 위해 마이크 권한이 필요합니다.',
+            ? 'Microphone permission is required for voice recording. Please enable it in your device settings.'
+            : '음성 녹음을 위해 마이크 권한이 필요합니다. 기기 설정에서 권한을 허용해주세요.',
         );
         return;
       }
+    } catch (error) {
+      setError(
+        t.locale.startsWith('en')
+          ? 'An error occurred during voice recording.'
+          : '음성 녹음 중 오류가 발생했습니다.',
+      );
+      CustomAlertManager.error(
+        t.locale.startsWith('en') ? 'Error' : '오류',
+        t.locale.startsWith('en')
+          ? 'An error occurred during voice recording.'
+          : '음성 녹음 중 오류가 발생했습니다.',
+      );
+    }
+  };
 
+  /**
+   * 실제 녹음 진행
+   */
+  const proceedWithRecording = async () => {
+    try {
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,

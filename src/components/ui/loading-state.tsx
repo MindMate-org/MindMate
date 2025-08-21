@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
+
 import { useThemeColors } from '../providers/theme-provider';
 
 export type LoadingStateVariant = 'fullscreen' | 'inline' | 'overlay' | 'compact';

@@ -1,8 +1,9 @@
 import { Phone } from 'lucide-react-native';
 import React from 'react';
 import { Text, TouchableOpacity, Linking } from 'react-native';
-import { useI18n } from '../../../hooks/use-i18n';
+
 import { useThemeColors } from '../../../components/providers/theme-provider';
+import { useI18n } from '../../../hooks/use-i18n';
 
 const CallButton = ({ phoneNumber }: { phoneNumber: string }) => {
   const { t } = useI18n();

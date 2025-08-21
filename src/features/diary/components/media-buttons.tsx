@@ -3,8 +3,8 @@ import React from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
 
 import { useThemeColors } from '../../../components/providers/theme-provider';
-import { useI18n } from '../../../hooks/use-i18n';
 import { Colors } from '../../../constants/colors';
+import { useI18n } from '../../../hooks/use-i18n';
 import { RecordingStateType } from '../types';
 
 type MediaButtonsProps = {

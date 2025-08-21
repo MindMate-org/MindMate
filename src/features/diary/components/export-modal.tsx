@@ -5,10 +5,9 @@ import { FileText, MessageSquare, X } from 'lucide-react-native';
 import React from 'react';
 import { View, Text, TouchableOpacity, Modal, Pressable } from 'react-native';
 
-import { Colors } from '../../../constants/colors';
 import { useThemeColors } from '../../../components/providers/theme-provider';
-import { useI18n } from '../../../hooks/use-i18n';
 import { CustomAlertManager } from '../../../components/ui/custom-alert';
+import { useI18n } from '../../../hooks/use-i18n';
 
 type ExportModalProps = {
   visible: boolean;

@@ -1,4 +1,5 @@
 import { Stack } from 'expo-router';
+
 import { ANIMATION_CONFIG } from '../../../src/constants/animations';
 
 export default function DiaryLayout() {

@@ -1,8 +1,7 @@
-import { useRouter } from 'expo-router';
 import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
 import * as Notifications from 'expo-notifications';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
+import * as Sharing from 'expo-sharing';
 import {
   ArrowLeft,
   User,
@@ -18,13 +17,13 @@ import {
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Switch } from 'react-native';
 
+import { useDataClear } from './test-data-clear';
+import { useThemeColors } from '../../src/components/providers/theme-provider';
 import { CustomAlertManager } from '../../src/components/ui/custom-alert';
 import PrivacyPolicyModal from '../../src/components/ui/privacy-policy-modal';
-import { useThemeColors } from '../../src/components/providers/theme-provider';
 import { useI18n } from '../../src/hooks/use-i18n';
 import { notificationService } from '../../src/lib/notification-service';
 import { useTheme, useLanguage, useSetTheme, useSetLanguage } from '../../src/store/app-store';
-import { useDataClear } from './test-data-clear';
 
 const SettingsPage = () => {
   const router = useRouter();

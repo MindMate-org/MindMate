@@ -130,7 +130,7 @@ export const ContactSchema = BaseEntitySchema.extend({
   name: z.string().min(1, '이름은 필수입니다').max(100),
   phone_number: z
     .string()
-    .regex(/^[\+]?[0-9\-\s\(\)]{10,20}$/, '올바른 전화번호 형식을 입력하세요'),
+    .regex(/^[+]?[0-9\-\s()]{10,20}$/, '올바른 전화번호 형식을 입력하세요'),
   email: z.string().email('올바른 이메일 형식을 입력하세요').optional(),
   address: z.string().max(500).optional(),
   memo: z.string().max(1000).optional(),

@@ -14,9 +14,9 @@ import {
 } from 'react-native';
 
 import { useThemeColors } from '../../src/components/providers/theme-provider';
-import { useI18n } from '../../src/hooks/use-i18n';
 import { CustomAlertManager } from '../../src/components/ui/custom-alert';
 import { AddressBookService } from '../../src/features/address-book/services';
+import { useI18n } from '../../src/hooks/use-i18n';
 import { useSetUserName } from '../../src/store/app-store';
 
 /**

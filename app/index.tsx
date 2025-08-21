@@ -1,14 +1,13 @@
 import { router } from 'expo-router';
 import { BookOpen, Clock, Search, RefreshCcw, UserRound, Settings } from 'lucide-react-native';
-import { Text, View, TouchableOpacity, Image } from 'react-native';
 import { useEffect, useState } from 'react';
+import { Text, View, TouchableOpacity, Image } from 'react-native';
 
-import FadeInView from '../src/components/ui/fade-in-view';
 import { useThemeColors } from '../src/components/providers/theme-provider';
-import { useI18n } from '../src/hooks/use-i18n';
-import { Colors } from '../src/constants/colors';
-import { useUserName, useRecordScreenLoadTime, useSetUserName } from '../src/store/app-store';
+import FadeInView from '../src/components/ui/fade-in-view';
 import { AddressBookService } from '../src/features/address-book/services';
+import { useI18n } from '../src/hooks/use-i18n';
+import { useUserName, useRecordScreenLoadTime, useSetUserName } from '../src/store/app-store';
 
 export default function HomeScreen() {
   const { theme: themeColors, isDark } = useThemeColors();

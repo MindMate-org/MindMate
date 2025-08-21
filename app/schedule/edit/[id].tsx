@@ -3,10 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { SafeAreaView, ActivityIndicator, Text } from 'react-native';
 
 import { EntryForm, EntryFormDataType } from '../../../src/components/common/entry-form';
-import { CustomAlertManager } from '../../../src/components/ui/custom-alert';
-import { useI18n } from '../../../src/hooks/use-i18n';
-import { Colors } from '../../../src/constants/colors';
 import { useThemeColors } from '../../../src/components/providers/theme-provider';
+import { CustomAlertManager } from '../../../src/components/ui/custom-alert';
 import { AlarmSection } from '../../../src/features/schedule/components/alarm-section';
 import {
   fetchGetScheduleById,
@@ -19,6 +17,7 @@ import type {
   ScheduleType,
   UpdateScheduleDataType,
 } from '../../../src/features/schedule/types/schedule-types';
+import { useI18n } from '../../../src/hooks/use-i18n';
 
 /**
  * 일정 편집 페이지

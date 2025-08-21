@@ -1,18 +1,18 @@
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter } from 'expo-router';
-import { Calendar as CalendarIcon, Plus } from 'lucide-react-native';
+import { Calendar as CalendarIcon } from 'lucide-react-native';
 import React, { useState, useCallback, useMemo } from 'react';
 import { View, ScrollView, Text, TouchableOpacity, SafeAreaView } from 'react-native';
 
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { useThemeColors } from '../../../src/components/providers/theme-provider';
 import { CustomAlertManager } from '../../../src/components/ui/custom-alert';
 import ErrorState from '../../../src/components/ui/error-state';
 import FadeInView from '../../../src/components/ui/fade-in-view';
 import LoadingState from '../../../src/components/ui/loading-state';
-import { useThemeColors } from '../../../src/components/providers/theme-provider';
-import { useI18n } from '../../../src/hooks/use-i18n';
 import RoutineListCard from '../../../src/features/routine/components/routine-list-card';
 import { useDeleteRoutine } from '../../../src/features/routine/hooks/use-routine-mutation';
 import { useRoutineQuery } from '../../../src/features/routine/hooks/use-routine-query';
+import { useI18n } from '../../../src/hooks/use-i18n';
 import { toKSTDateString, formatTime, formatDate } from '../../../src/lib/date-utils';
 
 const RoutineMain = () => {

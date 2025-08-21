@@ -5,10 +5,10 @@
  * - 크로스 피처 상태 동기화
  * - 성능 최적화된 상태 선택
  */
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { devtools, persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // ============================================================================
 // 통합된 앱 상태 타입 정의 (기존 global-store + 새로운 기능들)
@@ -505,7 +505,7 @@ export const getPerformanceReport = () => {
  * 스토어 디버그 정보
  */
 export const getStoreDebugInfo = () => {
-  if (!__DEV__) return null;
+  if (process.env.NODE_ENV === 'production') return null;
 
   const state = useAppStore.getState();
 

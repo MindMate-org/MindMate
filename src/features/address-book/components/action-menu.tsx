@@ -1,8 +1,9 @@
-import { Modal, TouchableOpacity, View, Text, Pressable, StatusBar } from 'react-native';
 import { Edit3, Trash2 } from 'lucide-react-native';
+import { Modal, TouchableOpacity, View, Text, Pressable, StatusBar } from 'react-native';
+
 import { useThemeColors } from '../../../components/providers/theme-provider';
-import { useI18n } from '../../../hooks/use-i18n';
 import { CustomAlertManager } from '../../../components/ui/custom-alert';
+import { useI18n } from '../../../hooks/use-i18n';
 
 const ActionMenu = ({
   isVisible,

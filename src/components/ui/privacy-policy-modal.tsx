@@ -1,9 +1,10 @@
+import { X } from 'lucide-react-native';
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Modal, StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { X } from 'lucide-react-native';
-import { useThemeColors } from '../providers/theme-provider';
+
 import { useI18n } from '../../hooks/use-i18n';
+import { useThemeColors } from '../providers/theme-provider';
 
 interface PrivacyPolicyModalProps {
   visible: boolean;

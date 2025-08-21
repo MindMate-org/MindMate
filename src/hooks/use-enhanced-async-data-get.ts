@@ -3,8 +3,9 @@
  * - 기존 코드의 호환성을 유지하면서 새로운 useQuery로 점진적 마이그레이션
  * - 동일한 API를 제공하지만 내부적으로 useQuery 사용
  */
-import { useQuery } from './use-query';
 import { useCallback } from 'react';
+
+import { useQuery } from './use-query';
 
 export interface EnhancedAsyncDataOptions<T> {
   enabled?: boolean;

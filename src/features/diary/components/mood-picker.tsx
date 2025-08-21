@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 
 import { useThemeColors } from '../../../components/providers/theme-provider';
 import { useI18n } from '../../../hooks/use-i18n';
-import { MoodType, MOOD_OPTIONS, getMoodOptions } from '../types';
+import { MoodType, getMoodOptions } from '../types';
 import BaseModal from './base-modal';
 
 type MoodPickerProps = {

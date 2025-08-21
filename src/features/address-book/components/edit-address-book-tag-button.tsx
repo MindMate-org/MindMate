@@ -2,16 +2,16 @@ import { Plus } from 'lucide-react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { AddressBookService } from '../services';
-import { ContactType, TagType } from '../types/address-book-type';
-import { cleanupDuplicateTags } from '../services/get-tag-data';
 import { invalidateQueries } from '../../../hooks/use-query';
+import { AddressBookService } from '../services';
+import { cleanupDuplicateTags } from '../services/get-tag-data';
+import { ContactType, TagType } from '../types/address-book-type';
 
+import { useThemeColors } from '@/src/components/providers/theme-provider';
 import BottomModal from '@/src/components/ui/bottom-modal';
 import Button from '@/src/components/ui/button';
-import { useThemeColors } from '@/src/components/providers/theme-provider';
-import { useQuery } from '@/src/hooks/use-query';
 import { useI18n } from '@/src/hooks/use-i18n';
+import { useQuery } from '@/src/hooks/use-query';
 
 const EditAddressBookTagButton = ({
   refetch,

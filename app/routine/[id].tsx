@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
@@ -13,14 +14,12 @@ import {
   BackHandler,
 } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { useFocusEffect } from '@react-navigation/native';
 
+import { useThemeColors } from '../../src/components/providers/theme-provider';
 import CheckBox from '../../src/components/ui/checkbox';
 import { CustomAlertManager } from '../../src/components/ui/custom-alert';
 import FormInput from '../../src/components/ui/form-input';
 import MediaPicker from '../../src/components/ui/media-picker';
-import { useThemeColors } from '../../src/components/providers/theme-provider';
-import { useI18n } from '../../src/hooks/use-i18n';
 import { useMediaPicker } from '../../src/features/diary/hooks/use-media-picker';
 import RepeatInfoModal from '../../src/features/routine/components/repeat-info-modal';
 import { useAlarm } from '../../src/features/routine/hooks/use-alarm';
@@ -35,6 +34,7 @@ import {
   RepeatCycleType,
 } from '../../src/features/routine/types';
 import { getLocalizedRepeatCycle } from '../../src/features/routine/utils';
+import { useI18n } from '../../src/hooks/use-i18n';
 
 const RoutineDetail = () => {
   const { id, startDate } = useLocalSearchParams();

@@ -4,9 +4,8 @@
  * 중복 방지 및 정확한 시간 보장
  */
 
-import * as Notifications from 'expo-notifications';
-import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
 
 // 알림 타입 정의
 export interface NotificationData {

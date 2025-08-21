@@ -1,16 +1,15 @@
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { ChevronLeft, MoreVertical, Edit3, Trash2, Clock, MapPin } from 'lucide-react-native';
+import { ChevronLeft, MoreVertical, Edit3, Trash2, MapPin } from 'lucide-react-native';
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Pressable } from 'react-native';
 
+import { useThemeColors } from '../../../components/providers/theme-provider';
 import { CustomAlertManager } from '../../../components/ui/custom-alert';
 import ErrorState from '../../../components/ui/error-state';
 import FadeInView from '../../../components/ui/fade-in-view';
 import LoadingState from '../../../components/ui/loading-state';
-import { useThemeColors } from '../../../components/providers/theme-provider';
-import { Colors } from '../../../constants/colors';
 import { useI18n } from '../../../hooks/use-i18n';
-import { formatDateTimeString, formatDate as formatDateUtil } from '../../../lib/date-utils';
+import { formatDateTimeString } from '../../../lib/date-utils';
 import { MediaSlider } from '../../diary/components/media-slider';
 import type { MediaTableType } from '../../diary/db/diary-db-types';
 import {

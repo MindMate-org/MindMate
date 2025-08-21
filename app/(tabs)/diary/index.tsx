@@ -1,4 +1,5 @@
 import { Feather } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { router, useFocusEffect } from 'expo-router';
 import {
   ArrowDownWideNarrow,
@@ -11,22 +12,14 @@ import {
   Calendar,
 } from 'lucide-react-native';
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  ActivityIndicator,
-  TouchableOpacity,
-} from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 
 import { useThemeColors } from '../../../src/components/providers/theme-provider';
-import { useI18n } from '../../../src/hooks/use-i18n';
 import { DiaryListItem } from '../../../src/features/diary/components/diary-list-item';
 import SearchModal from '../../../src/features/diary/components/search-modal';
 import { DiaryService } from '../../../src/features/diary/services';
 import { groupDiariesByPeriod } from '../../../src/features/diary/utils/diary-grouping';
+import { useI18n } from '../../../src/hooks/use-i18n';
 import { formatDateTimeString } from '../../../src/lib/date-utils';
 
 type SortOrderType = 'asc' | 'desc';
