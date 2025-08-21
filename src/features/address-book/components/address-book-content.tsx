@@ -9,12 +9,14 @@ type AddressBOokContentProps = {
 
 const AddressBookContent = ({ children }: AddressBOokContentProps) => {
   const { theme: themeColors } = useThemeColors();
-  
+
   return (
-    <Text style={{
-      fontSize: 12,
-      color: themeColors.textSecondary,
-    }}>
+    <Text
+      style={{
+        fontSize: 12,
+        color: themeColors.textSecondary,
+      }}
+    >
       {children}
     </Text>
   );

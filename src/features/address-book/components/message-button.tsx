@@ -29,12 +29,14 @@ const MessageButton = ({ phoneNumber }: { phoneNumber: string }) => {
       onPress={handleMessage}
     >
       <Mail size={14} color={themeColors.primary} />
-      <Text style={{
-        marginLeft: 4,
-        fontSize: 12,
-        fontWeight: '500',
-        color: themeColors.primary,
-      }}>
+      <Text
+        style={{
+          marginLeft: 4,
+          fontSize: 12,
+          fontWeight: '500',
+          color: themeColors.primary,
+        }}
+      >
         {isEnglish ? 'Message' : '문자'}
       </Text>
     </TouchableOpacity>

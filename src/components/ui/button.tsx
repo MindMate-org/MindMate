@@ -101,17 +101,19 @@ const Button = ({
       activeOpacity={activeOpacity}
       style={[
         {
-          ...(isFloating ? {
-            backgroundColor: themeColors.primary,
-            shadowColor: themeColors.shadow,
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: isDark ? 0.4 : 0.2,
-            shadowRadius: 8,
-            elevation: 8,
-          } : {}),
+          ...(isFloating
+            ? {
+                backgroundColor: themeColors.primary,
+                shadowColor: themeColors.shadow,
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: isDark ? 0.4 : 0.2,
+                shadowRadius: 8,
+                elevation: 8,
+              }
+            : {}),
           ...(isFloating && size === 'md' ? { transform: [{ scale: disabled ? 0.95 : 1 }] } : {}),
         },
-        style
+        style,
       ]}
     >
       {loading ? (
@@ -119,10 +121,9 @@ const Button = ({
       ) : (
         <>
           {isFloating ? (
-            <Text 
-              className={getTextStyles()}
-              style={{ color: themeColors.primaryText }}
-            >{text}</Text>
+            <Text className={getTextStyles()} style={{ color: themeColors.primaryText }}>
+              {text}
+            </Text>
           ) : (
             children
           )}

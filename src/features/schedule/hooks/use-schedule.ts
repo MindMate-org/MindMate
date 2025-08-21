@@ -14,7 +14,7 @@ export const useSchedules = () => {
       const data = await fetchGetSchedules();
       setSchedules(data);
     } catch (error) {
-      } finally {
+    } finally {
       setLoading(false);
     }
   }, []);
@@ -42,7 +42,7 @@ export const useSchedulesByDate = (date: string) => {
       const data = await fetchGetSchedulesByDate(date);
       setSchedules(data);
     } catch (error) {
-      } finally {
+    } finally {
       setLoading(false);
     }
   }, [date]);

@@ -41,7 +41,7 @@ const BaseModal: React.FC<BaseModalProps> = ({
   preventOutsideTouch = false,
 }) => {
   const { theme: themeColors } = useThemeColors();
-  
+
   return (
     <Modal
       visible={visible}

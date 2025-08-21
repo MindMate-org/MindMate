@@ -76,7 +76,9 @@ const SearchForm = () => {
       });
     } catch (error) {
       console.error('Form initialization error:', error);
-      CustomAlertManager.error(t.locale.startsWith('en') ? 'Form initialization error.' : '폼 초기화 오류가 발생했습니다.');
+      CustomAlertManager.error(
+        t.locale.startsWith('en') ? 'Form initialization error.' : '폼 초기화 오류가 발생했습니다.',
+      );
     }
   };
   useEffect(() => {
@@ -113,12 +115,18 @@ const SearchForm = () => {
           await fetchInsertMedia(mediaItems, 'search', lastInsertRowId);
         }
       });
-      
-      await CustomAlertManager.success(t.locale.startsWith('en') ? 'Item saved successfully.' : '물건이 저장되었습니다.');
+
+      await CustomAlertManager.success(
+        t.locale.startsWith('en') ? 'Item saved successfully.' : '물건이 저장되었습니다.',
+      );
       router.back();
     } catch (error) {
       console.error('Item save failed:', error);
-      CustomAlertManager.error(t.locale.startsWith('en') ? 'An error occurred while saving the item.' : '물건 저장 중 오류가 발생했습니다.');
+      CustomAlertManager.error(
+        t.locale.startsWith('en')
+          ? 'An error occurred while saving the item.'
+          : '물건 저장 중 오류가 발생했습니다.',
+      );
       return;
     }
   };
@@ -131,12 +139,18 @@ const SearchForm = () => {
         type: item.type as 'image' | 'video' | 'livePhoto' | 'pairedVideo' | undefined,
       }));
       await fetchUpdateSearchById(+id, data, mediaItems);
-      
-      await CustomAlertManager.success(t.locale.startsWith('en') ? 'Item updated successfully.' : '물건이 수정되었습니다.');
+
+      await CustomAlertManager.success(
+        t.locale.startsWith('en') ? 'Item updated successfully.' : '물건이 수정되었습니다.',
+      );
       router.back();
     } catch (error) {
       console.error('Item update failed:', error);
-      CustomAlertManager.error(t.locale.startsWith('en') ? 'An error occurred while updating the item.' : '물건 수정 중 오류가 발생했습니다.');
+      CustomAlertManager.error(
+        t.locale.startsWith('en')
+          ? 'An error occurred while updating the item.'
+          : '물건 수정 중 오류가 발생했습니다.',
+      );
       return;
     }
   };
@@ -160,7 +174,7 @@ const SearchForm = () => {
   const handleCancel = async () => {
     const confirmed = await CustomAlertManager.confirm(
       t.locale.startsWith('en') ? 'Confirm' : '확인',
-      t.locale.startsWith('en') ? 'Do you want to cancel writing?' : '작성을 취소하시겠습니까?'
+      t.locale.startsWith('en') ? 'Do you want to cancel writing?' : '작성을 취소하시겠습니까?',
     );
     if (confirmed) {
       router.back();
@@ -178,45 +192,54 @@ const SearchForm = () => {
     useCallback(() => {
       const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
       return () => subscription.remove();
-    }, [handleBackPress])
+    }, [handleBackPress]),
   );
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
         {/* 헤더 */}
-        <View style={{
-          paddingTop: 40, // 상태바 아래 여백
-          borderTopLeftRadius: 12,
-          borderTopRightRadius: 12,
-          backgroundColor: themeColors.surface,
-          paddingHorizontal: 16,
-          paddingVertical: 16,
-          shadowColor: themeColors.shadow,
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: isDark ? 0.3 : 0.1,
-          shadowRadius: 4,
-          elevation: 2,
-        }}>
-          <View style={{
-            marginTop: 0,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
-          }}>
-            <TouchableOpacity
-              onPress={handleCancel}
-              style={{ position: 'absolute', left: 0 }}
-            >
+        <View
+          style={{
+            paddingTop: 40, // 상태바 아래 여백
+            borderTopLeftRadius: 12,
+            borderTopRightRadius: 12,
+            backgroundColor: themeColors.surface,
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+            shadowColor: themeColors.shadow,
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: isDark ? 0.3 : 0.1,
+            shadowRadius: 4,
+            elevation: 2,
+          }}
+        >
+          <View
+            style={{
+              marginTop: 0,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative',
+            }}
+          >
+            <TouchableOpacity onPress={handleCancel} style={{ position: 'absolute', left: 0 }}>
               <Ionicons name="arrow-back" size={24} color={themeColors.primary} />
             </TouchableOpacity>
-            <Text style={{
-              fontSize: 18,
-              fontWeight: 'bold',
-              color: themeColors.primary,
-            }}>
-              {id ? (t.locale.startsWith('en') ? 'Edit Item' : '물건 수정') : (t.locale.startsWith('en') ? 'Register Item' : '물건 등록')}
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: 'bold',
+                color: themeColors.primary,
+              }}
+            >
+              {id
+                ? t.locale.startsWith('en')
+                  ? 'Edit Item'
+                  : '물건 수정'
+                : t.locale.startsWith('en')
+                  ? 'Register Item'
+                  : '물건 등록'}
             </Text>
           </View>
         </View>
@@ -226,12 +249,12 @@ const SearchForm = () => {
           keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
           style={{ flex: 1 }}
         >
-          <ScrollView 
-            style={{ 
-              flex: 1, 
+          <ScrollView
+            style={{
+              flex: 1,
               backgroundColor: themeColors.surface,
               paddingHorizontal: 16,
-            }} 
+            }}
             keyboardShouldPersistTaps="handled"
           >
             <View style={{ paddingBottom: 24 }}>
@@ -241,7 +264,11 @@ const SearchForm = () => {
                 render={({ field: { onChange, value, onBlur } }) => (
                   <FormInput
                     label={t.locale.startsWith('en') ? 'Item Name' : '물건 이름'}
-                    placeholder={t.locale.startsWith('en') ? 'Please enter item name' : '물건 이름을 입력해 주세요'}
+                    placeholder={
+                      t.locale.startsWith('en')
+                        ? 'Please enter item name'
+                        : '물건 이름을 입력해 주세요'
+                    }
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -251,19 +278,25 @@ const SearchForm = () => {
                   />
                 )}
               />
-              <View style={{
-                zIndex: 10,
-                marginBottom: 36,
-                width: '100%',
-                alignItems: 'flex-start',
-                justifyContent: 'center',
-                gap: 8,
-              }}>
-                <Text style={{
-                  fontSize: 14,
-                  fontWeight: '500',
-                  color: themeColors.text,
-                }}>{t.locale.startsWith('en') ? 'Category' : '카테고리'}</Text>
+              <View
+                style={{
+                  zIndex: 10,
+                  marginBottom: 36,
+                  width: '100%',
+                  alignItems: 'flex-start',
+                  justifyContent: 'center',
+                  gap: 8,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: '500',
+                    color: themeColors.text,
+                  }}
+                >
+                  {t.locale.startsWith('en') ? 'Category' : '카테고리'}
+                </Text>
                 <Controller
                   name="category"
                   control={control}
@@ -281,10 +314,14 @@ const SearchForm = () => {
                 />
                 <View style={{ height: 20 }}>
                   {errors.category && (
-                    <Text style={{
-                      fontSize: 12,
-                      color: themeColors.error,
-                    }}>{errors.category.message}</Text>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        color: themeColors.error,
+                      }}
+                    >
+                      {errors.category.message}
+                    </Text>
                   )}
                 </View>
               </View>
@@ -294,7 +331,11 @@ const SearchForm = () => {
                 render={({ field: { onChange, value, onBlur } }) => (
                   <FormInput
                     label={t.locale.startsWith('en') ? 'Brief Location' : '간략한 위치'}
-                    placeholder={t.locale.startsWith('en') ? 'Please enter brief location' : '간략한 위치를 입력해 주세요'}
+                    placeholder={
+                      t.locale.startsWith('en')
+                        ? 'Please enter brief location'
+                        : '간략한 위치를 입력해 주세요'
+                    }
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -310,7 +351,11 @@ const SearchForm = () => {
                 render={({ field: { onChange, value } }) => (
                   <FormInput
                     label={t.locale.startsWith('en') ? 'Detailed Location' : '상세 위치'}
-                    placeholder={t.locale.startsWith('en') ? 'Please enter detailed location' : '상세 위치를 입력해 주세요'}
+                    placeholder={
+                      t.locale.startsWith('en')
+                        ? 'Please enter detailed location'
+                        : '상세 위치를 입력해 주세요'
+                    }
                     value={value ?? ''}
                     onChangeText={onChange}
                     variant="search"
@@ -321,10 +366,12 @@ const SearchForm = () => {
                 )}
               />
 
-              <View style={{ 
-                marginBottom: 32, 
-                width: '100%' 
-              }}>
+              <View
+                style={{
+                  marginBottom: 32,
+                  width: '100%',
+                }}
+              >
                 <MediaPicker
                   mediaList={images}
                   onAddMedia={handleAddImage}
@@ -335,12 +382,14 @@ const SearchForm = () => {
                 />
               </View>
             </View>
-            <View style={{ 
-              width: '100%', 
-              flexDirection: 'row', 
-              gap: 12,
-              marginTop: 24
-            }}>
+            <View
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                gap: 12,
+                marginTop: 24,
+              }}
+            >
               <TouchableOpacity
                 style={{
                   flex: 1,
@@ -354,13 +403,21 @@ const SearchForm = () => {
                     : () => handleSubmit(handleFormSubmit)()
                 }
               >
-                <Text style={{
-                  textAlign: 'center',
-                  fontSize: 16,
-                  fontWeight: '500',
-                  color: themeColors.primaryText,
-                }}>
-                  {id ? (t.locale.startsWith('en') ? 'Update' : '수정하기') : (t.locale.startsWith('en') ? 'Register' : '등록하기')}
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    fontSize: 16,
+                    fontWeight: '500',
+                    color: themeColors.primaryText,
+                  }}
+                >
+                  {id
+                    ? t.locale.startsWith('en')
+                      ? 'Update'
+                      : '수정하기'
+                    : t.locale.startsWith('en')
+                      ? 'Register'
+                      : '등록하기'}
                 </Text>
               </TouchableOpacity>
 
@@ -373,12 +430,16 @@ const SearchForm = () => {
                 }}
                 onPress={handleCancel}
               >
-                <Text style={{
-                  textAlign: 'center',
-                  fontSize: 16,
-                  fontWeight: '500',
-                  color: '#576BCD',
-                }}>{t.locale.startsWith('en') ? 'Cancel' : '취소하기'}</Text>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    fontSize: 16,
+                    fontWeight: '500',
+                    color: '#576BCD',
+                  }}
+                >
+                  {t.locale.startsWith('en') ? 'Cancel' : '취소하기'}
+                </Text>
               </TouchableOpacity>
             </View>
           </ScrollView>

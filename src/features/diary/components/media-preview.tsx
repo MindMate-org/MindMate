@@ -77,8 +77,7 @@ const MediaPreview = ({ media, onRemove, isUploading = false }: MediaPreviewProp
           [item.id]: { ...prev[item.id], isPlaying: true },
         }));
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   };
 
   return (

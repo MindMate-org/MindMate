@@ -80,7 +80,7 @@ export const fetchGetRoutines = async (
 
     // 날짜 필터링 (해당 날짜에 생성된 루틴 또는 이전에 생성된 루틴 중 해당 날짜에 실행되어야 하는 루틴)
     if (options.date) {
-      conditions.push("DATE(r.created_at) <= DATE(?)");
+      conditions.push('DATE(r.created_at) <= DATE(?)');
       params.push(options.date); // 'YYYY-MM-DD'만 전달
     }
 

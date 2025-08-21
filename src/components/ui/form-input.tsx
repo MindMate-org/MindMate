@@ -59,11 +59,7 @@ const FormInput: React.FC<FormInputPropsType> = ({
       fontSize: variant === 'compact' ? 14 : 16,
       color: disabled ? themeColors.textSecondary : themeColors.text,
       borderWidth: variant === 'search' ? 0 : 1,
-      borderColor: error 
-        ? themeColors.error 
-        : disabled 
-        ? themeColors.border 
-        : themeColors.border,
+      borderColor: error ? themeColors.error : disabled ? themeColors.border : themeColors.border,
       shadowColor: themeColors.shadow,
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: isDark ? 0.2 : 0.1,
@@ -78,22 +74,32 @@ const FormInput: React.FC<FormInputPropsType> = ({
     <View style={{ width: '100%' }}>
       {/* 라벨 */}
       {label && (
-        <View style={{
-          marginBottom: 8,
-          flexDirection: 'row',
-          alignItems: 'center',
-        }}>
-          <Text style={{
-            fontSize: 14,
-            fontWeight: '500',
-            color: themeColors.text,
-          }}>{label}</Text>
-          {required && (
-            <Text style={{
-              marginLeft: 4,
+        <View
+          style={{
+            marginBottom: 8,
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}
+        >
+          <Text
+            style={{
               fontSize: 14,
-              color: themeColors.error,
-            }}>*</Text>
+              fontWeight: '500',
+              color: themeColors.text,
+            }}
+          >
+            {label}
+          </Text>
+          {required && (
+            <Text
+              style={{
+                marginLeft: 4,
+                fontSize: 14,
+                color: themeColors.error,
+              }}
+            >
+              *
+            </Text>
           )}
         </View>
       )}
@@ -117,11 +123,15 @@ const FormInput: React.FC<FormInputPropsType> = ({
 
       {/* 에러 메시지 */}
       {error && (
-        <Text style={{
-          marginTop: 4,
-          fontSize: 12,
-          color: themeColors.error,
-        }}>{error}</Text>
+        <Text
+          style={{
+            marginTop: 4,
+            fontSize: 12,
+            color: themeColors.error,
+          }}
+        >
+          {error}
+        </Text>
       )}
     </View>
   );

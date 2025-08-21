@@ -98,65 +98,85 @@ const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
   return (
     <View style={{ width: '100%' }}>
       {/* 헤더 */}
-      <View style={{
-        marginBottom: 24,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}>
-        <TouchableOpacity 
-          onPress={goToPreviousMonth} 
+      <View
+        style={{
+          marginBottom: 24,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <TouchableOpacity
+          onPress={goToPreviousMonth}
           style={{
             backgroundColor: themeColors.accent,
             borderRadius: 16,
             padding: 8,
           }}
         >
-          <Text style={{
-            color: themeColors.primary,
-            fontSize: 18,
-            fontWeight: 'bold',
-          }}>‹</Text>
+          <Text
+            style={{
+              color: themeColors.primary,
+              fontSize: 18,
+              fontWeight: 'bold',
+            }}
+          >
+            ‹
+          </Text>
         </TouchableOpacity>
-        <Text style={{
-          color: themeColors.text,
-          fontSize: 20,
-          fontWeight: 'bold',
-        }}>
+        <Text
+          style={{
+            color: themeColors.text,
+            fontSize: 20,
+            fontWeight: 'bold',
+          }}
+        >
           {formatMonthYear(currentMonth, t.locale)}
         </Text>
-        <TouchableOpacity 
-          onPress={goToNextMonth} 
+        <TouchableOpacity
+          onPress={goToNextMonth}
           style={{
             backgroundColor: themeColors.accent,
             borderRadius: 16,
             padding: 8,
           }}
         >
-          <Text style={{
-            color: themeColors.primary,
-            fontSize: 18,
-            fontWeight: 'bold',
-          }}>›</Text>
+          <Text
+            style={{
+              color: themeColors.primary,
+              fontSize: 18,
+              fontWeight: 'bold',
+            }}
+          >
+            ›
+          </Text>
         </TouchableOpacity>
       </View>
 
       {/* 요일 헤더 */}
-      <View style={{
-        marginBottom: 16,
-        flexDirection: 'row',
-      }}>
+      <View
+        style={{
+          marginBottom: 16,
+          flexDirection: 'row',
+        }}
+      >
         {weekDays.map((day, index) => (
-          <View key={day} style={{
-            flex: 1,
-            alignItems: 'center',
-            paddingVertical: 8,
-          }}>
-            <Text style={{
-              fontSize: 14,
-              fontWeight: '500',
-              color: index === 0 ? '#EF4444' : index === 6 ? '#3B82F6' : themeColors.textSecondary,
-            }}>
+          <View
+            key={day}
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              paddingVertical: 8,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 14,
+                fontWeight: '500',
+                color:
+                  index === 0 ? '#EF4444' : index === 6 ? '#3B82F6' : themeColors.textSecondary,
+              }}
+            >
               {day}
             </Text>
           </View>
@@ -164,10 +184,12 @@ const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
       </View>
 
       {/* 날짜 그리드 */}
-      <View style={{
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-      }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+        }}
+      >
         {calendarDates.map((date, index) => {
           const isCurrentMonthDate = isCurrentMonth(date);
           const isTodayDate = isToday(date);
@@ -183,24 +205,26 @@ const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 borderRadius: 24,
-                backgroundColor: isSelectedDate 
-                  ? themeColors.primary 
-                  : isTodayDate 
-                    ? themeColors.accent 
+                backgroundColor: isSelectedDate
+                  ? themeColors.primary
+                  : isTodayDate
+                    ? themeColors.accent
                     : 'transparent',
               }}
             >
-              <Text style={{
-                fontSize: 14,
-                fontWeight: '500',
-                color: isSelectedDate
-                  ? themeColors.primaryText
-                  : isTodayDate
-                    ? themeColors.primary
-                    : isCurrentMonthDate
-                      ? themeColors.text
-                      : themeColors.textSecondary,
-              }}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: '500',
+                  color: isSelectedDate
+                    ? themeColors.primaryText
+                    : isTodayDate
+                      ? themeColors.primary
+                      : isCurrentMonthDate
+                        ? themeColors.text
+                        : themeColors.textSecondary,
+                }}
+              >
                 {date.getDate()}
               </Text>
             </TouchableOpacity>

@@ -9,13 +9,15 @@ type AddressBookNameProps = {
 
 const AddressBookName = ({ children }: AddressBookNameProps) => {
   const { theme: themeColors } = useThemeColors();
-  
+
   return (
-    <Text style={{
-      fontSize: 20,
-      fontWeight: 'bold',
-      color: themeColors.text,
-    }}>
+    <Text
+      style={{
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: themeColors.text,
+      }}
+    >
       {children}
     </Text>
   );

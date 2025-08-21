@@ -49,7 +49,7 @@ const FormEditContact = ({ id }: { id: string }) => {
   const { t } = useI18n();
   const setUserName = useSetUserName();
   const isEnglish = t.locale.startsWith('en');
-  
+
   // URL 쿼리 파라미터에서 isMyInfo 확인
   const params = useLocalSearchParams();
   const isMyInfo = params.isMyInfo === 'true';
@@ -132,12 +132,12 @@ const FormEditContact = ({ id }: { id: string }) => {
           memo,
           profile_image: image,
         });
-        
+
         // 내 정보인 경우 글로벌 userName도 업데이트
         if (data?.is_me === 1) {
           setUserName(name);
         }
-        
+
         refetch();
         // 주소록 목록 캐시 무효화
         invalidateQueries('address-book-contacts');
@@ -145,7 +145,9 @@ const FormEditContact = ({ id }: { id: string }) => {
         if (data?.is_me === 1) {
           invalidateQueries('my-contact');
         }
-        await CustomAlertManager.success(isEnglish ? 'Contact has been updated.' : '연락처가 수정되었습니다.');
+        await CustomAlertManager.success(
+          isEnglish ? 'Contact has been updated.' : '연락처가 수정되었습니다.',
+        );
         router.push('/address-book');
       } else if (mode === MODE.NEW) {
         await AddressBookService.fetchCreateContact({
@@ -158,7 +160,7 @@ const FormEditContact = ({ id }: { id: string }) => {
           updated_at: new Date().toISOString(),
           deleted_at: null,
         });
-        
+
         // 내 정보인 경우 글로벌 userName도 설정
         if (isMyInfo) {
           setUserName(name);
@@ -168,36 +170,48 @@ const FormEditContact = ({ id }: { id: string }) => {
         if (isMyInfo) {
           invalidateQueries('my-contact');
         }
-        await CustomAlertManager.success(isEnglish ? 'Contact has been created.' : '연락처가 생성되었습니다.');
+        await CustomAlertManager.success(
+          isEnglish ? 'Contact has been created.' : '연락처가 생성되었습니다.',
+        );
         router.push('/address-book');
       }
     } catch (error) {
-      CustomAlertManager.error(isEnglish ? 'An error occurred while saving the contact.' : '연락처 저장 중 오류가 발생했습니다.');
+      CustomAlertManager.error(
+        isEnglish
+          ? 'An error occurred while saving the contact.'
+          : '연락처 저장 중 오류가 발생했습니다.',
+      );
     }
   };
 
   return (
-    <View style={{
-      marginBottom: 24,
-      borderRadius: 12,
-      backgroundColor: themeColors.surface,
-      padding: 24,
-      shadowColor: themeColors.shadow,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: isDark ? 0.3 : 0.1,
-      shadowRadius: 4,
-      elevation: 3,
-    }}>
-      {/* 프로필 섹션 */}
-      <View style={{
+    <View
+      style={{
         marginBottom: 24,
-        flexDirection: 'row',
-        alignItems: 'flex-start',
-      }}>
-        <View style={{
-          marginRight: 16,
-          flex: 1,
-        }}>
+        borderRadius: 12,
+        backgroundColor: themeColors.surface,
+        padding: 24,
+        shadowColor: themeColors.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: isDark ? 0.3 : 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+      }}
+    >
+      {/* 프로필 섹션 */}
+      <View
+        style={{
+          marginBottom: 24,
+          flexDirection: 'row',
+          alignItems: 'flex-start',
+        }}
+      >
+        <View
+          style={{
+            marginRight: 16,
+            flex: 1,
+          }}
+        >
           <FormInput
             value={name}
             onChangeText={setName}
@@ -228,26 +242,36 @@ const FormEditContact = ({ id }: { id: string }) => {
       {/* 추가 연락처 정보 */}
       {customFields.length > 0 && (
         <View style={{ marginBottom: 24 }}>
-          <Text style={{
-            marginBottom: 12,
-            fontSize: 18,
-            fontWeight: 'bold',
-            color: themeColors.text,
-          }}>{isEnglish ? 'Additional Information' : '추가 정보'}</Text>
+          <Text
+            style={{
+              marginBottom: 12,
+              fontSize: 18,
+              fontWeight: 'bold',
+              color: themeColors.text,
+            }}
+          >
+            {isEnglish ? 'Additional Information' : '추가 정보'}
+          </Text>
 
           {customFields.map((field) => (
             <View key={field.id} style={{ marginBottom: 16 }}>
-              <View style={{
-                marginBottom: 8,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
-                <Text style={{
-                  fontSize: 14,
-                  fontWeight: '500',
-                  color: themeColors.text,
-                }}>{field.label}</Text>
+              <View
+                style={{
+                  marginBottom: 8,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: '500',
+                    color: themeColors.text,
+                  }}
+                >
+                  {field.label}
+                </Text>
                 <TouchableOpacity
                   onPress={() => removeCustomField(field.id)}
                   style={{
@@ -297,12 +321,16 @@ const FormEditContact = ({ id }: { id: string }) => {
           onPress={() => setShowFieldOptions(true)}
         >
           <Plus size={20} color={themeColors.primary} />
-          <Text style={{
-            marginLeft: 8,
-            fontSize: 14,
-            fontWeight: '500',
-            color: themeColors.primary,
-          }}>{isEnglish ? 'Add Information' : '정보 추가'}</Text>
+          <Text
+            style={{
+              marginLeft: 8,
+              fontSize: 14,
+              fontWeight: '500',
+              color: themeColors.primary,
+            }}
+          >
+            {isEnglish ? 'Add Information' : '정보 추가'}
+          </Text>
         </TouchableOpacity>
 
         {/* 필드 옵션 선택 */}
@@ -322,7 +350,10 @@ const FormEditContact = ({ id }: { id: string }) => {
           value={memo}
           onChangeText={setMemo}
           label={isEnglish ? 'Memo' : '메모'}
-          placeholder={placeHolder[mode].description || (isEnglish ? 'Enter a simple description' : '간단한 설명을 입력하세요')}
+          placeholder={
+            placeHolder[mode].description ||
+            (isEnglish ? 'Enter a simple description' : '간단한 설명을 입력하세요')
+          }
           multiline
           height={80}
         />
@@ -343,13 +374,21 @@ const FormEditContact = ({ id }: { id: string }) => {
         }}
         onPress={handleSave}
       >
-        <Text style={{
-          textAlign: 'center',
-          fontSize: 16,
-          fontWeight: '600',
-          color: themeColors.primaryText,
-        }}>
-          {mode === MODE.EDIT ? (isEnglish ? 'Update' : '수정하기') : (isEnglish ? 'Save' : '저장하기')}
+        <Text
+          style={{
+            textAlign: 'center',
+            fontSize: 16,
+            fontWeight: '600',
+            color: themeColors.primaryText,
+          }}
+        >
+          {mode === MODE.EDIT
+            ? isEnglish
+              ? 'Update'
+              : '수정하기'
+            : isEnglish
+              ? 'Save'
+              : '저장하기'}
         </Text>
       </TouchableOpacity>
     </View>
@@ -374,7 +413,9 @@ const FieldSelectionModal = ({
 
   const handleAddCustomField = () => {
     if (!customLabel.trim()) {
-      CustomAlertManager.error(isEnglish ? 'Please enter a field name.' : '필드 이름을 입력해주세요.');
+      CustomAlertManager.error(
+        isEnglish ? 'Please enter a field name.' : '필드 이름을 입력해주세요.',
+      );
       return;
     }
     onSelectCustom(customLabel.trim(), customType);
@@ -393,33 +434,41 @@ const FieldSelectionModal = ({
   const { theme: themeColors } = useThemeColors();
 
   return (
-    <View style={{
-      marginTop: 16,
-      borderRadius: 8,
-      backgroundColor: themeColors.surface,
-      padding: 16,
-      shadowColor: themeColors.shadow,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 2,
-    }}>
+    <View
+      style={{
+        marginTop: 16,
+        borderRadius: 8,
+        backgroundColor: themeColors.surface,
+        padding: 16,
+        shadowColor: themeColors.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
+      }}
+    >
       {!showCustomInput ? (
         <>
-          <Text style={{
-            fontSize: 14,
-            fontWeight: '500',
-            color: themeColors.text,
-            marginBottom: 12,
-          }}>{isEnglish ? 'Select information to add:' : '추가할 정보 선택:'}</Text>
+          <Text
+            style={{
+              fontSize: 14,
+              fontWeight: '500',
+              color: themeColors.text,
+              marginBottom: 12,
+            }}
+          >
+            {isEnglish ? 'Select information to add:' : '추가할 정보 선택:'}
+          </Text>
 
           {/* 미리 정의된 옵션들 */}
-          <View style={{
-            marginBottom: 16,
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            gap: 8,
-          }}>
+          <View
+            style={{
+              marginBottom: 16,
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              gap: 8,
+            }}
+          >
             {fieldOptions.map((option, index) => (
               <TouchableOpacity
                 key={index}
@@ -431,11 +480,15 @@ const FieldSelectionModal = ({
                 }}
                 onPress={() => onSelectPredefined(option)}
               >
-                <Text style={{
-                  fontSize: 14,
-                  fontWeight: '500',
-                  color: themeColors.primary,
-                }}>{option.label}</Text>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: '500',
+                    color: themeColors.primary,
+                  }}
+                >
+                  {option.label}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -451,23 +504,29 @@ const FieldSelectionModal = ({
             }}
             onPress={() => setShowCustomInput(true)}
           >
-            <View style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
               <Plus size={16} color={themeColors.success} />
-              <Text style={{
-                marginLeft: 8,
-                fontSize: 14,
-                fontWeight: '500',
-                color: themeColors.success,
-              }}>{isEnglish ? 'Custom Input' : '직접 입력하기'}</Text>
+              <Text
+                style={{
+                  marginLeft: 8,
+                  fontSize: 14,
+                  fontWeight: '500',
+                  color: themeColors.success,
+                }}
+              >
+                {isEnglish ? 'Custom Input' : '직접 입력하기'}
+              </Text>
             </View>
           </TouchableOpacity>
 
           {/* 취소 버튼 */}
-          <TouchableOpacity 
+          <TouchableOpacity
             style={{
               borderRadius: 8,
               backgroundColor: '#FEF3C7',
@@ -476,22 +535,30 @@ const FieldSelectionModal = ({
             }}
             onPress={onClose}
           >
-            <Text style={{
-              textAlign: 'center',
-              fontSize: 14,
-              fontWeight: '500',
-              color: '#576BCD', // 커스텀 알러트 취소 버튼과 동일한 색상
-            }}>{isEnglish ? 'Cancel' : '취소'}</Text>
+            <Text
+              style={{
+                textAlign: 'center',
+                fontSize: 14,
+                fontWeight: '500',
+                color: '#576BCD', // 커스텀 알러트 취소 버튼과 동일한 색상
+              }}
+            >
+              {isEnglish ? 'Cancel' : '취소'}
+            </Text>
           </TouchableOpacity>
         </>
       ) : (
         <>
-          <Text style={{
-            fontSize: 14,
-            fontWeight: '500',
-            color: themeColors.text,
-            marginBottom: 12,
-          }}>{isEnglish ? 'Add New Information:' : '새 정보 추가:'}</Text>
+          <Text
+            style={{
+              fontSize: 14,
+              fontWeight: '500',
+              color: themeColors.text,
+              marginBottom: 12,
+            }}
+          >
+            {isEnglish ? 'Add New Information:' : '새 정보 추가:'}
+          </Text>
 
           {/* 필드 이름 입력 */}
           <View style={{ marginBottom: 16 }}>
@@ -499,23 +566,31 @@ const FieldSelectionModal = ({
               value={customLabel}
               onChangeText={setCustomLabel}
               label={isEnglish ? 'Field Name' : '필드 이름'}
-              placeholder={isEnglish ? 'e.g. Hobby, School, Colleague, etc.' : '예: 취미, 학교, 직장동료 등'}
+              placeholder={
+                isEnglish ? 'e.g. Hobby, School, Colleague, etc.' : '예: 취미, 학교, 직장동료 등'
+              }
               variant="compact"
             />
           </View>
 
           {/* 필드 타입 선택 */}
           <View style={{ marginBottom: 16 }}>
-            <Text style={{
-              fontSize: 12,
-              fontWeight: '500',
-              color: themeColors.textSecondary,
-              marginBottom: 8,
-            }}>{isEnglish ? 'Input Type' : '입력 타입'}</Text>
-            <View style={{
-              flexDirection: 'row',
-              gap: 8,
-            }}>
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: '500',
+                color: themeColors.textSecondary,
+                marginBottom: 8,
+              }}
+            >
+              {isEnglish ? 'Input Type' : '입력 타입'}
+            </Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                gap: 8,
+              }}
+            >
               {FIELD_TYPE_OPTIONS.map((option) => (
                 <TouchableOpacity
                   key={option.value}
@@ -523,19 +598,18 @@ const FieldSelectionModal = ({
                     borderRadius: 8,
                     paddingHorizontal: 12,
                     paddingVertical: 8,
-                    backgroundColor: customType === option.value 
-                      ? themeColors.primary 
-                      : themeColors.accent,
+                    backgroundColor:
+                      customType === option.value ? themeColors.primary : themeColors.accent,
                   }}
                   onPress={() => setCustomType(option.value)}
                 >
-                  <Text style={{
-                    fontSize: 12,
-                    fontWeight: '500',
-                    color: customType === option.value 
-                      ? themeColors.primaryText 
-                      : '#576BCD', // 커스텀 알러트 취소 버튼과 동일한 색상
-                  }}>
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: '500',
+                      color: customType === option.value ? themeColors.primaryText : '#576BCD', // 커스텀 알러트 취소 버튼과 동일한 색상
+                    }}
+                  >
                     {option.label}
                   </Text>
                 </TouchableOpacity>
@@ -544,10 +618,12 @@ const FieldSelectionModal = ({
           </View>
 
           {/* 버튼들 */}
-          <View style={{
-            flexDirection: 'row',
-            gap: 8,
-          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              gap: 8,
+            }}
+          >
             <TouchableOpacity
               style={{
                 flex: 1,
@@ -561,12 +637,16 @@ const FieldSelectionModal = ({
                 setCustomType('text');
               }}
             >
-              <Text style={{
-                textAlign: 'center',
-                fontSize: 14,
-                fontWeight: '500',
-                color: '#576BCD', // 커스텀 알러트 취소 버튼과 동일한 색상
-              }}>{isEnglish ? 'Back' : '뒤로'}</Text>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  fontSize: 14,
+                  fontWeight: '500',
+                  color: '#576BCD', // 커스텀 알러트 취소 버튼과 동일한 색상
+                }}
+              >
+                {isEnglish ? 'Back' : '뒤로'}
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -578,12 +658,16 @@ const FieldSelectionModal = ({
               }}
               onPress={handleAddCustomField}
             >
-              <Text style={{
-                textAlign: 'center',
-                fontSize: 14,
-                fontWeight: '500',
-                color: themeColors.primaryText,
-              }}>{isEnglish ? 'Add' : '추가'}</Text>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  fontSize: 14,
+                  fontWeight: '500',
+                  color: themeColors.primaryText,
+                }}
+              >
+                {isEnglish ? 'Add' : '추가'}
+              </Text>
             </TouchableOpacity>
           </View>
         </>

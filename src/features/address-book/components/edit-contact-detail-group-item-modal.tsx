@@ -44,7 +44,7 @@ const EditContactDetailGroupItemModal = ({
     borderBottomColor: themeColors.border,
     borderRadius: 6,
     padding: 8,
-    fontWeight: 'bold',
+    fontWeight: 'bold' as const,
     fontSize: 16,
     backgroundColor: themeColors.surface,
     color: themeColors.text,

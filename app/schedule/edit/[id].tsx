@@ -49,7 +49,7 @@ const EditSchedulePage = () => {
         fetchGetScheduleById(scheduleId),
         fetchGetMediaByScheduleId(scheduleId),
       ]);
-      
+
       if (data) {
         setSchedule(data);
         setLocation(data.location || '');
@@ -76,12 +76,18 @@ const EditSchedulePage = () => {
           },
         });
       } else {
-        CustomAlertManager.error(t.locale.startsWith('en') ? 'Schedule not found.' : '일정을 찾을 수 없습니다.');
+        CustomAlertManager.error(
+          t.locale.startsWith('en') ? 'Schedule not found.' : '일정을 찾을 수 없습니다.',
+        );
         router.back();
       }
     } catch (error) {
       console.error('Error loading schedule:', error);
-      CustomAlertManager.error(t.locale.startsWith('en') ? 'An error occurred while loading the schedule.' : '일정을 불러오는 중 문제가 발생했습니다.');
+      CustomAlertManager.error(
+        t.locale.startsWith('en')
+          ? 'An error occurred while loading the schedule.'
+          : '일정을 불러오는 중 문제가 발생했습니다.',
+      );
     } finally {
       setLoading(false);
     }
@@ -116,14 +122,22 @@ const EditSchedulePage = () => {
           });
         }
 
-        await CustomAlertManager.success(t.locale.startsWith('en') ? 'Schedule has been updated.' : '일정이 수정되었습니다.');
+        await CustomAlertManager.success(
+          t.locale.startsWith('en') ? 'Schedule has been updated.' : '일정이 수정되었습니다.',
+        );
         router.back();
       } else {
-        CustomAlertManager.error(t.locale.startsWith('en') ? 'Failed to update schedule.' : '일정 수정에 실패했습니다.');
+        CustomAlertManager.error(
+          t.locale.startsWith('en') ? 'Failed to update schedule.' : '일정 수정에 실패했습니다.',
+        );
       }
     } catch (error) {
       console.error('Error updating schedule:', error);
-      CustomAlertManager.error(t.locale.startsWith('en') ? 'An error occurred while updating the schedule.' : '일정 수정 중 문제가 발생했습니다.');
+      CustomAlertManager.error(
+        t.locale.startsWith('en')
+          ? 'An error occurred while updating the schedule.'
+          : '일정 수정 중 문제가 발생했습니다.',
+      );
     }
   };
 
@@ -133,28 +147,42 @@ const EditSchedulePage = () => {
 
   const handleAlarmPress = () => {
     // TODO: 알림 설정 모달 구현
-    CustomAlertManager.info(t.locale.startsWith('en') ? 'Notification settings feature will be added soon.' : '알림 설정 기능은 곧 추가될 예정입니다.');
+    CustomAlertManager.info(
+      t.locale.startsWith('en')
+        ? 'Notification settings feature will be added soon.'
+        : '알림 설정 기능은 곧 추가될 예정입니다.',
+    );
   };
 
   if (loading) {
     return (
-      <SafeAreaView style={{ 
-        flex: 1, 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        backgroundColor: themeColors.background 
-      }}>
+      <SafeAreaView
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: themeColors.background,
+        }}
+      >
         <ActivityIndicator size="large" color={themeColors.primary} />
-        <Text style={{ 
-          marginTop: 8, 
-          color: themeColors.text 
-        }}>{t.locale.startsWith('en') ? 'Loading...' : '로딩 중...'}</Text>
+        <Text
+          style={{
+            marginTop: 8,
+            color: themeColors.text,
+          }}
+        >
+          {t.locale.startsWith('en') ? 'Loading...' : '로딩 중...'}
+        </Text>
       </SafeAreaView>
     );
   }
 
   if (!initialData) {
-    CustomAlertManager.error(t.locale.startsWith('en') ? 'Schedule information not found.' : '일정 정보를 찾을 수 없습니다.');
+    CustomAlertManager.error(
+      t.locale.startsWith('en')
+        ? 'Schedule information not found.'
+        : '일정 정보를 찾을 수 없습니다.',
+    );
     router.back();
     return null;
   }

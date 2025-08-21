@@ -24,16 +24,16 @@ export default function HomeScreen() {
       try {
         // 내 정보(is_me = 1)가 있는지 확인
         const myContact = await AddressBookService.fetchGetMyContact();
-        
+
         if (!myContact || !myContact.name) {
           // 사용자 정보가 없으면 온보딩으로 이동
           router.replace('/onboarding/welcome');
           return;
         }
-        
+
         // 데이터베이스에서 가져온 사용자 이름을 글로벌 상태에 저장
         setUserName(myContact.name);
-        
+
         setIsCheckingUser(false);
       } catch (error) {
         console.log('사용자 정보 확인 중 오류:', error);
@@ -48,14 +48,14 @@ export default function HomeScreen() {
   // 화면 로드 시간 측정
   useEffect(() => {
     if (isCheckingUser) return;
-    
+
     const startTime = Date.now();
-    
+
     const timer = setTimeout(() => {
       const loadTime = Date.now() - startTime;
       recordScreenLoadTime('home', loadTime);
     }, 100); // 화면 렌더링 완료 후 측정
-    
+
     return () => clearTimeout(timer);
   }, [recordScreenLoadTime, isCheckingUser]);
 

@@ -36,7 +36,7 @@ const ErrorState: React.FC<ErrorStateProps> = ({
 }) => {
   const { theme: themeColors, isDark } = useThemeColors();
   const { t } = useI18n();
-  
+
   const finalRetryText = retryText || t.common.retry;
 
   const getIconSize = () => {

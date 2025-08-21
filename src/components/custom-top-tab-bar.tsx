@@ -30,7 +30,6 @@ export default function CustomTopTabBar({
           paddingHorizontal: 16,
           paddingTop: 32,
           paddingBottom: 16,
-          
         }}
       >
         <View style={{ width: 32 }} />
@@ -116,8 +115,10 @@ export default function CustomTopTabBar({
                 borderRadius: 8,
                 paddingHorizontal: 8,
                 paddingVertical: 12,
-                backgroundColor: isFocused 
-                  ? (isDark ? themeColors.primary : '#576BCD') 
+                backgroundColor: isFocused
+                  ? isDark
+                    ? themeColors.primary
+                    : '#576BCD'
                   : 'transparent',
               }}
             >
@@ -125,9 +126,13 @@ export default function CustomTopTabBar({
                 style={{
                   fontSize: 13,
                   fontWeight: isFocused ? 'bold' : 'normal',
-                  color: isFocused 
-                    ? (isDark ? themeColors.primaryText : '#FFFFFF')
-                    : (isDark ? themeColors.primary : '#576BCD'),
+                  color: isFocused
+                    ? isDark
+                      ? themeColors.primaryText
+                      : '#FFFFFF'
+                    : isDark
+                      ? themeColors.primary
+                      : '#576BCD',
                 }}
                 numberOfLines={1}
                 adjustsFontSizeToFit

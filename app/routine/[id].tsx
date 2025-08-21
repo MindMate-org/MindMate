@@ -168,24 +168,28 @@ const RoutineDetail = () => {
             onPress: () => {
               setShowAlarmTimePicker(true);
               resolve();
-            }
+            },
           },
           {
-            text: notificationEnabled 
-              ? (t.locale.startsWith('en') ? '🔕 Turn Off' : '🔕 알림 끄기')
-              : (t.locale.startsWith('en') ? '🔔 Turn On' : '🔔 알림 켜기'),
+            text: notificationEnabled
+              ? t.locale.startsWith('en')
+                ? '🔕 Turn Off'
+                : '🔕 알림 끄기'
+              : t.locale.startsWith('en')
+                ? '🔔 Turn On'
+                : '🔔 알림 켜기',
             onPress: () => {
               setNotificationEnabled(!notificationEnabled);
               setIsAlarmEnabled(!notificationEnabled);
               resolve();
-            }
+            },
           },
           {
             text: t.locale.startsWith('en') ? 'Cancel' : '취소',
             style: 'cancel',
-            onPress: () => resolve()
-          }
-        ]
+            onPress: () => resolve(),
+          },
+        ],
       );
     });
   };
@@ -302,7 +306,7 @@ const RoutineDetail = () => {
   const handleCancel = async () => {
     const confirmed = await CustomAlertManager.confirm(
       t.locale.startsWith('en') ? 'Confirm' : '확인',
-      t.locale.startsWith('en') ? 'Do you want to cancel writing?' : '작성을 취소하시겠습니까?'
+      t.locale.startsWith('en') ? 'Do you want to cancel writing?' : '작성을 취소하시겠습니까?',
     );
     if (confirmed) {
       router.back();
@@ -320,23 +324,29 @@ const RoutineDetail = () => {
     useCallback(() => {
       const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
       return () => subscription.remove();
-    }, [handleBackPress])
+    }, [handleBackPress]),
   );
 
   // 로딩 상태
   if (isLoading) {
     return (
-      <SafeAreaView style={{ 
-        flex: 1, 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        backgroundColor: themeColors.background 
-      }}>
+      <SafeAreaView
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: themeColors.background,
+        }}
+      >
         <ActivityIndicator size="large" color={themeColors.primary} />
-        <Text style={{ 
-          color: themeColors.textSecondary, 
-          marginTop: 16 
-        }}>{t.routine.loadingRoutine}</Text>
+        <Text
+          style={{
+            color: themeColors.textSecondary,
+            marginTop: 16,
+          }}
+        >
+          {t.routine.loadingRoutine}
+        </Text>
       </SafeAreaView>
     );
   }
@@ -344,24 +354,30 @@ const RoutineDetail = () => {
   // 에러 상태
   if (error) {
     return (
-      <SafeAreaView style={{ 
-        flex: 1, 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        backgroundColor: themeColors.background,
-        paddingHorizontal: 16
-      }}>
-        <Text style={{ 
-          marginBottom: 16, 
-          textAlign: 'center', 
-          color: themeColors.error 
-        }}>{error}</Text>
+      <SafeAreaView
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: themeColors.background,
+          paddingHorizontal: 16,
+        }}
+      >
+        <Text
+          style={{
+            marginBottom: 16,
+            textAlign: 'center',
+            color: themeColors.error,
+          }}
+        >
+          {error}
+        </Text>
         <TouchableOpacity
-          style={{ 
-            borderRadius: 8, 
-            backgroundColor: themeColors.primary, 
-            paddingHorizontal: 16, 
-            paddingVertical: 8 
+          style={{
+            borderRadius: 8,
+            backgroundColor: themeColors.primary,
+            paddingHorizontal: 16,
+            paddingVertical: 8,
           }}
           onPress={() => router.back()}
         >
@@ -376,26 +392,30 @@ const RoutineDetail = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
       {/* 헤더 */}
-      <View style={{
-        paddingTop: 40, // 상태바 아래 여백 증가 (32 + 8)
-        borderTopLeftRadius: 12,
-        borderTopRightRadius: 12,
-        backgroundColor: themeColors.surface,
-        paddingHorizontal: 16,
-        paddingVertical: 16,
-        shadowColor: themeColors.shadow,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: isDark ? 0.3 : 0.1,
-        shadowRadius: 4,
-        elevation: 2,
-      }}>
-        <View style={{
-          marginTop: 0,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          position: 'relative',
-        }}>
+      <View
+        style={{
+          paddingTop: 40, // 상태바 아래 여백 증가 (32 + 8)
+          borderTopLeftRadius: 12,
+          borderTopRightRadius: 12,
+          backgroundColor: themeColors.surface,
+          paddingHorizontal: 16,
+          paddingVertical: 16,
+          shadowColor: themeColors.shadow,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: isDark ? 0.3 : 0.1,
+          shadowRadius: 4,
+          elevation: 2,
+        }}
+      >
+        <View
+          style={{
+            marginTop: 0,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'relative',
+          }}
+        >
           <TouchableOpacity
             onPress={handleCancel}
             style={{ position: 'absolute', left: 0 }}
@@ -403,21 +423,25 @@ const RoutineDetail = () => {
           >
             <Ionicons name="arrow-back" size={24} color={themeColors.primary} />
           </TouchableOpacity>
-          <Text style={{
-            fontSize: 18,
-            fontWeight: 'bold',
-            color: themeColors.primary,
-          }}>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: 'bold',
+              color: themeColors.primary,
+            }}
+          >
             {isEdit ? t.routine.edit : t.routine.create}
           </Text>
         </View>
       </View>
 
-      <ScrollView style={{ 
-        flex: 1, 
-        backgroundColor: themeColors.surface,
-        paddingHorizontal: 16
-      }}>
+      <ScrollView
+        style={{
+          flex: 1,
+          backgroundColor: themeColors.surface,
+          paddingHorizontal: 16,
+        }}
+      >
         <View style={{ paddingVertical: 16 }}>
           {/* 제목 */}
           <FormInput
@@ -441,18 +465,25 @@ const RoutineDetail = () => {
           />
 
           {/* 하위 작업 */}
-          <Text style={{
-            marginBottom: 8,
-            fontSize: 16,
-            fontWeight: 'bold',
-            color: themeColors.primary,
-          }}>{t.routine.subTasks}</Text>
-          {subTasks.map((task, index) => (
-            <View key={index} style={{
+          <Text
+            style={{
               marginBottom: 8,
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
+              fontSize: 16,
+              fontWeight: 'bold',
+              color: themeColors.primary,
+            }}
+          >
+            {t.routine.subTasks}
+          </Text>
+          {subTasks.map((task, index) => (
+            <View
+              key={index}
+              style={{
+                marginBottom: 8,
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
               <TextInput
                 value={task}
                 onChangeText={(text) => updateSubTask(index, text)}
@@ -499,11 +530,15 @@ const RoutineDetail = () => {
               elevation: 2,
             }}
           >
-            <Text style={{
-              textAlign: 'center',
-              fontSize: 16,
-              color: themeColors.primary,
-            }}>{t.routine.addNewSubTask}</Text>
+            <Text
+              style={{
+                textAlign: 'center',
+                fontSize: 16,
+                color: themeColors.primary,
+              }}
+            >
+              {t.routine.addNewSubTask}
+            </Text>
           </TouchableOpacity>
 
           {/* 사진 */}
@@ -525,28 +560,41 @@ const RoutineDetail = () => {
           />
 
           {/* 옵션 영역 */}
-          <View style={{
-            marginTop: 16,
-            marginBottom: 24,
-            borderRadius: 12,
-            backgroundColor: themeColors.backgroundSecondary,
-            paddingHorizontal: 16,
-            paddingVertical: 16,
-          }}>
+          <View
+            style={{
+              marginTop: 16,
+              marginBottom: 24,
+              borderRadius: 12,
+              backgroundColor: themeColors.backgroundSecondary,
+              paddingHorizontal: 16,
+              paddingVertical: 16,
+            }}
+          >
             {/* 반복 */}
-            <View style={{
-              marginBottom: 12,
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-              <Ionicons name="time-outline" size={18} color={themeColors.primary} style={{ marginRight: 8 }} />
-              <View style={{ flexDirection: 'row', alignItems: 'center', width: 80, marginRight: 16 }}>
-                <Text style={{ 
-                  fontSize: 16,
-                  fontWeight: 'bold',
-                  color: themeColors.primary,
-                  marginRight: 4,
-                }}>
+            <View
+              style={{
+                marginBottom: 12,
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <Ionicons
+                name="time-outline"
+                size={18}
+                color={themeColors.primary}
+                style={{ marginRight: 8 }}
+              />
+              <View
+                style={{ flexDirection: 'row', alignItems: 'center', width: 80, marginRight: 16 }}
+              >
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                    color: themeColors.primary,
+                    marginRight: 4,
+                  }}
+                >
                   {t.routine.repeat}
                 </Text>
                 <TouchableOpacity onPress={() => setShowRepeatInfo(true)}>
@@ -562,10 +610,14 @@ const RoutineDetail = () => {
                   }
                 }}
               >
-                <Text style={{
-                  fontSize: 16,
-                  color: themeColors.text,
-                }}>{getLocalizedRepeatCycle(repeatInfo, t)}</Text>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: themeColors.text,
+                  }}
+                >
+                  {getLocalizedRepeatCycle(repeatInfo, t)}
+                </Text>
               </TouchableOpacity>
               <CheckBox
                 checked={isRepeatEnabled}
@@ -575,34 +627,37 @@ const RoutineDetail = () => {
             </View>
 
             {/* 알림 */}
-            <View style={{
-              marginBottom: 12,
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
+            <View
+              style={{
+                marginBottom: 12,
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
               <Ionicons
                 name="notifications-outline"
                 size={18}
                 color={themeColors.primary}
                 style={{ marginRight: 8 }}
               />
-              <Text style={{ 
-                fontSize: 16,
-                fontWeight: 'bold',
-                color: themeColors.primary,
-                width: 80,
-                marginRight: 16,
-              }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                  color: themeColors.primary,
+                  width: 80,
+                  marginRight: 16,
+                }}
+              >
                 {t.routine.alarm}
               </Text>
-              <TouchableOpacity
-                style={{ flex: 1 }}
-                onPress={handleNotificationSettings}
-              >
-                <Text style={{
-                  fontSize: 16,
-                  color: themeColors.text,
-                }}>
+              <TouchableOpacity style={{ flex: 1 }} onPress={handleNotificationSettings}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: themeColors.text,
+                  }}
+                >
                   {isAlarmEnabled
                     ? `${alarmTime.getHours().toString().padStart(2, '0')}:${alarmTime.getMinutes().toString().padStart(2, '0')} ${notificationEnabled ? '🔔' : '🔕'}`
                     : t.routine.noAlarm}
@@ -617,11 +672,13 @@ const RoutineDetail = () => {
                   borderRadius: 8,
                 }}
               >
-                <Text style={{
-                  fontSize: 14,
-                  color: themeColors.primary,
-                  fontWeight: '500',
-                }}>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: themeColors.primary,
+                    fontWeight: '500',
+                  }}
+                >
                   {t.locale.startsWith('en') ? 'Settings' : '설정'}
                 </Text>
               </TouchableOpacity>
@@ -655,45 +712,64 @@ const RoutineDetail = () => {
                 color={themeColors.primary}
                 style={{ marginRight: 8 }}
               />
-              <Text style={{ 
-                fontSize: 16,
-                fontWeight: 'bold',
-                color: themeColors.primary,
-                width: 80,
-                marginRight: 16,
-              }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                  color: themeColors.primary,
+                  width: 80,
+                  marginRight: 16,
+                }}
+              >
                 {t.routine.deadline}
               </Text>
-              <Text style={{
-                flex: 1,
-                fontSize: 16,
-                color: themeColors.text,
-              }}>{deadline}</Text>
+              <Text
+                style={{
+                  flex: 1,
+                  fontSize: 16,
+                  color: themeColors.text,
+                }}
+              >
+                {deadline}
+              </Text>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Ionicons name="chevron-forward" size={16} color={themeColors.textSecondary} />
               </View>
             </TouchableOpacity>
 
             {/* 기간 */}
-            <View style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-              <Ionicons name="happy-outline" size={18} color={themeColors.primary} style={{ marginRight: 8 }} />
-              <Text style={{ 
-                fontSize: 16,
-                fontWeight: 'bold',
-                color: themeColors.primary,
-                width: 80,
-                marginRight: 16,
-              }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <Ionicons
+                name="happy-outline"
+                size={18}
+                color={themeColors.primary}
+                style={{ marginRight: 8 }}
+              />
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                  color: themeColors.primary,
+                  width: 80,
+                  marginRight: 16,
+                }}
+              >
                 {t.routine.period}
               </Text>
               <TouchableOpacity style={{ flex: 1 }} onPress={() => setShowDurationPicker(true)}>
-                <Text style={{
-                  fontSize: 16,
-                  color: themeColors.text,
-                }}>{duration}</Text>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: themeColors.text,
+                  }}
+                >
+                  {duration}
+                </Text>
               </TouchableOpacity>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Ionicons name="chevron-forward" size={16} color={themeColors.textSecondary} />
@@ -730,12 +806,14 @@ const RoutineDetail = () => {
           />
 
           {/* 하단 버튼 */}
-          <View style={{
-            marginTop: 8,
-            marginBottom: 100, // 네비게이션 바 공간 확보
-            flexDirection: 'row',
-            gap: 12,
-          }}>
+          <View
+            style={{
+              marginTop: 8,
+              marginBottom: 100, // 네비게이션 바 공간 확보
+              flexDirection: 'row',
+              gap: 12,
+            }}
+          >
             <TouchableOpacity
               onPress={handleSave}
               style={{
@@ -746,12 +824,14 @@ const RoutineDetail = () => {
               }}
               disabled={isSaving}
             >
-              <Text style={{
-                textAlign: 'center',
-                fontSize: 16,
-                fontWeight: '500',
-                color: themeColors.primaryText,
-              }}>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  fontSize: 16,
+                  fontWeight: '500',
+                  color: themeColors.primaryText,
+                }}
+              >
                 {isSaving ? t.routine.processing : isEdit ? t.routine.modify : t.routine.register}
               </Text>
             </TouchableOpacity>
@@ -765,12 +845,16 @@ const RoutineDetail = () => {
               }}
               disabled={isSaving}
             >
-              <Text style={{
-                textAlign: 'center',
-                fontSize: 16,
-                fontWeight: '500',
-                color: '#576BCD',
-              }}>{t.routine.cancel}</Text>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  fontSize: 16,
+                  fontWeight: '500',
+                  color: '#576BCD',
+                }}
+              >
+                {t.routine.cancel}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -781,30 +865,38 @@ const RoutineDetail = () => {
 
       {/* 반복 입력 모달 */}
       {showRepeatInput && (
-        <View style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 50,
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        }}>
-          <View style={{
-            width: 320,
-            borderRadius: 12,
-            backgroundColor: themeColors.surface,
-            padding: 24,
-          }}>
-            <Text style={{
-              marginBottom: 16,
-              textAlign: 'center',
-              fontSize: 18,
-              fontWeight: 'bold',
-              color: themeColors.primary,
-            }}>{t.routine.repeatSetting}</Text>
+        <View
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 50,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}
+        >
+          <View
+            style={{
+              width: 320,
+              borderRadius: 12,
+              backgroundColor: themeColors.surface,
+              padding: 24,
+            }}
+          >
+            <Text
+              style={{
+                marginBottom: 16,
+                textAlign: 'center',
+                fontSize: 18,
+                fontWeight: 'bold',
+                color: themeColors.primary,
+              }}
+            >
+              {t.routine.repeatSetting}
+            </Text>
             <TextInput
               value={tempRepeatInfo}
               onChangeText={setTempRepeatInfo}
@@ -831,12 +923,16 @@ const RoutineDetail = () => {
                   paddingVertical: 12,
                 }}
               >
-                <Text style={{
-                  textAlign: 'center',
-                  fontSize: 16,
-                  fontWeight: '500',
-                  color: themeColors.textSecondary,
-                }}>{t.routine.cancel}</Text>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    fontSize: 16,
+                    fontWeight: '500',
+                    color: themeColors.textSecondary,
+                  }}
+                >
+                  {t.routine.cancel}
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
@@ -850,12 +946,16 @@ const RoutineDetail = () => {
                   paddingVertical: 12,
                 }}
               >
-                <Text style={{
-                  textAlign: 'center',
-                  fontSize: 16,
-                  fontWeight: '500',
-                  color: themeColors.primaryText,
-                }}>{t.routine.confirm}</Text>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    fontSize: 16,
+                    fontWeight: '500',
+                    color: themeColors.primaryText,
+                  }}
+                >
+                  {t.routine.confirm}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>

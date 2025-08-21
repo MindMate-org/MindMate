@@ -24,15 +24,17 @@ const MediaButtons = ({
 }: MediaButtonsProps) => {
   const { theme: themeColors } = useThemeColors();
   const { t } = useI18n();
-  
+
   return (
-    <View style={{
-      marginTop: 16,
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      gap: 4,
-      padding: 16,
-    }}>
+    <View
+      style={{
+        marginTop: 16,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 4,
+        padding: 16,
+      }}
+    >
       {/* 이미지 버튼 */}
       <View style={{ alignItems: 'center' }}>
         <TouchableOpacity
@@ -98,7 +100,8 @@ const MediaButtons = ({
               opacity: recordingState.isRecording ? 1 : 0,
             }}
           >
-{recordingState.duration}{t.locale.startsWith('en') ? 's' : '초'}
+            {recordingState.duration}
+            {t.locale.startsWith('en') ? 's' : '초'}
           </Text>
         </View>
       </View>
@@ -117,11 +120,15 @@ const MediaButtons = ({
             borderColor: themeColors.primary,
           }}
         >
-          <Text style={{
-            fontSize: 18,
-            fontWeight: 'bold',
-            color: themeColors.primary,
-          }}>Aa</Text>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: 'bold',
+              color: themeColors.primary,
+            }}
+          >
+            Aa
+          </Text>
         </TouchableOpacity>
         <View style={{ minHeight: 16 }} />
       </View>

@@ -39,7 +39,6 @@ const SchedulePage = () => {
     });
   }, [selectedDate, selectedDateString]);
 
-
   // const days = ['일', '월', '화', '수', '목', '금', '토']; // 제거됨 - t.schedule.days 사용
 
   // 선택된 날짜의 ISO 문자열을 메모이제이션
@@ -97,13 +96,15 @@ const SchedulePage = () => {
     }
   };
 
-
   const TaskItem = ({ schedule, onToggle, onPress }: TaskItemProps) => {
     const scheduleTime = new Date(schedule.time);
-    const timeString = scheduleTime.toLocaleTimeString(t.locale.startsWith('en') ? 'en-US' : 'ko-KR', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    const timeString = scheduleTime.toLocaleTimeString(
+      t.locale.startsWith('en') ? 'en-US' : 'ko-KR',
+      {
+        hour: '2-digit',
+        minute: '2-digit',
+      },
+    );
 
     return (
       <TouchableOpacity
@@ -132,30 +133,42 @@ const SchedulePage = () => {
             backgroundColor: schedule.is_completed ? '#14b8a6' : '#ec4899',
           }}
         />
-        <View style={{
-          marginLeft: 8,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
+        <View
+          style={{
+            marginLeft: 8,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
           <View style={{ flex: 1 }}>
-            <View style={{
-              marginBottom: 4,
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-              <Text style={{
-                marginRight: 12,
-                fontSize: 14,
-                fontWeight: '500',
-                color: themeColors.textSecondary,
-              }}>{timeString}</Text>
-              <Text style={{
-                flex: 1,
-                fontSize: 16,
-                fontWeight: 'bold',
-                color: themeColors.text,
-              }}>{schedule.title}</Text>
+            <View
+              style={{
+                marginBottom: 4,
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <Text
+                style={{
+                  marginRight: 12,
+                  fontSize: 14,
+                  fontWeight: '500',
+                  color: themeColors.textSecondary,
+                }}
+              >
+                {timeString}
+              </Text>
+              <Text
+                style={{
+                  flex: 1,
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                  color: themeColors.text,
+                }}
+              >
+                {schedule.title}
+              </Text>
             </View>
             {schedule.contents && (
               <Text
@@ -172,17 +185,25 @@ const SchedulePage = () => {
             {(schedule.location || schedule.companion) && (
               <View style={{ flexDirection: 'row' }}>
                 {schedule.location && (
-                  <Text style={{
-                    marginRight: 12,
-                    fontSize: 12,
-                    color: themeColors.primary,
-                  }}>📍 {schedule.location}</Text>
+                  <Text
+                    style={{
+                      marginRight: 12,
+                      fontSize: 12,
+                      color: themeColors.primary,
+                    }}
+                  >
+                    📍 {schedule.location}
+                  </Text>
                 )}
                 {schedule.companion && (
-                  <Text style={{
-                    fontSize: 12,
-                    color: themeColors.primary,
-                  }}>👥 {schedule.companion}</Text>
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      color: themeColors.primary,
+                    }}
+                  >
+                    👥 {schedule.companion}
+                  </Text>
                 )}
               </View>
             )}
@@ -195,9 +216,7 @@ const SchedulePage = () => {
               alignItems: 'center',
               justifyContent: 'center',
               borderRadius: 6,
-              backgroundColor: schedule.is_completed
-                ? '#14b8a6'
-                : themeColors.surface,
+              backgroundColor: schedule.is_completed ? '#14b8a6' : themeColors.surface,
               borderWidth: schedule.is_completed ? 0 : 2,
               borderColor: '#ec4899',
             }}
@@ -215,18 +234,22 @@ const SchedulePage = () => {
         {/* 오늘 날짜 헤더 */}
         <View style={{ marginTop: 16, paddingHorizontal: 16 }}>
           {/* 날짜 표시 */}
-          <View style={{
-            position: 'relative',
-            marginBottom: 24,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-            <Text style={{
-              fontSize: 18,
-              fontWeight: '500',
-              color: themeColors.primary,
-            }}>
+          <View
+            style={{
+              position: 'relative',
+              marginBottom: 24,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: '500',
+                color: themeColors.primary,
+              }}
+            >
               {selectedDateObject.toLocaleDateString(t.locale, {
                 year: 'numeric',
                 month: 'long',
@@ -246,11 +269,13 @@ const SchedulePage = () => {
           </View>
 
           {/* 달력 날짜 */}
-          <View style={{
-            marginBottom: 24,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}>
+          <View
+            style={{
+              marginBottom: 24,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
             {weekDates.map((date, index) => {
               const isSelected =
                 selectedDate.getDate() === date.getDate() &&
@@ -269,17 +294,15 @@ const SchedulePage = () => {
                       backgroundColor: isSelected
                         ? themeColors.primary
                         : isDark
-                        ? `${themeColors.surface}80`
-                        : 'rgba(255,255,255,0.5)',
+                          ? `${themeColors.surface}80`
+                          : 'rgba(255,255,255,0.5)',
                     }}
                   >
                     <Text
                       style={{
                         fontSize: 12,
                         fontWeight: '500',
-                        color: isSelected
-                          ? themeColors.primaryText
-                          : themeColors.primary,
+                        color: isSelected ? themeColors.primaryText : themeColors.primary,
                       }}
                     >
                       {t.schedule.days[index]}
@@ -288,9 +311,7 @@ const SchedulePage = () => {
                       style={{
                         fontSize: 14,
                         fontWeight: 'bold',
-                        color: isSelected
-                          ? themeColors.primaryText
-                          : themeColors.primary,
+                        color: isSelected ? themeColors.primaryText : themeColors.primary,
                         marginTop: 4,
                       }}
                     >
@@ -303,37 +324,49 @@ const SchedulePage = () => {
           </View>
 
           {/* 일정 통계 배너 */}
-          <View style={{
-            marginBottom: 24,
-            borderRadius: 12,
-            backgroundColor: themeColors.accent,
-            padding: 24,
-            shadowColor: themeColors.shadow,
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: isDark ? 0.2 : 0.1,
-            shadowRadius: 2,
-            elevation: 2,
-          }}>
-            <View style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}>
+          <View
+            style={{
+              marginBottom: 24,
+              borderRadius: 12,
+              backgroundColor: themeColors.accent,
+              padding: 24,
+              shadowColor: themeColors.shadow,
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: isDark ? 0.2 : 0.1,
+              shadowRadius: 2,
+              elevation: 2,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
               <View style={{ flex: 1 }}>
-                <Text style={{
-                  marginBottom: 4,
-                  fontSize: 18,
-                  fontWeight: 'bold',
-                  color: themeColors.primary,
-                }}>
-                  {t.schedule.todaySchedule} <Text style={{ color: themeColors.text }}>{schedules.length}</Text>{t.schedule.count}
+                <Text
+                  style={{
+                    marginBottom: 4,
+                    fontSize: 18,
+                    fontWeight: 'bold',
+                    color: themeColors.primary,
+                  }}
+                >
+                  {t.schedule.todaySchedule}{' '}
+                  <Text style={{ color: themeColors.text }}>{schedules.length}</Text>
+                  {t.schedule.count}
                 </Text>
-                <Text style={{
-                  fontSize: 20,
-                  fontWeight: 'bold',
-                  color: themeColors.primary,
-                }}>
-                  {t.schedule.total} <Text style={{ color: themeColors.text }}>{completedSchedules.length}</Text>{t.schedule.completed}
+                <Text
+                  style={{
+                    fontSize: 20,
+                    fontWeight: 'bold',
+                    color: themeColors.primary,
+                  }}
+                >
+                  {t.schedule.total}{' '}
+                  <Text style={{ color: themeColors.text }}>{completedSchedules.length}</Text>
+                  {t.schedule.completed}
                   <Text style={{ fontSize: 18 }}>{t.schedule.great}</Text>
                 </Text>
               </View>
@@ -353,69 +386,93 @@ const SchedulePage = () => {
           ) : (
             <>
               {/* 범례 */}
-              <View style={{
-                marginBottom: 16,
-                flexDirection: 'row',
-                justifyContent: 'flex-end',
-              }}>
-                <View style={{
-                  marginRight: 16,
+              <View
+                style={{
+                  marginBottom: 16,
                   flexDirection: 'row',
-                  alignItems: 'center',
-                }}>
-                  <View style={{
-                    height: 16,
-                    width: 16,
-                    borderRadius: 8,
-                    backgroundColor: '#ec4899',
-                  }}></View>
-                  <Text style={{
-                    fontSize: 14,
-                    fontWeight: '500',
-                    color: themeColors.textSecondary,
-                    marginLeft: 8,
-                  }}>
+                  justifyContent: 'flex-end',
+                }}
+              >
+                <View
+                  style={{
+                    marginRight: 16,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}
+                >
+                  <View
+                    style={{
+                      height: 16,
+                      width: 16,
+                      borderRadius: 8,
+                      backgroundColor: '#ec4899',
+                    }}
+                  ></View>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontWeight: '500',
+                      color: themeColors.textSecondary,
+                      marginLeft: 8,
+                    }}
+                  >
                     {t.schedule.incomplete} ({incompleteSchedules.length})
                   </Text>
                 </View>
-                <View style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}>
-                  <View style={{
-                    height: 16,
-                    width: 16,
-                    borderRadius: 8,
-                    backgroundColor: '#14b8a6',
-                  }}></View>
-                  <Text style={{
-                    fontSize: 14,
-                    fontWeight: '500',
-                    color: themeColors.textSecondary,
-                    marginLeft: 8,
-                  }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}
+                >
+                  <View
+                    style={{
+                      height: 16,
+                      width: 16,
+                      borderRadius: 8,
+                      backgroundColor: '#14b8a6',
+                    }}
+                  ></View>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontWeight: '500',
+                      color: themeColors.textSecondary,
+                      marginLeft: 8,
+                    }}
+                  >
                     {t.schedule.complete} ({completedSchedules.length})
                   </Text>
                 </View>
               </View>
 
               {schedules.length === 0 ? (
-                <View style={{
-                  alignItems: 'center',
-                  paddingVertical: 48,
-                }}>
+                <View
+                  style={{
+                    alignItems: 'center',
+                    paddingVertical: 48,
+                  }}
+                >
                   <Calendar size={48} color={themeColors.textSecondary} />
-                  <Text style={{
-                    marginTop: 16,
-                    fontSize: 18,
-                    fontWeight: '500',
-                    color: themeColors.textSecondary,
-                  }}>{t.schedule.noSchedules}</Text>
-                  <Text style={{
-                    marginTop: 8,
-                    fontSize: 14,
-                    color: themeColors.textSecondary,
-                  }}>{t.schedule.addNewSchedule}</Text>
+                  <Text
+                    style={{
+                      marginTop: 16,
+                      fontSize: 18,
+                      fontWeight: '500',
+                      color: themeColors.textSecondary,
+                    }}
+                  >
+                    {t.schedule.noSchedules}
+                  </Text>
+                  <Text
+                    style={{
+                      marginTop: 8,
+                      fontSize: 14,
+                      color: themeColors.textSecondary,
+                    }}
+                  >
+                    {t.schedule.addNewSchedule}
+                  </Text>
                   <TouchableOpacity
                     style={{
                       marginTop: 16,
@@ -426,10 +483,14 @@ const SchedulePage = () => {
                     }}
                     onPress={() => router.push('/schedule/create')}
                   >
-                    <Text style={{
-                      fontSize: 14,
-                      color: themeColors.primaryText,
-                    }}>{t.schedule.addSchedule}</Text>
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        color: themeColors.primaryText,
+                      }}
+                    >
+                      {t.schedule.addSchedule}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               ) : (
@@ -437,12 +498,14 @@ const SchedulePage = () => {
                   {/* 미완료 일정 */}
                   {incompleteSchedules.length > 0 && (
                     <>
-                      <Text style={{
-                        marginBottom: 12,
-                        fontSize: 18,
-                        fontWeight: 'bold',
-                        color: themeColors.text,
-                      }}>
+                      <Text
+                        style={{
+                          marginBottom: 12,
+                          fontSize: 18,
+                          fontWeight: 'bold',
+                          color: themeColors.text,
+                        }}
+                      >
                         {t.schedule.incomplete} ({incompleteSchedules.length})
                       </Text>
                       {incompleteSchedules.map((schedule) => (
@@ -459,13 +522,15 @@ const SchedulePage = () => {
                   {/* 완료된 일정 */}
                   {completedSchedules.length > 0 && (
                     <>
-                      <Text style={{
-                        marginBottom: 12,
-                        marginTop: 24,
-                        fontSize: 18,
-                        fontWeight: 'bold',
-                        color: themeColors.text,
-                      }}>
+                      <Text
+                        style={{
+                          marginBottom: 12,
+                          marginTop: 24,
+                          fontSize: 18,
+                          fontWeight: 'bold',
+                          color: themeColors.text,
+                        }}
+                      >
                         {t.schedule.complete} ({completedSchedules.length})
                       </Text>
                       {completedSchedules.map((schedule) => (
@@ -506,11 +571,15 @@ const SchedulePage = () => {
         onPress={handlePress}
         activeOpacity={0.8}
       >
-        <Text style={{
-          fontSize: 28,
-          fontWeight: '300',
-          color: themeColors.primaryText,
-        }}>+</Text>
+        <Text
+          style={{
+            fontSize: 28,
+            fontWeight: '300',
+            color: themeColors.primaryText,
+          }}
+        >
+          +
+        </Text>
       </TouchableOpacity>
 
       {/* 날짜 선택기 */}

@@ -75,14 +75,14 @@ const RoutineMain = () => {
   // 루틴 삭제
   const handleDeleteRoutine = useCallback(
     async (id: string) => {
-      const routine = routines.find(r => r.id === id);
+      const routine = routines.find((r) => r.id === id);
       const routineName = routine?.name || t.routine.title;
-      
+
       const confirmed = await CustomAlertManager.confirm(
         t.common.delete,
-        `"${routineName}" ${t.routine.deleteConfirm}`
+        `"${routineName}" ${t.routine.deleteConfirm}`,
       );
-      
+
       if (confirmed) {
         const success = await deleteRoutine(id);
         if (success) {
@@ -100,19 +100,21 @@ const RoutineMain = () => {
     setShowDatePicker(true);
   };
 
-
   // 시간 문자열 포맷팅 함수
-  const formatTimeString = useCallback((time: string) => {
-    try {
-      const [hours, minutes] = time.split(':');
-      const hour = parseInt(hours);
-      const date = new Date();
-      date.setHours(hour, parseInt(minutes), 0, 0);
-      return formatTime(date, '12h', t.locale.startsWith('en') ? 'en' : 'ko');
-    } catch {
-      return time;
-    }
-  }, [t.locale]);
+  const formatTimeString = useCallback(
+    (time: string) => {
+      try {
+        const [hours, minutes] = time.split(':');
+        const hour = parseInt(hours);
+        const date = new Date();
+        date.setHours(hour, parseInt(minutes), 0, 0);
+        return formatTime(date, '12h', t.locale.startsWith('en') ? 'en' : 'ko');
+      } catch {
+        return time;
+      }
+    },
+    [t.locale],
+  );
 
   // 루틴 시간 표시 함수
   const getRoutineTime = useCallback(
@@ -152,23 +154,29 @@ const RoutineMain = () => {
   const selectedDateStr = toKSTDateString(selectedDate);
 
   return (
-    <SafeAreaView style={{ position: 'relative', flex: 1, backgroundColor: themeColors.background }}>
+    <SafeAreaView
+      style={{ position: 'relative', flex: 1, backgroundColor: themeColors.background }}
+    >
       {/* 상단 달력 */}
       <FadeInView delay={0} duration={300}>
         <View style={{ marginTop: 16, paddingHorizontal: 16, paddingBottom: 16 }}>
           {/* 날짜 표시 */}
-          <View style={{
-            position: 'relative',
-            marginBottom: 24,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-            <Text style={{
-              fontSize: 18,
-              fontWeight: '500',
-              color: themeColors.primary,
-            }}>
+          <View
+            style={{
+              position: 'relative',
+              marginBottom: 24,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: '500',
+                color: themeColors.primary,
+              }}
+            >
               {selectedDate.toLocaleDateString(t.locale, {
                 year: 'numeric',
                 month: 'long',
@@ -188,11 +196,13 @@ const RoutineMain = () => {
           </View>
 
           {/* 달력 날짜 */}
-          <View style={{
-            marginBottom: 24,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}>
+          <View
+            style={{
+              marginBottom: 24,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
             {weekDates.map((date, index) => {
               const isSelected =
                 selectedDate.getDate() === date.getDate() &&
@@ -211,17 +221,15 @@ const RoutineMain = () => {
                       backgroundColor: isSelected
                         ? themeColors.primary
                         : isDark
-                        ? `${themeColors.surface}80`
-                        : 'rgba(255,255,255,0.5)',
+                          ? `${themeColors.surface}80`
+                          : 'rgba(255,255,255,0.5)',
                     }}
                   >
                     <Text
                       style={{
                         fontSize: 12,
                         fontWeight: '500',
-                        color: isSelected
-                          ? themeColors.primaryText
-                          : themeColors.primary,
+                        color: isSelected ? themeColors.primaryText : themeColors.primary,
                       }}
                     >
                       {t.schedule.days[index]}
@@ -230,9 +238,7 @@ const RoutineMain = () => {
                       style={{
                         fontSize: 14,
                         fontWeight: 'bold',
-                        color: isSelected
-                          ? themeColors.primaryText
-                          : themeColors.primary,
+                        color: isSelected ? themeColors.primaryText : themeColors.primary,
                         marginTop: 4,
                       }}
                     >
@@ -252,23 +258,27 @@ const RoutineMain = () => {
           <FadeInView delay={100} duration={300}>
             <View className="flex-1 items-center justify-center py-20">
               <CalendarIcon size={48} color={themeColors.primary} />
-              <Text style={{
-                marginTop: 16,
-                textAlign: 'center',
-                fontSize: 18,
-                color: themeColors.text,
-                fontWeight: '500',
-              }}>
-                {t.locale.startsWith('en') 
+              <Text
+                style={{
+                  marginTop: 16,
+                  textAlign: 'center',
+                  fontSize: 18,
+                  color: themeColors.text,
+                  fontWeight: '500',
+                }}
+              >
+                {t.locale.startsWith('en')
                   ? `${t.routine.noRoutines} ${formatDate(selectedDate, 'en')}.`
                   : `${formatDate(selectedDate, 'ko')}에 ${t.routine.noRoutines}.`}
               </Text>
-              <Text style={{
-                marginTop: 8,
-                textAlign: 'center',
-                fontSize: 14,
-                color: themeColors.textSecondary,
-              }}>
+              <Text
+                style={{
+                  marginTop: 8,
+                  textAlign: 'center',
+                  fontSize: 14,
+                  color: themeColors.textSecondary,
+                }}
+              >
                 {t.routine.addNewRoutine}
               </Text>
             </View>
@@ -311,11 +321,15 @@ const RoutineMain = () => {
         }}
         activeOpacity={0.8}
       >
-        <Text style={{
-          fontSize: 28,
-          fontWeight: '300',
-          color: themeColors.primaryText,
-        }}>+</Text>
+        <Text
+          style={{
+            fontSize: 28,
+            fontWeight: '300',
+            color: themeColors.primaryText,
+          }}
+        >
+          +
+        </Text>
       </TouchableOpacity>
 
       {/* 날짜 선택기 */}

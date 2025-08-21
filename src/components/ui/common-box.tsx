@@ -23,21 +23,23 @@ const colorMap: Record<string, string> = {
 const CommonBox = ({ children, color }: CommonBoxProps) => {
   const { theme: themeColors, isDark } = useThemeColors();
   const borderLeftColor = color ? colorMap[color] : colorMap.paleCobalt;
-  
+
   return (
-    <View style={{
-      width: '100%',
-      borderRadius: 8,
-      borderLeftWidth: 4,
-      borderLeftColor: borderLeftColor,
-      backgroundColor: themeColors.surface,
-      padding: 16,
-      shadowColor: themeColors.shadow,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: isDark ? 0.3 : 0.1,
-      shadowRadius: 2,
-      elevation: 2,
-    }}>
+    <View
+      style={{
+        width: '100%',
+        borderRadius: 8,
+        borderLeftWidth: 4,
+        borderLeftColor: borderLeftColor,
+        backgroundColor: themeColors.surface,
+        padding: 16,
+        shadowColor: themeColors.shadow,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: isDark ? 0.3 : 0.1,
+        shadowRadius: 2,
+        elevation: 2,
+      }}
+    >
       {children}
     </View>
   );

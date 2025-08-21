@@ -25,15 +25,16 @@ export const FONT_FAMILY_OPTIONS = [
 /**
  * 언어별 폰트 패밀리 옵션 가져오기
  */
-export const getFontFamilyOptions = (isEnglish: boolean) => [
-  { value: 'default', label: isEnglish ? 'Default' : '기본' },
-  { value: 'System', label: isEnglish ? 'System' : '시스템' },
-  { value: 'Georgia', label: isEnglish ? 'Georgia' : '조지아' },
-  { value: 'Times New Roman', label: isEnglish ? 'Times' : '타임즈' },
-  { value: 'Courier New', label: isEnglish ? 'Courier' : '쿠리어' },
-  { value: 'Helvetica', label: isEnglish ? 'Helvetica' : '헬베티카' },
-  { value: 'Arial', label: isEnglish ? 'Arial' : '아리얼' },
-] as const;
+export const getFontFamilyOptions = (isEnglish: boolean) =>
+  [
+    { value: 'default', label: isEnglish ? 'Default' : '기본' },
+    { value: 'System', label: isEnglish ? 'System' : '시스템' },
+    { value: 'Georgia', label: isEnglish ? 'Georgia' : '조지아' },
+    { value: 'Times New Roman', label: isEnglish ? 'Times' : '타임즈' },
+    { value: 'Courier New', label: isEnglish ? 'Courier' : '쿠리어' },
+    { value: 'Helvetica', label: isEnglish ? 'Helvetica' : '헬베티카' },
+    { value: 'Arial', label: isEnglish ? 'Arial' : '아리얼' },
+  ] as const;
 
 /**
  * 텍스트 정렬 옵션
@@ -52,7 +53,9 @@ export const TEXT_ALIGN_LABELS: Record<'left' | 'center' | 'right', string> = {
 /**
  * 언어별 텍스트 정렬 라벨 가져오기
  */
-export const getTextAlignLabels = (isEnglish: boolean): Record<'left' | 'center' | 'right', string> => ({
+export const getTextAlignLabels = (
+  isEnglish: boolean,
+): Record<'left' | 'center' | 'right', string> => ({
   left: isEnglish ? 'Left' : '왼쪽',
   center: isEnglish ? 'Center' : '가운데',
   right: isEnglish ? 'Right' : '오른쪽',

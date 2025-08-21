@@ -307,12 +307,13 @@ export class DiaryService {
         `SELECT * FROM diaries 
          WHERE deleted_at IS NULL
          ORDER BY 
-           CASE WHEN updated_at IS NOT NULL THEN updated_at ELSE created_at END DESC`
+           CASE WHEN updated_at IS NOT NULL THEN updated_at ELSE created_at END DESC`,
       );
 
       // 각 일기에 대해 첫 번째 미디어를 찾아서 추가
-      const result: (DiaryTableType & { media_uri: string | null; media_type: string | null })[] = [];
-      
+      const result: (DiaryTableType & { media_uri: string | null; media_type: string | null })[] =
+        [];
+
       for (const diary of diaries) {
         // 각 일기의 첫 번째 미디어 찾기 (이미지 우선)
         const media = await db.getFirstAsync<{ file_path: string; media_type: string }>(
@@ -325,7 +326,7 @@ export class DiaryService {
                ELSE 3 
              END, id
            LIMIT 1`,
-          [diary.id]
+          [diary.id],
         );
 
         result.push({

@@ -4,17 +4,17 @@ import { SupportedLanguage } from '../../../lib/i18n';
 // 한국어-영어 카테고리 매핑
 const categoryMapping: Record<string, string> = {
   // 한국어 -> 영어 키
-  '전체': 'all',
-  '개인용품': 'personal',
-  '모바일': 'mobile',
-  '전자제품': 'electronics',
-  '주방용품': 'kitchen',
+  전체: 'all',
+  개인용품: 'personal',
+  모바일: 'mobile',
+  전자제품: 'electronics',
+  주방용품: 'kitchen',
   // 영어 -> 영어 키 (역방향 호환)
-  'All': 'all',
+  All: 'all',
   'Personal Items': 'personal',
-  'Mobile': 'mobile',
-  'Electronics': 'electronics',
-  'Kitchen': 'kitchen',
+  Mobile: 'mobile',
+  Electronics: 'electronics',
+  Kitchen: 'kitchen',
 };
 
 /**
@@ -25,10 +25,10 @@ const categoryMapping: Record<string, string> = {
  */
 export const getCategoryData = (label: string, language: SupportedLanguage = 'ko') => {
   const searchCategories = getSearchCategories(language);
-  
+
   // 1. 직접 매칭 시도 (같은 언어)
   let foundCategory = searchCategories.find((category) => category.label === label);
-  
+
   // 2. 직접 매칭 실패시, 크로스 언어 매칭 시도
   if (!foundCategory) {
     const categoryKey = categoryMapping[label];
@@ -39,7 +39,7 @@ export const getCategoryData = (label: string, language: SupportedLanguage = 'ko
       });
     }
   }
-  
+
   return {
     icon: foundCategory?.icon,
     color: foundCategory?.color ?? 'foggyBlue',

@@ -90,16 +90,17 @@ export const useGlobalStore = create<GlobalStateType>()(
           })),
 
         clearNotifications: () => set({ notifications: [] }),
-        
+
         // 앱 상태 완전 초기화 (모든 데이터 삭제 시 사용)
-        resetAppState: () => set({
-          theme: 'system',
-          language: 'ko',
-          isOnboarding: true,
-          userName: '',
-          isLoading: false,
-          notifications: [],
-        }),
+        resetAppState: () =>
+          set({
+            theme: 'system',
+            language: 'ko',
+            isOnboarding: true,
+            userName: '',
+            isLoading: false,
+            notifications: [],
+          }),
       }),
       {
         name: 'global-store',

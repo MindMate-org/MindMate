@@ -51,29 +51,31 @@ const Modal = ({
   const { theme: themeColors, isDark } = useThemeColors();
 
   const renderBottomModal = () => (
-    <View 
-      style={{ 
+    <View
+      style={{
         flex: 1,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         justifyContent: 'flex-end',
-        paddingTop: StatusBar.currentHeight || 0
+        paddingTop: StatusBar.currentHeight || 0,
       }}
     >
       <TouchableWithoutFeedback onPress={closeOnBackdrop ? onClose : undefined}>
         <View style={{ flex: 1 }} />
       </TouchableWithoutFeedback>
-      <View style={{
-        backgroundColor: themeColors.surface,
-        borderTopLeftRadius: 16,
-        borderTopRightRadius: 16,
-        paddingHorizontal: 16,
-        paddingVertical: 16,
-        paddingBottom: 0,
-        marginBottom: 0,
-        width: '100%',
-        alignSelf: 'center',
-        maxHeight: '80%',
-      }}>
+      <View
+        style={{
+          backgroundColor: themeColors.surface,
+          borderTopLeftRadius: 16,
+          borderTopRightRadius: 16,
+          paddingHorizontal: 16,
+          paddingVertical: 16,
+          paddingBottom: 0,
+          marginBottom: 0,
+          width: '100%',
+          alignSelf: 'center',
+          maxHeight: '80%',
+        }}
+      >
         {children}
       </View>
     </View>
@@ -81,16 +83,16 @@ const Modal = ({
 
   const renderCenterModal = () => {
     const sizeStyles = {
-      sm: { minWidth: '60%', maxWidth: '80%' },
-      md: { minWidth: '70%', maxWidth: '90%' },
-      lg: { minWidth: '80%', maxWidth: '95%' },
-      xl: { minWidth: '90%', maxWidth: '98%' },
+      sm: { minWidth: '60%' as const, maxWidth: '80%' as const },
+      md: { minWidth: '70%' as const, maxWidth: '90%' as const },
+      lg: { minWidth: '80%' as const, maxWidth: '95%' as const },
+      xl: { minWidth: '90%' as const, maxWidth: '98%' as const },
       full: { flex: 1 },
     };
 
     return (
       <TouchableWithoutFeedback onPress={closeOnBackdrop ? onClose : undefined}>
-        <View 
+        <View
           style={{
             flex: 1,
             alignItems: 'center',
@@ -101,22 +103,27 @@ const Modal = ({
           }}
         >
           <TouchableWithoutFeedback onPress={() => {}}>
-            <View style={[
-              {
-                backgroundColor: themeColors.surface,
-                borderRadius: 16,
-                padding: 24,
-                shadowColor: themeColors.shadow,
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: isDark ? 0.4 : 0.2,
-                shadowRadius: 8,
-                elevation: 8,
-              },
-              sizeStyles[size]
-            ]}>
+            <View
+              style={[
+                {
+                  backgroundColor: themeColors.surface,
+                  borderRadius: 16,
+                  padding: 24,
+                  shadowColor: themeColors.shadow,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: isDark ? 0.4 : 0.2,
+                  shadowRadius: 8,
+                  elevation: 8,
+                },
+                sizeStyles[size],
+              ]}
+            >
               {children}
               {showCloseButton && (
-                <TouchableOpacity onPress={onClose} style={{ marginTop: 16, alignSelf: 'flex-end' }}>
+                <TouchableOpacity
+                  onPress={onClose}
+                  style={{ marginTop: 16, alignSelf: 'flex-end' }}
+                >
                   <Text style={{ color: themeColors.primary, fontWeight: 'bold' }}>닫기</Text>
                 </TouchableOpacity>
               )}
@@ -128,14 +135,18 @@ const Modal = ({
   };
 
   const renderFullscreenModal = () => (
-    <View style={{
-      flex: 1,
-      backgroundColor: 'rgba(0, 0, 0, 0.9)',
-    }}>
-      <View style={{
+    <View
+      style={{
         flex: 1,
-        backgroundColor: themeColors.background,
-      }}>
+        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+      }}
+    >
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: themeColors.background,
+        }}
+      >
         {children}
       </View>
     </View>

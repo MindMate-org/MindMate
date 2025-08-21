@@ -90,7 +90,9 @@ const SearchModal = ({ visible, onClose, onSearch }: SearchModalProps) => {
 
         {/* 키워드 검색 */}
         <View style={{ marginBottom: 24 }}>
-          <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 8, color: themeColors.text }}>
+          <Text
+            style={{ fontSize: 16, fontWeight: '600', marginBottom: 8, color: themeColors.text }}
+          >
             {t.diary.keywordSearch}
           </Text>
           <View
@@ -111,9 +113,9 @@ const SearchModal = ({ visible, onClose, onSearch }: SearchModalProps) => {
               onChangeText={setKeyword}
               placeholder={t.diary.searchTitleContent}
               placeholderTextColor={themeColors.textSecondary}
-              style={{ 
-                flex: 1, 
-                marginLeft: 12, 
+              style={{
+                flex: 1,
+                marginLeft: 12,
                 fontSize: 16,
                 color: themeColors.text,
               }}
@@ -123,12 +125,16 @@ const SearchModal = ({ visible, onClose, onSearch }: SearchModalProps) => {
 
         {/* 날짜 범위 */}
         <View style={{ marginBottom: 24 }}>
-          <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 8, color: themeColors.text }}>
+          <Text
+            style={{ fontSize: 16, fontWeight: '600', marginBottom: 8, color: themeColors.text }}
+          >
             {t.diary.dateRange}
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 12, color: themeColors.textSecondary, marginBottom: 4 }}>{t.diary.startDate}</Text>
+              <Text style={{ fontSize: 12, color: themeColors.textSecondary, marginBottom: 4 }}>
+                {t.diary.startDate}
+              </Text>
               <TextInput
                 value={startDate}
                 onChangeText={(value) => handleDateChange(value, 'start')}
@@ -148,7 +154,9 @@ const SearchModal = ({ visible, onClose, onSearch }: SearchModalProps) => {
             </View>
             <Text style={{ color: themeColors.textSecondary, marginTop: 16 }}>~</Text>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 12, color: themeColors.textSecondary, marginBottom: 4 }}>{t.diary.endDate}</Text>
+              <Text style={{ fontSize: 12, color: themeColors.textSecondary, marginBottom: 4 }}>
+                {t.diary.endDate}
+              </Text>
               <TextInput
                 value={endDate}
                 onChangeText={(value) => handleDateChange(value, 'end')}
@@ -171,7 +179,9 @@ const SearchModal = ({ visible, onClose, onSearch }: SearchModalProps) => {
 
         {/* 기분 필터 */}
         <View style={{ marginBottom: 24 }}>
-          <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 12, color: themeColors.text }}>
+          <Text
+            style={{ fontSize: 16, fontWeight: '600', marginBottom: 12, color: themeColors.text }}
+          >
             {t.diary.moodFilter}
           </Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
@@ -181,14 +191,16 @@ const SearchModal = ({ visible, onClose, onSearch }: SearchModalProps) => {
                 paddingHorizontal: 16,
                 paddingVertical: 8,
                 borderRadius: 20,
-                backgroundColor: selectedMood === null ? themeColors.primary : themeColors.backgroundSecondary,
+                backgroundColor:
+                  selectedMood === null ? themeColors.primary : themeColors.backgroundSecondary,
                 borderWidth: 1,
                 borderColor: selectedMood === null ? themeColors.primary : themeColors.border,
               }}
             >
               <Text
                 style={{
-                  color: selectedMood === null ? themeColors.primaryText : themeColors.textSecondary,
+                  color:
+                    selectedMood === null ? themeColors.primaryText : themeColors.textSecondary,
                   fontSize: 14,
                   fontWeight: '500',
                 }}
@@ -204,9 +216,13 @@ const SearchModal = ({ visible, onClose, onSearch }: SearchModalProps) => {
                   paddingHorizontal: 12,
                   paddingVertical: 8,
                   borderRadius: 20,
-                  backgroundColor: selectedMood === mood.value ? themeColors.primary : themeColors.backgroundSecondary,
+                  backgroundColor:
+                    selectedMood === mood.value
+                      ? themeColors.primary
+                      : themeColors.backgroundSecondary,
                   borderWidth: 1,
-                  borderColor: selectedMood === mood.value ? themeColors.primary : themeColors.border,
+                  borderColor:
+                    selectedMood === mood.value ? themeColors.primary : themeColors.border,
                   flexDirection: 'row',
                   alignItems: 'center',
                   gap: 4,
@@ -215,7 +231,10 @@ const SearchModal = ({ visible, onClose, onSearch }: SearchModalProps) => {
                 <Text style={{ fontSize: 14 }}>{mood.emoji}</Text>
                 <Text
                   style={{
-                    color: selectedMood === mood.value ? themeColors.primaryText : themeColors.textSecondary,
+                    color:
+                      selectedMood === mood.value
+                        ? themeColors.primaryText
+                        : themeColors.textSecondary,
                     fontSize: 12,
                     fontWeight: '500',
                   }}
@@ -229,7 +248,9 @@ const SearchModal = ({ visible, onClose, onSearch }: SearchModalProps) => {
 
         {/* 미디어 필터 */}
         <View style={{ marginBottom: 32 }}>
-          <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 12, color: themeColors.text }}>
+          <Text
+            style={{ fontSize: 16, fontWeight: '600', marginBottom: 12, color: themeColors.text }}
+          >
             {t.diary.mediaFilter}
           </Text>
           <View style={{ flexDirection: 'row', gap: 8 }}>
@@ -239,7 +260,8 @@ const SearchModal = ({ visible, onClose, onSearch }: SearchModalProps) => {
                 paddingHorizontal: 16,
                 paddingVertical: 8,
                 borderRadius: 20,
-                backgroundColor: hasMedia === null ? themeColors.primary : themeColors.backgroundSecondary,
+                backgroundColor:
+                  hasMedia === null ? themeColors.primary : themeColors.backgroundSecondary,
                 borderWidth: 1,
                 borderColor: hasMedia === null ? themeColors.primary : themeColors.border,
               }}
@@ -260,7 +282,8 @@ const SearchModal = ({ visible, onClose, onSearch }: SearchModalProps) => {
                 paddingHorizontal: 16,
                 paddingVertical: 8,
                 borderRadius: 20,
-                backgroundColor: hasMedia === true ? themeColors.primary : themeColors.backgroundSecondary,
+                backgroundColor:
+                  hasMedia === true ? themeColors.primary : themeColors.backgroundSecondary,
                 borderWidth: 1,
                 borderColor: hasMedia === true ? themeColors.primary : themeColors.border,
               }}
@@ -281,7 +304,8 @@ const SearchModal = ({ visible, onClose, onSearch }: SearchModalProps) => {
                 paddingHorizontal: 16,
                 paddingVertical: 8,
                 borderRadius: 20,
-                backgroundColor: hasMedia === false ? themeColors.primary : themeColors.backgroundSecondary,
+                backgroundColor:
+                  hasMedia === false ? themeColors.primary : themeColors.backgroundSecondary,
                 borderWidth: 1,
                 borderColor: hasMedia === false ? themeColors.primary : themeColors.border,
               }}
@@ -327,7 +351,9 @@ const SearchModal = ({ visible, onClose, onSearch }: SearchModalProps) => {
               alignItems: 'center',
             }}
           >
-            <Text style={{ color: themeColors.primaryText, fontSize: 16, fontWeight: '600' }}>{t.diary.searchAction}</Text>
+            <Text style={{ color: themeColors.primaryText, fontSize: 16, fontWeight: '600' }}>
+              {t.diary.searchAction}
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

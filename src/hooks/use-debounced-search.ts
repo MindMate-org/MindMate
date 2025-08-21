@@ -11,10 +11,7 @@ export interface UseDebouncedSearchOptions {
   minLength?: number;
 }
 
-export const useDebouncedSearch = (
-  searchText: string, 
-  options: UseDebouncedSearchOptions = {}
-) => {
+export const useDebouncedSearch = (searchText: string, options: UseDebouncedSearchOptions = {}) => {
   const { delay = 300, minLength = 0 } = options;
   const [debouncedSearchText, setDebouncedSearchText] = useState(searchText);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);

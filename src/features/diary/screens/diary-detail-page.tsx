@@ -140,26 +140,35 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
     <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
       {/* 헤더 */}
       <FadeInView>
-        <View style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          backgroundColor: themeColors.surface,
-          paddingHorizontal: 16,
-          paddingVertical: 16,
-          marginTop: 32,
-        }}>
-          <TouchableOpacity onPress={handleBack} style={{
-            borderRadius: 20,
-            padding: 8,
-          }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            backgroundColor: themeColors.surface,
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+            marginTop: 32,
+          }}
+        >
+          <TouchableOpacity
+            onPress={handleBack}
+            style={{
+              borderRadius: 20,
+              padding: 8,
+            }}
+          >
             <ChevronLeft size={24} color={themeColors.primary} />
           </TouchableOpacity>
-          <Text style={{
-            fontSize: 18,
-            fontWeight: 'bold',
-            color: themeColors.primary,
-          }}>{t.diary.detail}</Text>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: 'bold',
+              color: themeColors.primary,
+            }}
+          >
+            {t.diary.detail}
+          </Text>
           <TouchableOpacity
             onPress={() => setShowMenu(!showMenu)}
             style={{
@@ -175,21 +184,23 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
 
       {/* 메뉴 */}
       {showMenu && (
-        <FadeInView style={{
-          position: 'absolute',
-          right: 16,
-          top: 80,
-          zIndex: 10,
-          width: 160,
-          borderRadius: 12,
-          backgroundColor: themeColors.surface,
-          padding: 8,
-          shadowColor: themeColors.shadow,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: isDark ? 0.3 : 0.1,
-          shadowRadius: 12,
-          elevation: 12,
-        }}>
+        <FadeInView
+          style={{
+            position: 'absolute',
+            right: 16,
+            top: 80,
+            zIndex: 10,
+            width: 160,
+            borderRadius: 12,
+            backgroundColor: themeColors.surface,
+            padding: 8,
+            shadowColor: themeColors.shadow,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: isDark ? 0.3 : 0.1,
+            shadowRadius: 12,
+            elevation: 12,
+          }}
+        >
           <TouchableOpacity
             style={{
               flexDirection: 'row',
@@ -201,12 +212,16 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
             onPress={handleEdit}
           >
             <Edit3 size={18} color={themeColors.primary} />
-            <Text style={{
-              marginLeft: 12,
-              fontSize: 14,
-              fontWeight: '500',
-              color: themeColors.text,
-            }}>{t.diary.edit}</Text>
+            <Text
+              style={{
+                marginLeft: 12,
+                fontSize: 14,
+                fontWeight: '500',
+                color: themeColors.text,
+              }}
+            >
+              {t.diary.edit}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={{
@@ -223,12 +238,14 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
               color={diary.is_favorite ? '#fbbf24' : themeColors.primary}
               fill={diary.is_favorite ? '#fbbf24' : 'none'}
             />
-            <Text style={{
-              marginLeft: 12,
-              fontSize: 14,
-              fontWeight: '500',
-              color: themeColors.text,
-            }}>
+            <Text
+              style={{
+                marginLeft: 12,
+                fontSize: 14,
+                fontWeight: '500',
+                color: themeColors.text,
+              }}
+            >
               {diary.is_favorite ? t.diary.removeFavorite : t.diary.favorite}
             </Text>
           </TouchableOpacity>
@@ -243,12 +260,16 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
             onPress={() => setShowExportModal(true)}
           >
             <Share2 size={18} color={themeColors.primary} />
-            <Text style={{
-              marginLeft: 12,
-              fontSize: 14,
-              fontWeight: '500',
-              color: themeColors.text,
-            }}>{t.diary.export}</Text>
+            <Text
+              style={{
+                marginLeft: 12,
+                fontSize: 14,
+                fontWeight: '500',
+                color: themeColors.text,
+              }}
+            >
+              {t.diary.export}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={{
@@ -261,12 +282,16 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
             onPress={handleDelete}
           >
             <Trash2 size={18} color={themeColors.error} />
-            <Text style={{
-              marginLeft: 12,
-              fontSize: 14,
-              fontWeight: '500',
-              color: themeColors.error,
-            }}>{t.diary.trash}</Text>
+            <Text
+              style={{
+                marginLeft: 12,
+                fontSize: 14,
+                fontWeight: '500',
+                color: themeColors.error,
+              }}
+            >
+              {t.diary.trash}
+            </Text>
           </TouchableOpacity>
         </FadeInView>
       )}
@@ -274,31 +299,48 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 40 }}>
         {/* 날짜 헤더 */}
         <FadeInView delay={100} style={{ marginHorizontal: 16, marginTop: 16 }}>
-          <View style={{
-            backgroundColor: themeColors.surface,
-            borderRadius: 12,
-            padding: 16,
-            marginBottom: 16,
-            shadowColor: themeColors.shadow,
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: isDark ? 0.2 : 0.1,
-            shadowRadius: 2,
-            elevation: 2,
-          }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <View
+            style={{
+              backgroundColor: themeColors.surface,
+              borderRadius: 12,
+              padding: 16,
+              marginBottom: 16,
+              shadowColor: themeColors.shadow,
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: isDark ? 0.2 : 0.1,
+              shadowRadius: 2,
+              elevation: 2,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
               <View>
-                <Text style={{
-                  color: themeColors.textSecondary,
-                  fontSize: 14,
-                }}>
-{formatDateTimeString(diary.created_at || '', t.locale.startsWith('en') ? 'en' : 'ko')}
+                <Text
+                  style={{
+                    color: themeColors.textSecondary,
+                    fontSize: 14,
+                  }}
+                >
+                  {formatDateTimeString(
+                    diary.created_at || '',
+                    t.locale.startsWith('en') ? 'en' : 'ko',
+                  )}
                 </Text>
                 {diary.is_favorite === 1 && (
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
-                    <Text style={{
-                      color: '#fbbf24',
-                      fontSize: 14,
-                    }}>⭐ {t.diary.favorite}</Text>
+                    <Text
+                      style={{
+                        color: '#fbbf24',
+                        fontSize: 14,
+                      }}
+                    >
+                      ⭐ {t.diary.favorite}
+                    </Text>
                   </View>
                 )}
               </View>
@@ -353,7 +395,7 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
             {media.length > 0 && (
               <View className="mt-4">
                 <View className="mb-3">
-                  <Text className="text-sm font-medium text-gray-600">첨부된 미디어</Text>
+                  <Text className="text-gray-600 text-sm font-medium">첨부된 미디어</Text>
                 </View>
                 <MediaSlider
                   media={media.map((m) => ({
@@ -368,27 +410,35 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
 
             {/* 기분 */}
             {mood && (
-              <View style={{
-                marginTop: 24,
-                paddingTop: 16,
-                borderTopWidth: 1,
-                borderTopColor: themeColors.border,
-              }}>
-                <View style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: themeColors.backgroundSecondary,
-                  borderRadius: 20,
-                  paddingHorizontal: 16,
-                  paddingVertical: 12,
-                }}>
+              <View
+                style={{
+                  marginTop: 24,
+                  paddingTop: 16,
+                  borderTopWidth: 1,
+                  borderTopColor: themeColors.border,
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: themeColors.backgroundSecondary,
+                    borderRadius: 20,
+                    paddingHorizontal: 16,
+                    paddingVertical: 12,
+                  }}
+                >
                   <Text style={{ marginRight: 8, fontSize: 20 }}>{mood.emoji}</Text>
-                  <Text style={{
-                    color: themeColors.text,
-                    fontSize: 14,
-                    fontWeight: '500',
-                  }}>{t.diary.todayMood}: {mood.label}</Text>
+                  <Text
+                    style={{
+                      color: themeColors.text,
+                      fontSize: 14,
+                      fontWeight: '500',
+                    }}
+                  >
+                    {t.diary.todayMood}: {mood.label}
+                  </Text>
                 </View>
               </View>
             )}
@@ -398,22 +448,27 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
         {/* 추가 정보 카드 */}
         {diary.audio_uri && (
           <FadeInView delay={300} style={{ marginHorizontal: 16, marginTop: 16 }}>
-            <View style={{
-              backgroundColor: themeColors.info + '20',
-              borderRadius: 12,
-              padding: 16,
-            }}>
+            <View
+              style={{
+                backgroundColor: themeColors.info + '20',
+                borderRadius: 12,
+                padding: 16,
+              }}
+            >
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={{
-                  color: themeColors.info,
-                  fontSize: 14,
-                  fontWeight: '500',
-                }}>🎵 {t.diary.voiceMemo}</Text>
+                <Text
+                  style={{
+                    color: themeColors.info,
+                    fontSize: 14,
+                    fontWeight: '500',
+                  }}
+                >
+                  🎵 {t.diary.voiceMemo}
+                </Text>
               </View>
             </View>
           </FadeInView>
         )}
-
       </ScrollView>
 
       <ExportModal
@@ -427,13 +482,18 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
       />
 
       {/* 메뉴 닫기용 오버레이 */}
-      {showMenu && <Pressable style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-      }} onPress={() => setShowMenu(false)} />}
+      {showMenu && (
+        <Pressable
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+          }}
+          onPress={() => setShowMenu(false)}
+        />
+      )}
     </SafeAreaView>
   );
 };

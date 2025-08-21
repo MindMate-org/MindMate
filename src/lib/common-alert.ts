@@ -18,15 +18,14 @@ export const deleteAlert = ({ type, text1, text2, onPress }: AlertType) => {
   const { useAppStore } = require('../store/app-store');
   const language = useAppStore.getState().language;
   const t = getTranslations(language);
-  
+
   const isEnglish = language === 'en';
-  
+
   // type에 따라 버튼 텍스트 결정
-  const confirmText = type === 'delete' 
-    ? (isEnglish ? 'Delete' : '삭제')
-    : (isEnglish ? 'Confirm' : '확인');
+  const confirmText =
+    type === 'delete' ? (isEnglish ? 'Delete' : '삭제') : isEnglish ? 'Confirm' : '확인';
   const cancelText = isEnglish ? 'Cancel' : '취소';
-  
+
   CustomAlertManager.alert(
     text1,
     text2 || '',
@@ -41,6 +40,6 @@ export const deleteAlert = ({ type, text1, text2, onPress }: AlertType) => {
         style: 'cancel',
       },
     ],
-    type === 'delete' ? 'warning' : 'info'
+    type === 'delete' ? 'warning' : 'info',
   );
 };

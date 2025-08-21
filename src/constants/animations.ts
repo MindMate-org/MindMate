@@ -9,8 +9,8 @@ export const ANIMATION_CONFIG = {
     animation: 'slide_from_right' as const,
     animationDuration: 300,
   },
-  
-  // 탭 전환 애니메이션 
+
+  // 탭 전환 애니메이션
   tabTransition: {
     animationEnabled: true,
     swipeEnabled: true,
@@ -18,20 +18,20 @@ export const ANIMATION_CONFIG = {
     sceneAnimationEnabled: true,
     sceneAnimationType: 'shifting' as const,
   },
-  
+
   // 모달 애니메이션
   modal: {
     fade: 'fade' as const,
     slide: 'slide' as const,
     none: 'none' as const,
   },
-  
+
   // 일반적인 애니메이션 지속시간
   duration: {
     fast: 150,
     normal: 300,
     slow: 500,
-  }
+  },
 } as const;
 
 export default ANIMATION_CONFIG;

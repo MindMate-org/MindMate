@@ -30,14 +30,17 @@ const AlarmTimePicker = ({ value, onChange, className = '' }: AlarmTimePickerPro
   const formatTime = (date: Date) => {
     let hours = date.getHours();
     const minutes = date.getMinutes();
-    const ampm = t.locale.startsWith('en') 
-      ? (hours >= 12 ? 'PM' : 'AM')
-      : (hours >= 12 ? '오후' : '오전');
+    const ampm = t.locale.startsWith('en')
+      ? hours >= 12
+        ? 'PM'
+        : 'AM'
+      : hours >= 12
+        ? '오후'
+        : '오전';
     hours = hours % 12;
     hours = hours === 0 ? 12 : hours;
     return `${ampm} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
   };
-
 
   const onTimeChange = (_: unknown, selected?: Date) => {
     setShow(false);

@@ -171,7 +171,7 @@ const ExportModal = ({ visible, onClose, diary, media = [] }: ExportModalProps) 
     } catch (error) {
       CustomAlertManager.error(
         isEnglish ? 'An error occurred while creating PDF.' : 'PDF 생성 중 오류가 발생했습니다.',
-        isEnglish ? 'Error' : '오류'
+        isEnglish ? 'Error' : '오류',
       );
     }
   };
@@ -185,7 +185,9 @@ const ExportModal = ({ visible, onClose, diary, media = [] }: ExportModalProps) 
 
       // 간단한 텍스트 형태로 일기 내용 구성
       const displayTime = diary.updated_at ?? diary.created_at ?? '';
-      const formattedDate = displayTime ? new Date(displayTime).toLocaleDateString(isEnglish ? 'en-US' : 'ko-KR') : '';
+      const formattedDate = displayTime
+        ? new Date(displayTime).toLocaleDateString(isEnglish ? 'en-US' : 'ko-KR')
+        : '';
 
       const shareText = `📝 ${diary.title || (isEnglish ? 'Diary' : '일기')}
 
@@ -209,11 +211,14 @@ ${diary.body || (isEnglish ? 'No Content' : '내용 없음')}
       } else {
         CustomAlertManager.alert(
           isEnglish ? 'Share Unavailable' : '공유 불가',
-          isEnglish ? 'Share function is not available.\nPlease copy the content directly.' : '공유 기능을 사용할 수 없습니다.\n내용을 직접 복사해서 사용하세요.',
+          isEnglish
+            ? 'Share function is not available.\nPlease copy the content directly.'
+            : '공유 기능을 사용할 수 없습니다.\n내용을 직접 복사해서 사용하세요.',
           [
             {
               text: isEnglish ? 'View Content' : '내용 보기',
-              onPress: () => CustomAlertManager.info(shareText, isEnglish ? 'Diary Content' : '일기 내용'),
+              onPress: () =>
+                CustomAlertManager.info(shareText, isEnglish ? 'Diary Content' : '일기 내용'),
             },
             { text: isEnglish ? 'OK' : '확인' },
           ],
@@ -222,7 +227,7 @@ ${diary.body || (isEnglish ? 'No Content' : '내용 없음')}
     } catch (error) {
       CustomAlertManager.error(
         isEnglish ? 'An error occurred while sharing.' : '공유 중 오류가 발생했습니다.',
-        isEnglish ? 'Error' : '오류'
+        isEnglish ? 'Error' : '오류',
       );
     }
   };
@@ -289,7 +294,9 @@ ${diary.body || (isEnglish ? 'No Content' : '내용 없음')}
                 {isEnglish ? 'Save as PDF' : 'PDF로 저장'}
               </Text>
               <Text style={{ fontSize: 12, color: themeColors.textSecondary, marginTop: 2 }}>
-                {isEnglish ? 'Save diary as PDF file for sharing' : '일기를 PDF 파일로 저장하여 공유'}
+                {isEnglish
+                  ? 'Save diary as PDF file for sharing'
+                  : '일기를 PDF 파일로 저장하여 공유'}
               </Text>
             </View>
           </TouchableOpacity>

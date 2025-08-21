@@ -28,7 +28,7 @@ const ContactDetailGroupSectionList = ({
   }, [id]);
   const { data, refetch: allGroupRefetch } = useAsyncDataGet<NoteGroupType[]>(
     getNoteGroupsByContactIdCallback,
-    false // 캐시 비활성화
+    false, // 캐시 비활성화
   );
 
   useEffect(() => {
@@ -68,7 +68,7 @@ const ContactDetailGroupList = ({
 
   const { data, refetch: noteItemRefetch } = useAsyncDataGet<NoteItemType[]>(
     getNoteItemsByGroupIdCallback,
-    false // 캐시 비활성화
+    false, // 캐시 비활성화
   );
   const handleDeleteContactDetailGroup = async () => {
     await deleteNoteGroup(group.group_id.toString());
@@ -78,24 +78,34 @@ const ContactDetailGroupList = ({
 
   return (
     <View style={{ gap: 8, padding: 16 }}>
-      <View style={{ 
-        flexDirection: 'row', 
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      }}>
-        <Text style={{
-          marginBottom: 8,
-          fontSize: 14,
-          fontWeight: '400',
-          color: themeColors.text,
-        }}>{group.title}</Text>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <Text
+          style={{
+            marginBottom: 8,
+            fontSize: 14,
+            fontWeight: '400',
+            color: themeColors.text,
+          }}
+        >
+          {group.title}
+        </Text>
         <TouchableOpacity onPress={() => setIsActionMenuVisible(true)}>
           <EllipsisVertical size={20} color={themeColors.textSecondary} />
         </TouchableOpacity>
       </View>
-      {data && Array.isArray(data) ? data.map((item) => {
-        return <ContactDetailGroupItem key={item.item_id} item={item} refetch={noteItemRefetch} />;
-      }) : null}
+      {data && Array.isArray(data)
+        ? data.map((item) => {
+            return (
+              <ContactDetailGroupItem key={item.item_id} item={item} refetch={noteItemRefetch} />
+            );
+          })
+        : null}
       <AddContactDetailGroupItemButton refetch={noteItemRefetch} group={group} />
       {isModalVisible && (
         <EditContactDetailGroupModal
@@ -167,25 +177,35 @@ const ContactDetailGroupItem = ({ item, refetch }: { item: NoteItemType; refetch
   return (
     <CommonBox>
       <View style={{ gap: 12 }}>
-        <View style={{ 
-          flexDirection: 'row', 
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          <Text style={{
-            fontSize: 18,
-            fontWeight: 'bold',
-            color: themeColors.text,
-          }}>{item.title}</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: 'bold',
+              color: themeColors.text,
+            }}
+          >
+            {item.title}
+          </Text>
           <TouchableOpacity onPress={() => setIsActionMenuVisible(true)}>
             <EllipsisVertical size={20} color={themeColors.textSecondary} />
           </TouchableOpacity>
         </View>
-        <Text style={{
-          fontSize: 14,
-          fontWeight: '400',
-          color: themeColors.text,
-        }}>{item.content}</Text>
+        <Text
+          style={{
+            fontSize: 14,
+            fontWeight: '400',
+            color: themeColors.text,
+          }}
+        >
+          {item.content}
+        </Text>
       </View>
       {isActionMenuVisible && (
         <ActionMenu

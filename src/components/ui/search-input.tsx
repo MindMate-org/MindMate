@@ -13,21 +13,23 @@ type SearchInputType = {
 
 const SearchInput = ({ value, onChange, onSubmitEditing, placeholder }: SearchInputType) => {
   const { theme: themeColors, isDark } = useThemeColors();
-  
+
   return (
-    <View style={{
-      width: '100%',
-      flexDirection: 'row',
-      alignItems: 'center',
-      borderRadius: 24,
-      backgroundColor: themeColors.surface,
-      paddingHorizontal: 16,
-      shadowColor: themeColors.shadow,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: isDark ? 0.3 : 0.1,
-      shadowRadius: 4,
-      elevation: 3,
-    }}>
+    <View
+      style={{
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderRadius: 24,
+        backgroundColor: themeColors.surface,
+        paddingHorizontal: 16,
+        shadowColor: themeColors.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: isDark ? 0.3 : 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+      }}
+    >
       <TextInput
         style={{
           height: 56,
@@ -42,10 +44,7 @@ const SearchInput = ({ value, onChange, onSubmitEditing, placeholder }: SearchIn
         placeholderTextColor={themeColors.textSecondary}
       />
       {value.length > 0 && (
-        <TouchableOpacity 
-          onPress={() => onChange('')} 
-          style={{ marginRight: 8 }}
-        >
+        <TouchableOpacity onPress={() => onChange('')} style={{ marginRight: 8 }}>
           <X size={18} color={themeColors.error} />
         </TouchableOpacity>
       )}

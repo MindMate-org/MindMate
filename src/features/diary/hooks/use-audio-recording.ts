@@ -51,7 +51,9 @@ export const useAudioRecording = (
       if (uploadState.isUploading) {
         CustomAlertManager.error(
           t.locale.startsWith('en') ? 'Uploading' : '업로드 중',
-          t.locale.startsWith('en') ? 'Please wait for media upload to complete.' : '미디어 업로드가 완료될 때까지 기다려주세요.'
+          t.locale.startsWith('en')
+            ? 'Please wait for media upload to complete.'
+            : '미디어 업로드가 완료될 때까지 기다려주세요.',
         );
         return;
       }
@@ -79,16 +81,22 @@ export const useAudioRecording = (
         setValue('media', [...watchedMedia, newMedia]);
         CustomAlertManager.success(
           t.locale.startsWith('en') ? 'Audio file has been added.' : '음성 파일이 추가되었습니다.',
-          t.locale.startsWith('en') ? 'Success' : '성공'
+          t.locale.startsWith('en') ? 'Success' : '성공',
         );
       }
 
       finishUpload();
     } catch (error) {
-      setError(t.locale.startsWith('en') ? 'An error occurred while selecting the audio file.' : '음성 파일 선택 중 오류가 발생했습니다.');
+      setError(
+        t.locale.startsWith('en')
+          ? 'An error occurred while selecting the audio file.'
+          : '음성 파일 선택 중 오류가 발생했습니다.',
+      );
       CustomAlertManager.error(
         t.locale.startsWith('en') ? 'Error' : '오류',
-        t.locale.startsWith('en') ? 'An error occurred while selecting the audio file.' : '음성 파일 선택 중 오류가 발생했습니다.'
+        t.locale.startsWith('en')
+          ? 'An error occurred while selecting the audio file.'
+          : '음성 파일 선택 중 오류가 발생했습니다.',
       );
     }
   };
@@ -108,7 +116,9 @@ export const useAudioRecording = (
       if (uploadState.isUploading) {
         CustomAlertManager.error(
           t.locale.startsWith('en') ? 'Uploading' : '업로드 중',
-          t.locale.startsWith('en') ? 'Please wait for media upload to complete.' : '미디어 업로드가 완료될 때까지 기다려주세요.'
+          t.locale.startsWith('en')
+            ? 'Please wait for media upload to complete.'
+            : '미디어 업로드가 완료될 때까지 기다려주세요.',
         );
         return;
       }
@@ -118,7 +128,9 @@ export const useAudioRecording = (
       if (status !== 'granted') {
         CustomAlertManager.error(
           t.locale.startsWith('en') ? 'Permission Required' : '권한 필요',
-          t.locale.startsWith('en') ? 'Microphone permission is required for voice recording.' : '음성 녹음을 위해 마이크 권한이 필요합니다.'
+          t.locale.startsWith('en')
+            ? 'Microphone permission is required for voice recording.'
+            : '음성 녹음을 위해 마이크 권한이 필요합니다.',
         );
         return;
       }
@@ -149,10 +161,16 @@ export const useAudioRecording = (
       }, 1000);
       setRecordingInterval(interval);
     } catch (error) {
-      setError(t.locale.startsWith('en') ? 'An error occurred during voice recording.' : '음성 녹음 중 오류가 발생했습니다.');
+      setError(
+        t.locale.startsWith('en')
+          ? 'An error occurred during voice recording.'
+          : '음성 녹음 중 오류가 발생했습니다.',
+      );
       CustomAlertManager.error(
         t.locale.startsWith('en') ? 'Error' : '오류',
-        t.locale.startsWith('en') ? 'An error occurred during voice recording.' : '음성 녹음 중 오류가 발생했습니다.'
+        t.locale.startsWith('en')
+          ? 'An error occurred during voice recording.'
+          : '음성 녹음 중 오류가 발생했습니다.',
       );
     }
   };
@@ -176,7 +194,7 @@ export const useAudioRecording = (
             setValue('media', [...watchedMedia, newMedia]);
             CustomAlertManager.success(
               t.locale.startsWith('en') ? 'Voice has been saved.' : '음성이 저장되었습니다.',
-              t.locale.startsWith('en') ? 'Recording Complete' : '녹음 완료'
+              t.locale.startsWith('en') ? 'Recording Complete' : '녹음 완료',
             );
           }
           finishUpload();
@@ -188,29 +206,38 @@ export const useAudioRecording = (
         setRecordingState({ isRecording: false, duration: 0 });
       } else {
         // 녹음 시작 전 선택 옵션 제공
-        const options = t.locale.startsWith('en') 
+        const options = t.locale.startsWith('en')
           ? ['Record Voice', 'Select from Files', 'Cancel']
           : ['음성 녹음하기', '파일에서 선택', '취소'];
         CustomAlertManager.alert(
           t.locale.startsWith('en') ? 'Add Voice' : '음성 추가',
-          t.locale.startsWith('en') ? 'Please select how to add voice.' : '음성을 추가할 방법을 선택하세요.',
+          t.locale.startsWith('en')
+            ? 'Please select how to add voice.'
+            : '음성을 추가할 방법을 선택하세요.',
           [
-          {
-            text: options[0],
-            onPress: startRecording,
-          },
-          {
-            text: options[1],
-            onPress: handleAudioFilePicker,
-          },
-          { text: options[2], style: 'cancel' },
-        ]);
+            {
+              text: options[0],
+              onPress: startRecording,
+            },
+            {
+              text: options[1],
+              onPress: handleAudioFilePicker,
+            },
+            { text: options[2], style: 'cancel' },
+          ],
+        );
       }
     } catch (error) {
-      setError(t.locale.startsWith('en') ? 'An error occurred while processing audio.' : '음성 처리 중 오류가 발생했습니다.');
+      setError(
+        t.locale.startsWith('en')
+          ? 'An error occurred while processing audio.'
+          : '음성 처리 중 오류가 발생했습니다.',
+      );
       CustomAlertManager.error(
         t.locale.startsWith('en') ? 'Error' : '오류',
-        t.locale.startsWith('en') ? 'An error occurred while processing audio.' : '음성 처리 중 오류가 발생했습니다.'
+        t.locale.startsWith('en')
+          ? 'An error occurred while processing audio.'
+          : '음성 처리 중 오류가 발생했습니다.',
       );
     }
   };

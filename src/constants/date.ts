@@ -7,10 +7,10 @@ export const getWeekDays = (locale: string) => {
 
 export const formatDate = (date: Date, locale: string) => {
   if (locale.startsWith('en')) {
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
     });
   } else {
     return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
@@ -19,9 +19,9 @@ export const formatDate = (date: Date, locale: string) => {
 
 export const formatMonthYear = (date: Date, locale: string) => {
   if (locale.startsWith('en')) {
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long' 
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
     });
   } else {
     return `${date.getFullYear()}년 ${date.getMonth() + 1}월`;

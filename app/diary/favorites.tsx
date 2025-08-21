@@ -78,25 +78,31 @@ const FavoritesPage = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
       {/* 헤더 */}
-      <View style={{
-        marginTop: 32, // 상태바 아래 여백
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        borderBottomWidth: 1,
-        borderBottomColor: themeColors.primary,
-        backgroundColor: themeColors.surface,
-        paddingHorizontal: 16,
-        paddingVertical: 16,
-      }}>
+      <View
+        style={{
+          marginTop: 32, // 상태바 아래 여백
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottomWidth: 1,
+          borderBottomColor: themeColors.primary,
+          backgroundColor: themeColors.surface,
+          paddingHorizontal: 16,
+          paddingVertical: 16,
+        }}
+      >
         <TouchableOpacity onPress={handleBack}>
           <ChevronLeft size={24} color={themeColors.primary} />
         </TouchableOpacity>
-        <Text style={{
-          fontSize: 18,
-          fontWeight: 'bold',
-          color: themeColors.primary,
-        }}>{t.diary.bookmarks}</Text>
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: themeColors.primary,
+          }}
+        >
+          {t.diary.bookmarks}
+        </Text>
         <View style={{ width: 24 }} />
       </View>
 
@@ -105,84 +111,110 @@ const FavoritesPage = () => {
           contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 120 }}
         >
           {loading ? (
-            <View style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginTop: 100,
-            }}>
+            <View
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginTop: 100,
+              }}
+            >
               <ActivityIndicator size="large" color={themeColors.primary} />
-              <Text style={{
-                marginTop: 16,
-                textAlign: 'center',
-                fontSize: 16,
-                color: themeColors.primary,
-              }}>
+              <Text
+                style={{
+                  marginTop: 16,
+                  textAlign: 'center',
+                  fontSize: 16,
+                  color: themeColors.primary,
+                }}
+              >
                 {t.diary.loadingBookmarks}
               </Text>
             </View>
           ) : favoriteDiaries.length === 0 ? (
-            <View style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginTop: 100,
-            }}>
+            <View
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginTop: 100,
+              }}
+            >
               <Star size={64} color={themeColors.textSecondary} />
-              <Text style={{
-                marginTop: 16,
-                fontSize: 18,
-                color: themeColors.textSecondary,
-              }}>{t.diary.bookmarkEmpty}</Text>
-              <Text style={{
-                marginTop: 8,
-                fontSize: 14,
-                color: themeColors.textSecondary,
-              }}>
+              <Text
+                style={{
+                  marginTop: 16,
+                  fontSize: 18,
+                  color: themeColors.textSecondary,
+                }}
+              >
+                {t.diary.bookmarkEmpty}
+              </Text>
+              <Text
+                style={{
+                  marginTop: 8,
+                  fontSize: 14,
+                  color: themeColors.textSecondary,
+                }}
+              >
                 {t.diary.addBookmarkHint}
               </Text>
             </View>
           ) : (
             <>
               {/* 북마크 개수 */}
-              <View style={{
-                marginBottom: 16,
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 8,
-              }}>
+              <View
+                style={{
+                  marginBottom: 16,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 8,
+                }}
+              >
                 <Heart size={20} color={themeColors.primary} />
-                <Text style={{
-                  fontSize: 14,
-                  fontWeight: 'bold',
-                  color: themeColors.primary,
-                }}>
-                  {t.locale.startsWith('en') ? `${favoriteDiaries.length} ${t.diary.preciousDiariesCount}` : `총 ${favoriteDiaries.length}${t.diary.preciousDiariesCount}`}
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 'bold',
+                    color: themeColors.primary,
+                  }}
+                >
+                  {t.locale.startsWith('en')
+                    ? `${favoriteDiaries.length} ${t.diary.preciousDiariesCount}`
+                    : `총 ${favoriteDiaries.length}${t.diary.preciousDiariesCount}`}
                 </Text>
               </View>
 
               {/* 섹션별 목록 */}
               {Object.keys(grouped).map((section) => (
                 <View key={section} style={{ marginBottom: 24 }}>
-                  <View style={{
-                    marginBottom: 12,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 8,
-                  }}>
+                  <View
+                    style={{
+                      marginBottom: 12,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 8,
+                    }}
+                  >
                     <Star size={18} color="#FFD700" fill="#FFD700" />
-                    <Text style={{
-                      fontSize: 14,
-                      fontWeight: 'bold',
-                      color: themeColors.primary,
-                    }}>{section}</Text>
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        fontWeight: 'bold',
+                        color: themeColors.primary,
+                      }}
+                    >
+                      {section}
+                    </Text>
                   </View>
                   {grouped[section].map((item: any) => (
                     <DiaryListItem
                       key={item.id}
                       item={item}
                       onPress={() => router.push(`/diary/${item.id}`)}
-                      formatDateTime={(datetime: string) => formatDateTimeString(datetime, t.locale.startsWith('en') ? 'en' : 'ko')}
+                      formatDateTime={(datetime: string) =>
+                        formatDateTimeString(datetime, t.locale.startsWith('en') ? 'en' : 'ko')
+                      }
                     />
                   ))}
                 </View>

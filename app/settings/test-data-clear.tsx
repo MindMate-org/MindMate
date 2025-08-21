@@ -21,11 +21,23 @@ export const useDataClear = () => {
 
       // 3. 데이터베이스 초기화
       const { db } = await import('../../src/hooks/use-initialize-database');
-      
+
       const tables = [
-        'contact_tag', 'note_item', 'note_group', 'subtasks_executions', 
-        'subtasks', 'routine_executions', 'routine_statistics', 'alarms',
-        'media', 'diaries', 'schedules', 'routines', 'contact', 'tag', 'search'
+        'contact_tag',
+        'note_item',
+        'note_group',
+        'subtasks_executions',
+        'subtasks',
+        'routine_executions',
+        'routine_statistics',
+        'alarms',
+        'media',
+        'diaries',
+        'schedules',
+        'routines',
+        'contact',
+        'tag',
+        'search',
       ];
 
       for (const table of tables) {
@@ -39,23 +51,26 @@ export const useDataClear = () => {
 
       // 4. ID 재설정
       try {
-        await db.runAsync("DELETE FROM sqlite_sequence");
+        await db.runAsync('DELETE FROM sqlite_sequence');
         console.log('✓ Reset auto-increment IDs');
       } catch (error) {
         console.log('✗ Failed to reset auto-increment:', error);
       }
 
       // 5. 사용자 알림 및 이동
-      await CustomAlertManager.success('모든 데이터가 삭제되었습니다!\n\n앱이 초기 상태로 재시작됩니다.');
-      
+      await CustomAlertManager.success(
+        '모든 데이터가 삭제되었습니다!\n\n앱이 초기 상태로 재시작됩니다.',
+      );
+
       console.log('✓ Navigating to onboarding...');
       router.replace('/onboarding/welcome');
-      
-      console.log('=== 데이터 삭제 완료 ===');
 
+      console.log('=== 데이터 삭제 완료 ===');
     } catch (error) {
       console.error('=== 데이터 삭제 실패 ===', error);
-      CustomAlertManager.error(`데이터 삭제 실패: ${error instanceof Error ? error.message : String(error)}`);
+      CustomAlertManager.error(
+        `데이터 삭제 실패: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   };
 

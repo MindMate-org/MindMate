@@ -7,7 +7,10 @@ import { CustomAlertManager } from '../../src/components/ui/custom-alert';
 import { useI18n } from '../../src/hooks/use-i18n';
 import { AlarmSection } from '../../src/features/schedule/components/alarm-section';
 import { useScheduleAlarm } from '../../src/features/schedule/hooks/use-schedule-alarm';
-import { fetchCreateSchedule, fetchAddMediaToSchedule } from '../../src/features/schedule/services/schedule-services';
+import {
+  fetchCreateSchedule,
+  fetchAddMediaToSchedule,
+} from '../../src/features/schedule/services/schedule-services';
 import type { CreateScheduleDataType } from '../../src/features/schedule/types/schedule-types';
 import { notificationService } from '../../src/lib/notification-service';
 
@@ -63,9 +66,11 @@ const CreateSchedulePage = () => {
             newScheduleId.toString(),
             'schedule',
             t.locale.startsWith('en') ? 'Schedule Reminder' : '일정 알림',
-            t.locale.startsWith('en') ? `"${data.title}" is starting!` : `"${data.title}" 일정이 시작됩니다!`,
+            t.locale.startsWith('en')
+              ? `"${data.title}" is starting!`
+              : `"${data.title}" 일정이 시작됩니다!`,
             selectedDateTime,
-            false // 일회성 알림
+            false, // 일회성 알림
           );
 
           if (success) {
@@ -75,21 +80,28 @@ const CreateSchedulePage = () => {
           }
         }
 
-        await CustomAlertManager.success(t.locale.startsWith('en') ? 'Schedule saved successfully.' : '일정이 저장되었습니다.');
+        await CustomAlertManager.success(
+          t.locale.startsWith('en') ? 'Schedule saved successfully.' : '일정이 저장되었습니다.',
+        );
         router.push('/(tabs)/schedule');
       } else {
-        CustomAlertManager.error(t.locale.startsWith('en') ? 'Failed to save schedule.' : '일정 저장에 실패했습니다.');
+        CustomAlertManager.error(
+          t.locale.startsWith('en') ? 'Failed to save schedule.' : '일정 저장에 실패했습니다.',
+        );
       }
     } catch (error) {
       console.error('Error creating schedule:', error);
-      CustomAlertManager.error(t.locale.startsWith('en') ? 'An error occurred while saving the schedule.' : '일정 저장 중 문제가 발생했습니다.');
+      CustomAlertManager.error(
+        t.locale.startsWith('en')
+          ? 'An error occurred while saving the schedule.'
+          : '일정 저장 중 문제가 발생했습니다.',
+      );
     }
   };
 
   const handleCancel = () => {
     router.push('/(tabs)/schedule');
   };
-
 
   const handleDateChange = (event: any, date?: Date) => {
     setShowDatePicker(false);
@@ -128,30 +140,34 @@ const CreateSchedulePage = () => {
             onPress: () => {
               setShowDatePicker(true);
               resolve();
-            }
+            },
           },
           {
             text: t.locale.startsWith('en') ? '🕒 Time' : '🕒 시간',
             onPress: () => {
               setShowTimePicker(true);
               resolve();
-            }
+            },
           },
           {
-            text: notificationEnabled 
-              ? (t.locale.startsWith('en') ? '🔕 Turn Off' : '🔕 알림 끄기')
-              : (t.locale.startsWith('en') ? '🔔 Turn On' : '🔔 알림 켜기'),
+            text: notificationEnabled
+              ? t.locale.startsWith('en')
+                ? '🔕 Turn Off'
+                : '🔕 알림 끄기'
+              : t.locale.startsWith('en')
+                ? '🔔 Turn On'
+                : '🔔 알림 켜기',
             onPress: () => {
               setNotificationEnabled(!notificationEnabled);
               resolve();
-            }
+            },
           },
           {
             text: t.locale.startsWith('en') ? 'Cancel' : '취소',
             style: 'cancel',
-            onPress: () => resolve()
-          }
-        ]
+            onPress: () => resolve(),
+          },
+        ],
       );
     });
   };
@@ -178,7 +194,7 @@ const CreateSchedulePage = () => {
         showAlarmSection={true}
         alarmSection={alarmSection}
       />
-      
+
       {/* 날짜 선택기 */}
       {showDatePicker && (
         <DateTimePicker
@@ -189,7 +205,7 @@ const CreateSchedulePage = () => {
           onChange={handleDateChange}
         />
       )}
-      
+
       {/* 시간 선택기 */}
       {showTimePicker && (
         <DateTimePicker

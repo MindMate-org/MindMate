@@ -85,7 +85,7 @@ class NotificationService {
     body: string,
     scheduledTime: Date,
     isRecurring: boolean = false,
-    repeatPattern?: string
+    repeatPattern?: string,
   ): Promise<boolean> {
     if (!this.isInitialized) {
       const initialized = await this.initialize();
@@ -124,7 +124,7 @@ class NotificationService {
             repeatPattern,
           },
         },
-        trigger: scheduledTime,
+        trigger: null,
       });
 
       // 성공적으로 스케줄된 경우 추가
@@ -145,26 +145,24 @@ class NotificationService {
     try {
       // 모든 스케줄된 알림 조회
       const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
-      
+
       // 해당 아이템의 알림 찾기
-      const targetNotifications = scheduledNotifications.filter(
-        notification => {
-          const data = notification.content.data;
-          return data?.itemId === itemId && data?.type === type;
-        }
-      );
+      const targetNotifications = scheduledNotifications.filter((notification) => {
+        const data = notification.content.data;
+        return data?.itemId === itemId && data?.type === type;
+      });
 
       // 찾은 알림들 취소
       for (const notification of targetNotifications) {
         await Notifications.cancelScheduledNotificationAsync(notification.identifier);
         this.scheduledNotifications.delete(notification.identifier);
-        }
+      }
 
       await this.saveScheduledNotifications();
-      
+
       if (targetNotifications.length > 0) {
-        }
-      
+      }
+
       return true;
     } catch (error) {
       return false;
@@ -191,12 +189,12 @@ class NotificationService {
   async getScheduledNotifications(itemId?: string, type?: 'schedule' | 'routine') {
     try {
       const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
-      
+
       if (!itemId && !type) {
         return scheduledNotifications;
       }
 
-      return scheduledNotifications.filter(notification => {
+      return scheduledNotifications.filter((notification) => {
         const data = notification.content.data;
         if (itemId && type) {
           return data?.itemId === itemId && data?.type === type;
@@ -215,7 +213,11 @@ class NotificationService {
   /**
    * 고유한 알림 ID 생성
    */
-  private generateNotificationId(itemId: string, type: 'schedule' | 'routine', scheduledTime: Date): string {
+  private generateNotificationId(
+    itemId: string,
+    type: 'schedule' | 'routine',
+    scheduledTime: Date,
+  ): string {
     const timestamp = scheduledTime.getTime();
     const hash = this.simpleHash(`${itemId}_${type}_${timestamp}`);
     return `${type}_${itemId}_${hash}`;
@@ -228,7 +230,7 @@ class NotificationService {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // 32비트 정수로 변환
     }
     return Math.abs(hash).toString(36);
@@ -241,8 +243,7 @@ class NotificationService {
     try {
       const notificationsArray = Array.from(this.scheduledNotifications);
       await AsyncStorage.setItem('scheduledNotifications', JSON.stringify(notificationsArray));
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   /**
@@ -255,8 +256,7 @@ class NotificationService {
         const notificationsArray = JSON.parse(saved);
         this.scheduledNotifications = new Set(notificationsArray);
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   /**
@@ -268,10 +268,11 @@ class NotificationService {
       notifications.forEach((notification, index) => {
         const trigger = notification.trigger as any;
         const scheduledTime = trigger.date ? new Date(trigger.date) : '미정';
-        console.log(`   시간: ${scheduledTime instanceof Date ? scheduledTime.toLocaleString('ko-KR') : scheduledTime}`);
-        });
-    } catch (error) {
-      }
+        console.log(
+          `   시간: ${scheduledTime instanceof Date ? scheduledTime.toLocaleString('ko-KR') : scheduledTime}`,
+        );
+      });
+    } catch (error) {}
   }
 }
 

@@ -35,11 +35,11 @@ const SearchCategoryButton = ({ label, onPress, isSelected }: SearchCategoryButt
 
 const getBackgroundColor = (color: string) => {
   const colorMap: { [key: string]: string } = {
-    'paleCobalt': '#576BCD',
-    'foggyBlue': '#9BB5D6',
-    'paleYellow': '#F5E6A8',
-    'pink': '#F4A6CD',
-    'teal': '#14b8a6',
+    paleCobalt: '#576BCD',
+    foggyBlue: '#9BB5D6',
+    paleYellow: '#F5E6A8',
+    pink: '#F4A6CD',
+    teal: '#14b8a6',
   };
   return colorMap[color] || '#576BCD';
 };

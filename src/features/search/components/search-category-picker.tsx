@@ -5,11 +5,13 @@ import { useI18n } from '../../../hooks/use-i18n';
 const SearchCategoryPicker = (props: DropDownPickerProps<any>) => {
   const { theme: themeColors, isDark } = useThemeColors();
   const { t } = useI18n();
-  
+
   return (
     <DropDownPicker
       listMode="MODAL"
-      placeholder={t.locale.startsWith('en') ? 'Please select a category' : '카테고리를 선택해 주세요'}
+      placeholder={
+        t.locale.startsWith('en') ? 'Please select a category' : '카테고리를 선택해 주세요'
+      }
       placeholderStyle={{
         color: themeColors.textSecondary,
         fontSize: 18,

@@ -25,7 +25,7 @@ export const useAlarm = () => {
     try {
       // 알림 시간 파싱
       const [hours, minutes] = routine.alarmTime.split(':').map(Number);
-      
+
       // 오늘 날짜로 알림 시간 설정
       const now = new Date();
       const alarmTime = new Date();
@@ -38,22 +38,23 @@ export const useAlarm = () => {
 
       // 루틴을 일정 형태로 변환하여 일정 알림 시스템 사용
       const scheduleFormat = {
-        id: routine.id,
+        id: Number(routine.id),
         title: `루틴: ${routine.name}`,
         time: alarmTime.toISOString(),
-        content: `"${routine.name}" 루틴을 시작할 시간입니다!`,
+        contents: `"${routine.name}" 루틴을 시작할 시간입니다!`,
         category: 'routine' as any,
-        isCompleted: false,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        is_completed: 0,
+        created_at: new Date().toISOString(),
       };
 
       const success = await scheduleAlarmHook.scheduleAlarm(scheduleFormat);
 
       if (success) {
-        console.log(`✅ 루틴 알림 설정 완료 (일정 시스템 사용): ${routine.name} - ${alarmTime.toLocaleString('ko-KR')}`);
+        console.log(
+          `✅ 루틴 알림 설정 완료 (일정 시스템 사용): ${routine.name} - ${alarmTime.toLocaleString('ko-KR')}`,
+        );
       } else {
-        }
+      }
 
       return success;
     } catch (error) {
@@ -65,11 +66,11 @@ export const useAlarm = () => {
   const cancelRoutineAlarm = async (routineId: string): Promise<boolean> => {
     try {
       const success = await scheduleAlarmHook.cancelAlarm(parseInt(routineId));
-      
+
       if (success) {
         console.log(`✅ 루틴 알림 취소 완료 (일정 시스템 사용): ${routineId}`);
       } else {
-        }
+      }
 
       return success;
     } catch (error) {

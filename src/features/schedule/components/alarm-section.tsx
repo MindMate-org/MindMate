@@ -38,39 +38,38 @@ export const AlarmSection: React.FC<AlarmSectionProps> = ({
     if (!scheduledTime) {
       return t.locale.startsWith('en') ? 'No advance notifications' : '미리 알림 받지 않음';
     }
-    
-    const timeString = scheduledTime.toLocaleString(
-      t.locale.startsWith('en') ? 'en-US' : 'ko-KR',
-      {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      }
-    );
-    
+
+    const timeString = scheduledTime.toLocaleString(t.locale.startsWith('en') ? 'en-US' : 'ko-KR', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
     if (notificationEnabled) {
-      return t.locale.startsWith('en') 
-        ? `Notify at ${timeString}` 
-        : `${timeString}에 알림`;
+      return t.locale.startsWith('en') ? `Notify at ${timeString}` : `${timeString}에 알림`;
     } else {
-      return t.locale.startsWith('en') 
-        ? `Scheduled for ${timeString} (No notification)` 
+      return t.locale.startsWith('en')
+        ? `Scheduled for ${timeString} (No notification)`
         : `${timeString} 예정 (알림 없음)`;
     }
   };
-  
+
   return (
-    <View style={{
-      paddingHorizontal: 16,
-      paddingVertical: 16,
-      gap: 16,
-    }}>
+    <View
+      style={{
+        paddingHorizontal: 16,
+        paddingVertical: 16,
+        gap: 16,
+      }}
+    >
       {/* 장소 */}
-      <View style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-      }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}
+      >
         <MapPin size={20} color={themeColors.primary} />
         <TextInput
           style={{
@@ -79,7 +78,11 @@ export const AlarmSection: React.FC<AlarmSectionProps> = ({
             fontSize: 16,
             color: themeColors.text,
           }}
-          placeholder={t.locale.startsWith('en') ? '467 Maponaru-gil, Mapo-gu, Seoul' : '서울시 마포구 마포나루길 467'}
+          placeholder={
+            t.locale.startsWith('en')
+              ? '467 Maponaru-gil, Mapo-gu, Seoul'
+              : '서울시 마포구 마포나루길 467'
+          }
           placeholderTextColor={themeColors.textSecondary}
           value={location}
           onChangeText={onLocationChange}
@@ -87,26 +90,35 @@ export const AlarmSection: React.FC<AlarmSectionProps> = ({
       </View>
 
       {/* 알람 */}
-      <TouchableOpacity 
+      <TouchableOpacity
         style={{
           flexDirection: 'row',
           alignItems: 'center',
         }}
         onPress={onAlarmPress}
       >
-        <Bell size={20} color={notificationEnabled ? themeColors.primary : themeColors.textSecondary} />
-        <Text style={{
-          marginLeft: 12,
-          fontSize: 16,
-          color: notificationEnabled ? themeColors.text : themeColors.textSecondary,
-        }}>{getNotificationText()}</Text>
+        <Bell
+          size={20}
+          color={notificationEnabled ? themeColors.primary : themeColors.textSecondary}
+        />
+        <Text
+          style={{
+            marginLeft: 12,
+            fontSize: 16,
+            color: notificationEnabled ? themeColors.text : themeColors.textSecondary,
+          }}
+        >
+          {getNotificationText()}
+        </Text>
       </TouchableOpacity>
 
       {/* 참가자 */}
-      <View style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-      }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}
+      >
         <Users size={20} color={themeColors.primary} />
         <TextInput
           style={{

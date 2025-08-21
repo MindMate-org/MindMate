@@ -78,7 +78,7 @@ export const MOOD_OPTIONS: MoodOptionType[] = [
  */
 export const getMoodOptions = (locale: string = 'ko'): MoodOptionType[] => {
   const isEnglish = locale.startsWith('en');
-  
+
   return [
     {
       value: 'very-happy',

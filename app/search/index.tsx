@@ -20,10 +20,10 @@ const HomeScreen = () => {
   const [search, setSearch] = useState(''); // 제출 시 검색어
   const [selectCategory, setSelectCategory] = useState(''); // 선택된 카테고리
   const router = useRouter();
-  
-  const searchCategories = useMemo(() => 
-    getSearchCategories(t.locale.startsWith('en') ? 'en' : 'ko'), 
-    [t.locale]
+
+  const searchCategories = useMemo(
+    () => getSearchCategories(t.locale.startsWith('en') ? 'en' : 'ko'),
+    [t.locale],
   );
 
   const handleCreateItem = () => {
@@ -54,7 +54,8 @@ const HomeScreen = () => {
 
     return items.filter((item) => {
       // 전체인 경우 항상 통과, 특정 카테고리인 경우 일치 여부 검사
-      const matchesCategory = selectCategory === t.common.categories.all || item.category === selectCategory;
+      const matchesCategory =
+        selectCategory === t.common.categories.all || item.category === selectCategory;
 
       // search가 빈 문자열이면 항상 통과, 아니면 포함 여부 검사
       const matchesSearch = !normalizedSearch || item.name.toLowerCase().includes(normalizedSearch);

@@ -30,7 +30,7 @@ export interface EnhancedAsyncDataResult<T> {
  */
 export const useEnhancedAsyncDataGet = <T>(
   queryFn: () => Promise<T>,
-  options: EnhancedAsyncDataOptions<T> = {}
+  options: EnhancedAsyncDataOptions<T> = {},
 ): EnhancedAsyncDataResult<T> => {
   const {
     enabled = true,
@@ -50,18 +50,14 @@ export const useEnhancedAsyncDataGet = <T>(
     isError,
     error,
     refetch: originalRefetch,
-  } = useQuery<T>(
-    queryKey,
-    queryFn,
-    {
-      enabled,
-      staleTime,
-      cacheTime,
-      retry,
-      refetchOnWindowFocus,
-      initialData,
-    }
-  );
+  } = useQuery<T>(queryKey, queryFn, {
+    enabled,
+    staleTime,
+    cacheTime,
+    retry,
+    refetchOnWindowFocus,
+    initialData,
+  });
 
   // useAsyncDataGet과 동일한 인터페이스로 refetch 함수 제공
   const refetch = useCallback(() => {

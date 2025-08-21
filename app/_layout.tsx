@@ -19,7 +19,7 @@ export default function RootLayout() {
   const [fontsLoaded] = useFonts({
     pretendard: require('../assets/fonts/pretendard.ttf'),
   });
-  
+
   const recordError = useRecordError();
   const recordCrash = useRecordCrash();
 
@@ -31,7 +31,7 @@ export default function RootLayout() {
       try {
         // 통합 앱 스토어 초기화
         await initializeApp();
-        
+
         // 알림 서비스 초기화
         const success = await notificationService.initialize();
         if (success) {
@@ -57,34 +57,34 @@ export default function RootLayout() {
   // 전역 에러 핸들러 설정
   useEffect(() => {
     const originalErrorHandler = ErrorUtils.getGlobalHandler();
-    
+
     ErrorUtils.setGlobalHandler((error: Error, isFatal?: boolean) => {
       console.error('Global Error Handler:', error);
-      
+
       if (isFatal) {
         recordCrash();
       } else {
         recordError();
       }
-      
+
       // 원래 핸들러 호출
       originalErrorHandler?.(error, isFatal);
     });
-    
+
     return () => {
       ErrorUtils.setGlobalHandler(originalErrorHandler);
     };
   }, [recordError, recordCrash]);
 
   if (!fontsLoaded) return null;
-  
+
   return (
     <ErrorBoundary>
       <ThemeProvider>
         <StatusBar style="auto" translucent={true} />
         <AlertProvider>
-          <Stack 
-            screenOptions={{ 
+          <Stack
+            screenOptions={{
               headerShown: false,
               ...ANIMATION_CONFIG.pageTransition,
             }}

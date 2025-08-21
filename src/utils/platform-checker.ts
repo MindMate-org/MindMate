@@ -16,14 +16,14 @@ export const PlatformChecker = {
    * Development Build에서 실행 중인지 확인
    */
   isDevelopmentBuild: (): boolean => {
-    return Constants.appOwnership === 'standalone' || Constants.appOwnership === null;
+    return Constants.appOwnership === null || Constants.appOwnership === 'expo';
   },
 
   /**
    * 프로덕션 빌드에서 실행 중인지 확인
    */
   isProductionBuild: (): boolean => {
-    return Constants.appOwnership === 'standalone';
+    return Constants.appOwnership === null;
   },
 
   /**

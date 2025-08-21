@@ -46,41 +46,51 @@ const Calendar = ({
   const weekDays = getWeekDays(t.locale);
 
   return (
-    <View style={{
-      borderRadius: 12,
-      backgroundColor: themeColors.surface,
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-      shadowColor: themeColors.shadow,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: isDark ? 0.3 : 0.1,
-      shadowRadius: 4,
-      elevation: 4,
-    }}>
+    <View
+      style={{
+        borderRadius: 12,
+        backgroundColor: themeColors.surface,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        shadowColor: themeColors.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: isDark ? 0.3 : 0.1,
+        shadowRadius: 4,
+        elevation: 4,
+      }}
+    >
       {/* 상단: 날짜, 달력 아이콘 */}
-      <View style={{
-        marginBottom: 16,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}>
+      <View
+        style={{
+          marginBottom: 16,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
         <View style={{ flex: 1, alignItems: 'center' }}>
-          <Text style={{
-            fontSize: 18,
-            fontWeight: 'bold',
-            color: themeColors.text,
-          }}>{dateText}</Text>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: 'bold',
+              color: themeColors.text,
+            }}
+          >
+            {dateText}
+          </Text>
         </View>
         <TouchableOpacity onPress={onCalendarIconPress || (() => {})}>
           <CalendarIcon color={themeColors.primary} size={28} />
         </TouchableOpacity>
       </View>
       {/* 요일+날짜 */}
-      <View style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
         {weekDates.map((date) => {
           const isSelected = isSameDay(date, selectedDate);
           return (
@@ -98,18 +108,22 @@ const Calendar = ({
                 backgroundColor: isSelected ? themeColors.accent : 'transparent',
               }}
             >
-              <Text style={{
-                fontSize: 12,
-                fontWeight: '500',
-                color: isSelected ? themeColors.primary : themeColors.textSecondary,
-              }}>
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: '500',
+                  color: isSelected ? themeColors.primary : themeColors.textSecondary,
+                }}
+              >
                 {weekDays[date.getDay()]}
               </Text>
-              <Text style={{
-                fontSize: 16,
-                fontWeight: '500',
-                color: isSelected ? themeColors.primary : themeColors.textSecondary,
-              }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: '500',
+                  color: isSelected ? themeColors.primary : themeColors.textSecondary,
+                }}
+              >
                 {date.getDate()}
               </Text>
             </TouchableOpacity>

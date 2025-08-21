@@ -36,7 +36,7 @@ export const useAsyncDataGet = <T>(getFn: () => Promise<T>, useCache = true) => 
   const fetchData = useCallback(async () => {
     try {
       const cacheKey = getCacheKey(getFn);
-      
+
       // 캐시 확인
       if (useCache) {
         const cached = cache.get(cacheKey);
@@ -60,7 +60,7 @@ export const useAsyncDataGet = <T>(getFn: () => Promise<T>, useCache = true) => 
       if (isMountedRef.current) {
         setData(result);
         hasLoadedOnceRef.current = true;
-        
+
         // 캐시 저장
         if (useCache) {
           cache.set(cacheKey, {

@@ -3,8 +3,8 @@ import { ANIMATION_CONFIG } from '../../../src/constants/animations';
 
 export default function RoutineLayout() {
   return (
-    <Stack 
-      screenOptions={{ 
+    <Stack
+      screenOptions={{
         headerShown: false,
         ...ANIMATION_CONFIG.pageTransition,
       }}

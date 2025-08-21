@@ -45,11 +45,17 @@ const DiaryCreatePage = () => {
         });
       }
 
-      await CustomAlertManager.success(t.locale.startsWith('en') ? 'Diary saved successfully.' : '일기가 저장되었습니다.');
+      await CustomAlertManager.success(
+        t.locale.startsWith('en') ? 'Diary saved successfully.' : '일기가 저장되었습니다.',
+      );
       router.replace('/(tabs)/diary');
     } catch (error) {
       console.error('Diary save failed:', error);
-      CustomAlertManager.error(t.locale.startsWith('en') ? 'An error occurred while saving the diary.' : '일기 저장 중 오류가 발생했습니다.');
+      CustomAlertManager.error(
+        t.locale.startsWith('en')
+          ? 'An error occurred while saving the diary.'
+          : '일기 저장 중 오류가 발생했습니다.',
+      );
     }
   };
 

@@ -1,7 +1,24 @@
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { ChevronLeft, MoreVertical, Edit3, Trash2, Clock, MapPin, CheckCircle2, Circle } from 'lucide-react-native';
+import {
+  ChevronLeft,
+  MoreVertical,
+  Edit3,
+  Trash2,
+  Clock,
+  MapPin,
+  CheckCircle2,
+  Circle,
+} from 'lucide-react-native';
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Pressable, Image } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+  ScrollView,
+  Pressable,
+  Image,
+} from 'react-native';
 
 import { CustomAlertManager } from '../../../components/ui/custom-alert';
 import ErrorState from '../../../components/ui/error-state';
@@ -89,8 +106,7 @@ const RoutineDetailPage: React.FC<RoutineDetailPageProps> = () => {
         // 루틴 데이터를 다시 가져와서 UI 업데이트
         refetch();
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   };
 
   if (isLoading) {
@@ -104,10 +120,7 @@ const RoutineDetailPage: React.FC<RoutineDetailPageProps> = () => {
   if (error || !routine) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
-        <ErrorState
-          message={error || t.routine.cannotFind}
-          onRetry={() => refetch()}
-        />
+        <ErrorState message={error || t.routine.cannotFind} onRetry={() => refetch()} />
       </SafeAreaView>
     );
   }
@@ -116,25 +129,31 @@ const RoutineDetailPage: React.FC<RoutineDetailPageProps> = () => {
     <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
       {/* 헤더 */}
       <FadeInView>
-        <View style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          backgroundColor: themeColors.surface,
-          paddingHorizontal: 16,
-          paddingVertical: 16,
-          marginTop: 32,
-          borderBottomWidth: 1,
-          borderBottomColor: themeColors.border,
-        }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            backgroundColor: themeColors.surface,
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+            marginTop: 32,
+            borderBottomWidth: 1,
+            borderBottomColor: themeColors.border,
+          }}
+        >
           <TouchableOpacity onPress={handleBack} style={{ borderRadius: 20, padding: 8 }}>
             <ChevronLeft size={24} color={themeColors.primary} />
           </TouchableOpacity>
-          <Text style={{
-            fontSize: 18,
-            fontWeight: 'bold',
-            color: themeColors.text,
-          }}>{t.routine.routineDetail}</Text>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: 'bold',
+              color: themeColors.text,
+            }}
+          >
+            {t.routine.routineDetail}
+          </Text>
           <TouchableOpacity
             onPress={() => setShowMenu(!showMenu)}
             style={{
@@ -150,21 +169,23 @@ const RoutineDetailPage: React.FC<RoutineDetailPageProps> = () => {
 
       {/* 메뉴 */}
       {showMenu && (
-        <FadeInView style={{
-          position: 'absolute',
-          right: 16,
-          top: 80,
-          zIndex: 10,
-          width: 160,
-          borderRadius: 12,
-          backgroundColor: themeColors.surface,
-          padding: 8,
-          shadowColor: themeColors.shadow,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: isDark ? 0.3 : 0.1,
-          shadowRadius: 8,
-          elevation: 8,
-        }}>
+        <FadeInView
+          style={{
+            position: 'absolute',
+            right: 16,
+            top: 80,
+            zIndex: 10,
+            width: 160,
+            borderRadius: 12,
+            backgroundColor: themeColors.surface,
+            padding: 8,
+            shadowColor: themeColors.shadow,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: isDark ? 0.3 : 0.1,
+            shadowRadius: 8,
+            elevation: 8,
+          }}
+        >
           <TouchableOpacity
             style={{
               flexDirection: 'row',
@@ -179,12 +200,16 @@ const RoutineDetailPage: React.FC<RoutineDetailPageProps> = () => {
             }}
           >
             <Edit3 size={18} color={themeColors.primary} />
-            <Text style={{
-              marginLeft: 12,
-              fontSize: 14,
-              fontWeight: '500',
-              color: themeColors.text,
-            }}>{t.common.edit}</Text>
+            <Text
+              style={{
+                marginLeft: 12,
+                fontSize: 14,
+                fontWeight: '500',
+                color: themeColors.text,
+              }}
+            >
+              {t.common.edit}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={{
@@ -200,12 +225,16 @@ const RoutineDetailPage: React.FC<RoutineDetailPageProps> = () => {
             }}
           >
             <Trash2 size={18} color={themeColors.error} />
-            <Text style={{
-              marginLeft: 12,
-              fontSize: 14,
-              fontWeight: '500',
-              color: themeColors.error,
-            }}>{t.common.delete}</Text>
+            <Text
+              style={{
+                marginLeft: 12,
+                fontSize: 14,
+                fontWeight: '500',
+                color: themeColors.error,
+              }}
+            >
+              {t.common.delete}
+            </Text>
           </TouchableOpacity>
         </FadeInView>
       )}
@@ -213,45 +242,61 @@ const RoutineDetailPage: React.FC<RoutineDetailPageProps> = () => {
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 40 }}>
         {/* 루틴 정보 헤더 */}
         <FadeInView delay={100} style={{ marginHorizontal: 16, marginTop: 16 }}>
-          <View style={{
-            backgroundColor: themeColors.surface,
-            borderRadius: 12,
-            padding: 16,
-            shadowColor: themeColors.shadow,
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: isDark ? 0.3 : 0.1,
-            shadowRadius: 4,
-            elevation: 3,
-            marginBottom: 16,
-          }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <View
+            style={{
+              backgroundColor: themeColors.surface,
+              borderRadius: 12,
+              padding: 16,
+              shadowColor: themeColors.shadow,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: isDark ? 0.3 : 0.1,
+              shadowRadius: 4,
+              elevation: 3,
+              marginBottom: 16,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
               <View>
-                <Text style={{
-                  fontSize: 24,
-                  fontWeight: 'bold',
-                  color: themeColors.text,
-                  marginBottom: 8,
-                }}>
+                <Text
+                  style={{
+                    fontSize: 24,
+                    fontWeight: 'bold',
+                    color: themeColors.text,
+                    marginBottom: 8,
+                  }}
+                >
                   {routine.name}
                 </Text>
-                <View style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginTop: 8,
-                }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginTop: 8,
+                  }}
+                >
                   <Clock size={16} color={themeColors.textSecondary} />
-                  <Text style={{
-                    marginLeft: 8,
-                    color: themeColors.textSecondary,
-                    fontSize: 14,
-                  }}>
+                  <Text
+                    style={{
+                      marginLeft: 8,
+                      color: themeColors.textSecondary,
+                      fontSize: 14,
+                    }}
+                  >
                     {formatTime(routine.alarmTime)}
                   </Text>
-                  <Text style={{
-                    marginLeft: 16,
-                    color: themeColors.textSecondary,
-                    fontSize: 14,
-                  }}>
+                  <Text
+                    style={{
+                      marginLeft: 16,
+                      color: themeColors.textSecondary,
+                      fontSize: 14,
+                    }}
+                  >
                     {getLocalizedRepeatCycle(routine.repeatCycle, t)}
                   </Text>
                 </View>
@@ -262,24 +307,28 @@ const RoutineDetailPage: React.FC<RoutineDetailPageProps> = () => {
 
         {/* 메인 콘텐츠 카드 */}
         <FadeInView delay={200} style={{ marginHorizontal: 16 }}>
-          <View style={{
-            borderRadius: 12,
-            padding: 24,
-            backgroundColor: themeColors.surface,
-            shadowColor: themeColors.shadow,
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: isDark ? 0.3 : 0.15,
-            shadowRadius: 12,
-            elevation: 8,
-          }}>
+          <View
+            style={{
+              borderRadius: 12,
+              padding: 24,
+              backgroundColor: themeColors.surface,
+              shadowColor: themeColors.shadow,
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: isDark ? 0.3 : 0.15,
+              shadowRadius: 12,
+              elevation: 8,
+            }}
+          >
             {/* 설명 */}
             {routine.details && (
               <View style={{ marginBottom: 24 }}>
-                <Text style={{
-                  fontSize: 16,
-                  color: themeColors.textSecondary,
-                  lineHeight: 24,
-                }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: themeColors.textSecondary,
+                    lineHeight: 24,
+                  }}
+                >
                   {routine.details}
                 </Text>
               </View>
@@ -302,13 +351,16 @@ const RoutineDetailPage: React.FC<RoutineDetailPageProps> = () => {
 
             {/* 하위 작업 */}
             <View style={{ marginBottom: 24 }}>
-              <Text style={{
-                fontSize: 16,
-                fontWeight: '600',
-                color: themeColors.text,
-                marginBottom: 16,
-              }}>
-                {t.routine.subTasks} ({routine.subTasks?.length || 0}{t.routine.tasks})
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: '600',
+                  color: themeColors.text,
+                  marginBottom: 16,
+                }}
+              >
+                {t.routine.subTasks} ({routine.subTasks?.length || 0}
+                {t.routine.tasks})
               </Text>
               {routine.subTasks?.map((subTask, index) => (
                 <TouchableOpacity
@@ -337,12 +389,14 @@ const RoutineDetailPage: React.FC<RoutineDetailPageProps> = () => {
                   ) : (
                     <Circle size={20} color={themeColors.textSecondary} />
                   )}
-                  <Text style={{
-                    marginLeft: 12,
-                    fontSize: 14,
-                    color: subTask.isCompleted ? themeColors.textSecondary : themeColors.text,
-                    textDecorationLine: subTask.isCompleted ? 'line-through' : 'none',
-                  }}>
+                  <Text
+                    style={{
+                      marginLeft: 12,
+                      fontSize: 14,
+                      color: subTask.isCompleted ? themeColors.textSecondary : themeColors.text,
+                      textDecorationLine: subTask.isCompleted ? 'line-through' : 'none',
+                    }}
+                  >
                     {subTask.title}
                   </Text>
                 </TouchableOpacity>
@@ -350,24 +404,30 @@ const RoutineDetailPage: React.FC<RoutineDetailPageProps> = () => {
             </View>
 
             {/* 루틴 정보 */}
-            <View style={{
-              paddingTop: 16,
-              borderTopWidth: 1,
-              borderTopColor: themeColors.border,
-            }}>
+            <View
+              style={{
+                paddingTop: 16,
+                borderTopWidth: 1,
+                borderTopColor: themeColors.border,
+              }}
+            >
               {routine.deadline && (
-                <View style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginBottom: 12,
-                }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginBottom: 12,
+                  }}
+                >
                   <MapPin size={18} color={themeColors.primary} />
-                  <Text style={{
-                    marginLeft: 12,
-                    fontSize: 14,
-                    color: themeColors.text,
-                    fontWeight: '500',
-                  }}>
+                  <Text
+                    style={{
+                      marginLeft: 12,
+                      fontSize: 14,
+                      color: themeColors.text,
+                      fontWeight: '500',
+                    }}
+                  >
                     {t.routine.deadline}: {routine.deadline}
                   </Text>
                 </View>
@@ -376,7 +436,7 @@ const RoutineDetailPage: React.FC<RoutineDetailPageProps> = () => {
           </View>
         </FadeInView>
       </ScrollView>
-      
+
       {/* 메뉴 닫기용 오버레이 */}
       {showMenu && (
         <Pressable

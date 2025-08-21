@@ -181,7 +181,10 @@ export const fetchAddMediaToSchedule = async (input: {
 // 일정의 모든 미디어 삭제
 export const fetchDeleteAllMediaByScheduleId = async (scheduleId: number): Promise<boolean> => {
   try {
-    await db.runAsync('DELETE FROM media WHERE owner_type = ? AND owner_id = ?', ['schedule', scheduleId]);
+    await db.runAsync('DELETE FROM media WHERE owner_type = ? AND owner_id = ?', [
+      'schedule',
+      scheduleId,
+    ]);
     return true;
   } catch (error) {
     return false;

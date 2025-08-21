@@ -11,22 +11,22 @@ export const createNoteGroup = async (contactId: string, title: string): Promise
     if (isNaN(contactIdInt)) {
       throw new Error(`Invalid contactId: ${contactId}`);
     }
-    
+
     const result = await db.runAsync('INSERT INTO note_group (contact_id, title) VALUES (?, ?)', [
       contactIdInt,
       title,
     ]);
-    
+
     // 생성된 note_group 반환 (방금 생성된 그룹 ID로 조회)
     const createdGroup = await db.getFirstAsync<NoteGroupType>(
       'SELECT * FROM note_group WHERE group_id = ?',
-      [result.lastInsertRowId]
+      [result.lastInsertRowId],
     );
-    
+
     if (!createdGroup) {
       throw new Error('Created group not found');
     }
-    
+
     return createdGroup;
   } catch (error) {
     console.error('Error details:', error instanceof Error ? error.message : String(error));
@@ -65,13 +65,13 @@ export const updateNoteGroup = async (
     // 수정된 note_group 반환 (그룹 ID로 직접 조회)
     const updatedNoteGroup = await db.getFirstAsync<NoteGroupType>(
       'SELECT * FROM note_group WHERE group_id = ?',
-      [groupId]
+      [groupId],
     );
-    
+
     if (!updatedNoteGroup) {
       throw new Error('Updated group not found');
     }
-    
+
     return updatedNoteGroup;
   } catch (error) {
     throw error;

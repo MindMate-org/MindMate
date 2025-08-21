@@ -104,7 +104,10 @@ export const EntryForm: React.FC<EntryFormProps> = ({
   } = useMediaPicker(watchedMedia, setValue);
 
   useEffect(() => {
-    const updateTime = () => setCurrentDateTime(formatDateTime(undefined, 'full', '12h', t.locale.startsWith('en') ? 'en' : 'ko'));
+    const updateTime = () =>
+      setCurrentDateTime(
+        formatDateTime(undefined, 'full', '12h', t.locale.startsWith('en') ? 'en' : 'ko'),
+      );
     updateTime();
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
@@ -119,9 +122,11 @@ export const EntryForm: React.FC<EntryFormProps> = ({
 
   const handleFormSubmit = async (data: EntryFormDataType) => {
     if (audioUploadState.isUploading || mediaUploadState.isUploading) {
-      CustomAlertManager.info(t.locale.startsWith('en') 
-        ? 'Please wait for media upload to complete.' 
-        : '미디어 업로드가 완료될 때까지 기다려주세요.');
+      CustomAlertManager.info(
+        t.locale.startsWith('en')
+          ? 'Please wait for media upload to complete.'
+          : '미디어 업로드가 완료될 때까지 기다려주세요.',
+      );
       return;
     }
     await onSubmit(data, audioUri ?? undefined);
@@ -129,10 +134,21 @@ export const EntryForm: React.FC<EntryFormProps> = ({
 
   const handleSubmitError = (errors: any) => {
     const errorMessages = [];
-    if (errors.title) errorMessages.push(errors.title.message || (t.locale.startsWith('en') ? 'Please enter a title' : '제목을 입력해주세요'));
-    if (errors.content) errorMessages.push(errors.content.message || (t.locale.startsWith('en') ? 'Please enter content' : '내용을 입력해주세요'));
+    if (errors.title)
+      errorMessages.push(
+        errors.title.message ||
+          (t.locale.startsWith('en') ? 'Please enter a title' : '제목을 입력해주세요'),
+      );
+    if (errors.content)
+      errorMessages.push(
+        errors.content.message ||
+          (t.locale.startsWith('en') ? 'Please enter content' : '내용을 입력해주세요'),
+      );
     if (showMoodPicker && errors.mood)
-      errorMessages.push(errors.mood.message || (t.locale.startsWith('en') ? 'Please select your mood' : '오늘의 기분을 선택해주세요'));
+      errorMessages.push(
+        errors.mood.message ||
+          (t.locale.startsWith('en') ? 'Please select your mood' : '오늘의 기분을 선택해주세요'),
+      );
 
     if (errorMessages.length > 0) {
       CustomAlertManager.error(errorMessages.join('\\n'));
@@ -142,7 +158,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({
   const handleCancelWithConfirm = async () => {
     const confirmed = await CustomAlertManager.confirm(
       t.locale.startsWith('en') ? 'Confirm' : '확인',
-      t.locale.startsWith('en') ? 'Do you want to cancel writing?' : '작성을 취소하시겠습니까?'
+      t.locale.startsWith('en') ? 'Do you want to cancel writing?' : '작성을 취소하시겠습니까?',
     );
     if (confirmed) {
       onCancel();
@@ -160,7 +176,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({
     useCallback(() => {
       const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
       return () => subscription.remove();
-    }, [handleBackPress])
+    }, [handleBackPress]),
   );
 
   return (
@@ -194,10 +210,11 @@ export const EntryForm: React.FC<EntryFormProps> = ({
         <View style={{ width: 24 }} />
       </View>
 
-      <ScrollView 
-        style={{ 
+      <ScrollView
+        style={{
           flex: 1,
-          backgroundColor: watchedStyle.backgroundColor || (isDark ? themeColors.surface : '#FFFFFF')
+          backgroundColor:
+            watchedStyle.backgroundColor || (isDark ? themeColors.surface : '#FFFFFF'),
         }}
       >
         {/* 통합된 폼 컨테이너 */}
@@ -213,12 +230,16 @@ export const EntryForm: React.FC<EntryFormProps> = ({
           <Controller
             control={control}
             name="title"
-            rules={{ required: t.locale.startsWith('en') ? 'Please enter a title' : '제목을 입력해주세요' }}
+            rules={{
+              required: t.locale.startsWith('en') ? 'Please enter a title' : '제목을 입력해주세요',
+            }}
             render={({ field: { onChange, value } }) => (
               <TextInput
                 value={value}
                 onChangeText={onChange}
-                placeholder={t.locale.startsWith('en') ? 'Please enter a title.' : '제목을 입력해주세요.'}
+                placeholder={
+                  t.locale.startsWith('en') ? 'Please enter a title.' : '제목을 입력해주세요.'
+                }
                 placeholderTextColor={themeColors.textSecondary}
                 style={{
                   marginBottom: 16,
@@ -243,12 +264,18 @@ export const EntryForm: React.FC<EntryFormProps> = ({
               <Controller
                 control={control}
                 name="content"
-                rules={{ required: t.locale.startsWith('en') ? 'Please enter content' : '내용을 입력해주세요' }}
+                rules={{
+                  required: t.locale.startsWith('en')
+                    ? 'Please enter content'
+                    : '내용을 입력해주세요',
+                }}
                 render={({ field: { onChange, value } }) => (
                   <TextInput
                     value={value}
                     onChangeText={onChange}
-                    placeholder={t.locale.startsWith('en') ? 'Please enter content.' : '내용을 입력해 주세요.'}
+                    placeholder={
+                      t.locale.startsWith('en') ? 'Please enter content.' : '내용을 입력해 주세요.'
+                    }
                     placeholderTextColor={themeColors.textSecondary}
                     multiline
                     textAlignVertical="top"
@@ -382,8 +409,12 @@ export const EntryForm: React.FC<EntryFormProps> = ({
               }}
             >
               {audioUploadState.isUploading || mediaUploadState.isUploading || isLoading
-                ? (t.locale.startsWith('en') ? 'Uploading...' : '업로드 중...')
-                : (t.locale.startsWith('en') ? 'Submit' : '등록하기')}
+                ? t.locale.startsWith('en')
+                  ? 'Uploading...'
+                  : '업로드 중...'
+                : t.locale.startsWith('en')
+                  ? 'Submit'
+                  : '등록하기'}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity

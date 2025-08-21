@@ -22,7 +22,7 @@ const Edit = () => {
   const handleCancel = useCallback(async () => {
     const confirmed = await CustomAlertManager.confirm(
       t.locale.startsWith('en') ? 'Confirm' : '확인',
-      t.locale.startsWith('en') ? 'Do you want to cancel writing?' : '작성을 취소하시겠습니까?'
+      t.locale.startsWith('en') ? 'Do you want to cancel writing?' : '작성을 취소하시겠습니까?',
     );
     if (confirmed) {
       router.back();
@@ -40,41 +40,49 @@ const Edit = () => {
     useCallback(() => {
       const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
       return () => subscription.remove();
-    }, [handleBackPress])
+    }, [handleBackPress]),
   );
 
   return (
-    <SafeAreaView style={{ 
-      flex: 1, 
-      backgroundColor: themeColors.background 
-    }}>
-      {/* 헤더 */}
-      <View style={{
-        flexDirection: 'row',
-        alignItems: 'center',
+    <SafeAreaView
+      style={{
+        flex: 1,
         backgroundColor: themeColors.background,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        marginTop: 32,
-      }}>
-        <TouchableOpacity 
-          onPress={handleCancel} 
+      }}
+    >
+      {/* 헤더 */}
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: themeColors.background,
+          paddingHorizontal: 16,
+          paddingVertical: 12,
+          marginTop: 32,
+        }}
+      >
+        <TouchableOpacity
+          onPress={handleCancel}
           style={{ flexDirection: 'row', alignItems: 'center' }}
         >
           <ArrowLeft size={24} color={themeColors.primary} />
-          <Text style={{
-            marginLeft: 8,
-            fontSize: 18,
-            fontWeight: '500',
-            color: themeColors.primary,
-          }}>{t.addressBook.editContact}</Text>
+          <Text
+            style={{
+              marginLeft: 8,
+              fontSize: 18,
+              fontWeight: '500',
+              color: themeColors.primary,
+            }}
+          >
+            {t.addressBook.editContact}
+          </Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView style={{ flex: 1 }}>
         <View style={{ paddingHorizontal: 16, paddingBottom: 20 }}>
           <FormEditContact id={id} />
-          
+
           {/* 기존 연락처 편집 시에만 그룹 관련 기능 표시 */}
           {id !== 'new' && (
             <>
@@ -102,7 +110,7 @@ const Edit = () => {
 const AddContactDetailGroupButton = ({ onPress }: { onPress: () => void }) => {
   const { t } = useI18n();
   const { theme: themeColors } = useThemeColors();
-  
+
   return (
     <TouchableOpacity
       style={{
@@ -120,12 +128,16 @@ const AddContactDetailGroupButton = ({ onPress }: { onPress: () => void }) => {
       onPress={onPress}
     >
       <CircleCheckBig size={20} color={themeColors.primary} />
-      <Text style={{
-        marginLeft: 8,
-        fontSize: 14,
-        fontWeight: '500',
-        color: themeColors.primary,
-      }}>{t.addressBook.addContactGroup}</Text>
+      <Text
+        style={{
+          marginLeft: 8,
+          fontSize: 14,
+          fontWeight: '500',
+          color: themeColors.primary,
+        }}
+      >
+        {t.addressBook.addContactGroup}
+      </Text>
     </TouchableOpacity>
   );
 };

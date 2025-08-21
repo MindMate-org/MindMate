@@ -21,18 +21,22 @@ const AddressBookItem = ({ contact, refetch }: { contact: ContactType; refetch: 
   const { theme: themeColors, isDark } = useThemeColors();
   const [isActionMenuVisible, setIsActionMenuVisible] = useState(false);
   const getContactTagsUseCallBack = useCallback(
-    () => contact?.id ? AddressBookService.fetchGetContactTags(contact.id) : Promise.resolve([]),
+    () => (contact?.id ? AddressBookService.fetchGetContactTags(contact.id) : Promise.resolve([])),
     [contact?.id],
   );
-  const { data: fetchedTags, refetch: refetchTags } = useEnhancedAsyncDataGet(getContactTagsUseCallBack);
-  
+  const { data: fetchedTags, refetch: refetchTags } =
+    useEnhancedAsyncDataGet(getContactTagsUseCallBack);
+
   // Use tags from contact prop if available, otherwise use fetched tags
   const contactWithTags = contact as any;
-  
+
   // Debug logging
-  const tags = Array.isArray(fetchedTags) ? fetchedTags : 
-               Array.isArray(contactWithTags.tags) ? contactWithTags.tags : [];
-               
+  const tags = Array.isArray(fetchedTags)
+    ? fetchedTags
+    : Array.isArray(contactWithTags.tags)
+      ? contactWithTags.tags
+      : [];
+
   const refetchForEditTags = useCallback(() => {
     refetchTags();
     refetch();
@@ -51,8 +55,7 @@ const AddressBookItem = ({ contact, refetch }: { contact: ContactType; refetch: 
         setIsActionMenuVisible(false);
         refetch();
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   };
 
   return (
@@ -70,25 +73,26 @@ const AddressBookItem = ({ contact, refetch }: { contact: ContactType; refetch: 
         elevation: 4,
       }}
     >
-      <TouchableOpacity
-        onPress={handleEdit}
-        style={{ position: 'relative' }}
-        activeOpacity={0.8}
-      >
+      <TouchableOpacity onPress={handleEdit} style={{ position: 'relative' }} activeOpacity={0.8}>
         {/* 상단: 태그와 메뉴 */}
-        <View style={{
-          marginBottom: 12,
-          flexDirection: 'row',
-          alignItems: 'flex-start',
-          justifyContent: 'space-between',
-        }}>
-          <View style={{
-            flex: 1,
+        <View
+          style={{
+            marginBottom: 12,
             flexDirection: 'row',
-            flexWrap: 'wrap',
-            gap: 4,
-          }}>
-            {Array.isArray(tags) && tags.map((tag) => <AddressBookTag key={tag.id}>{tag.name}</AddressBookTag>)}
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+          }}
+        >
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              gap: 4,
+            }}
+          >
+            {Array.isArray(tags) &&
+              tags.map((tag) => <AddressBookTag key={tag.id}>{tag.name}</AddressBookTag>)}
             <EditAddressBookTagButton refetch={refetchForEditTags} contact={contact} />
           </View>
           <TouchableOpacity
@@ -114,20 +118,26 @@ const AddressBookItem = ({ contact, refetch }: { contact: ContactType; refetch: 
           {/* 연락처 정보 */}
           <View style={{ flex: 1 }}>
             <AddressBookName>{contact.name}</AddressBookName>
-            <Text style={{
-              color: themeColors.textSecondary,
-              marginBottom: 8,
-              fontSize: 14,
-            }}>{contact.phone_number}</Text>
+            <Text
+              style={{
+                color: themeColors.textSecondary,
+                marginBottom: 8,
+                fontSize: 14,
+              }}
+            >
+              {contact.phone_number}
+            </Text>
 
             {contact.memo && <AddressBookContent>{contact.memo}</AddressBookContent>}
 
             {/* 액션 버튼들 */}
-            <View style={{
-              marginTop: 12,
-              flexDirection: 'row',
-              gap: 8,
-            }}>
+            <View
+              style={{
+                marginTop: 12,
+                flexDirection: 'row',
+                gap: 8,
+              }}
+            >
               <CallButton phoneNumber={contact.phone_number} />
               <MessageButton phoneNumber={contact.phone_number} />
             </View>

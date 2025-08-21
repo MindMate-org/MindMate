@@ -22,13 +22,15 @@ export const useScheduleAlarm = () => {
         '일정 알림',
         `"${schedule.title}" 일정이 시작됩니다!`,
         scheduleDateTime,
-        false // 일정은 일회성 알림
+        false, // 일정은 일회성 알림
       );
 
       if (success) {
-        console.log(`✅ 일정 알림 설정 완료: ${schedule.title} - ${scheduleDateTime.toLocaleString('ko-KR')}`);
+        console.log(
+          `✅ 일정 알림 설정 완료: ${schedule.title} - ${scheduleDateTime.toLocaleString('ko-KR')}`,
+        );
       } else {
-        }
+      }
 
       return success;
     } catch (error) {
@@ -39,11 +41,14 @@ export const useScheduleAlarm = () => {
   // 일정 알림 취소
   const cancelAlarm = async (scheduleId: number): Promise<boolean> => {
     try {
-      const success = await notificationService.cancelNotification(scheduleId.toString(), 'schedule');
-      
+      const success = await notificationService.cancelNotification(
+        scheduleId.toString(),
+        'schedule',
+      );
+
       if (success) {
-        } else {
-        }
+      } else {
+      }
 
       return success;
     } catch (error) {
@@ -64,13 +69,19 @@ export const useScheduleAlarm = () => {
   const cancelAllScheduleAlarms = async (): Promise<boolean> => {
     try {
       // 모든 일정 알림 조회 후 취소
-      const allScheduleAlarms = await notificationService.getScheduledNotifications(undefined, 'schedule');
-      
+      const allScheduleAlarms = await notificationService.getScheduledNotifications(
+        undefined,
+        'schedule',
+      );
+
       let successCount = 0;
       for (const alarm of allScheduleAlarms) {
         const scheduleId = alarm.content.data?.itemId;
         if (scheduleId) {
-          const success = await notificationService.cancelNotification(String(scheduleId), 'schedule');
+          const success = await notificationService.cancelNotification(
+            String(scheduleId),
+            'schedule',
+          );
           if (success) successCount++;
         }
       }

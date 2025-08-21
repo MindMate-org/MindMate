@@ -25,8 +25,7 @@ export const useInitializeDatabase = () => {
     (async () => {
       try {
         await createDb();
-        } catch (err) {
-        }
+      } catch (err) {}
     })();
   }, []);
 };

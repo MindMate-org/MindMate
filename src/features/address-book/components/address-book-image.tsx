@@ -60,13 +60,15 @@ const EditAddressBookImageModal = ({
   const { t } = useI18n();
   const handleSelectImage = () => {
     CustomAlertManager.alert(
-      t.locale.startsWith('en') ? 'Select Image' : '이미지 선택', 
-      t.locale.startsWith('en') ? 'How would you like to select an image?' : '이미지를 어떻게 선택하시겠습니까?', 
+      t.locale.startsWith('en') ? 'Select Image' : '이미지 선택',
+      t.locale.startsWith('en')
+        ? 'How would you like to select an image?'
+        : '이미지를 어떻게 선택하시겠습니까?',
       [
         { text: t.locale.startsWith('en') ? 'Cancel' : '취소', style: 'cancel' },
         { text: t.locale.startsWith('en') ? 'Gallery' : '갤러리에서 선택', onPress: openGallery },
         { text: t.locale.startsWith('en') ? 'Camera' : '카메라로 촬영', onPress: openCamera },
-      ]
+      ],
     );
   };
 
@@ -77,8 +79,10 @@ const EditAddressBookImageModal = ({
 
       if (permissionResult.granted === false) {
         CustomAlertManager.error(
-          t.locale.startsWith('en') ? 'Gallery access permission is required.' : '갤러리 접근 권한이 필요합니다.',
-          t.locale.startsWith('en') ? 'Permission Required' : '권한 필요'
+          t.locale.startsWith('en')
+            ? 'Gallery access permission is required.'
+            : '갤러리 접근 권한이 필요합니다.',
+          t.locale.startsWith('en') ? 'Permission Required' : '권한 필요',
         );
         return;
       }
@@ -98,7 +102,7 @@ const EditAddressBookImageModal = ({
     } catch (error) {
       CustomAlertManager.error(
         t.locale.startsWith('en') ? 'Cannot open gallery.' : '갤러리를 열 수 없습니다.',
-        t.locale.startsWith('en') ? 'Error' : '오류'
+        t.locale.startsWith('en') ? 'Error' : '오류',
       );
     }
   };
@@ -110,8 +114,10 @@ const EditAddressBookImageModal = ({
 
       if (permissionResult.granted === false) {
         CustomAlertManager.error(
-          t.locale.startsWith('en') ? 'Camera access permission is required.' : '카메라 접근 권한이 필요합니다.',
-          t.locale.startsWith('en') ? 'Permission Required' : '권한 필요'
+          t.locale.startsWith('en')
+            ? 'Camera access permission is required.'
+            : '카메라 접근 권한이 필요합니다.',
+          t.locale.startsWith('en') ? 'Permission Required' : '권한 필요',
         );
         return;
       }
@@ -130,7 +136,7 @@ const EditAddressBookImageModal = ({
     } catch (error) {
       CustomAlertManager.error(
         t.locale.startsWith('en') ? 'Cannot open camera.' : '카메라를 열 수 없습니다.',
-        t.locale.startsWith('en') ? 'Error' : '오류'
+        t.locale.startsWith('en') ? 'Error' : '오류',
       );
     }
   };

@@ -77,9 +77,7 @@ const addMissingColumns = async () => {
     } catch (error) {
       // Column already exists, ignore error
     }
-
-    } catch (error) {
-    }
+  } catch (error) {}
 };
 
 // Mock data insertion function removed for production use

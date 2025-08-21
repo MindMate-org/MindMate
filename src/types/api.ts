@@ -13,15 +13,19 @@ import { z } from 'zod';
 export const ApiResponseSchema = z.object({
   success: z.boolean(),
   data: z.any().optional(),
-  error: z.object({
-    code: z.string(),
-    message: z.string(),
-    details: z.any().optional(),
-  }).optional(),
-  metadata: z.object({
-    timestamp: z.string(),
-    requestId: z.string().optional(),
-  }).optional(),
+  error: z
+    .object({
+      code: z.string(),
+      message: z.string(),
+      details: z.any().optional(),
+    })
+    .optional(),
+  metadata: z
+    .object({
+      timestamp: z.string(),
+      requestId: z.string().optional(),
+    })
+    .optional(),
 });
 
 export type ApiResponse<T = any> = {
@@ -63,13 +67,15 @@ export const DiarySchema = BaseEntitySchema.extend({
   is_favorite: z.number().int().min(0).max(1).default(0),
   is_deleted: z.number().int().min(0).max(1).default(0),
   deleted_at: z.string().datetime().nullable().optional(),
-  style: z.object({
-    fontFamily: z.string(),
-    fontSize: z.number().positive(),
-    textAlign: z.enum(['left', 'center', 'right']),
-    textColor: z.string(),
-    backgroundColor: z.string(),
-  }).optional(),
+  style: z
+    .object({
+      fontFamily: z.string(),
+      fontSize: z.number().positive(),
+      textAlign: z.enum(['left', 'center', 'right']),
+      textColor: z.string(),
+      backgroundColor: z.string(),
+    })
+    .optional(),
 });
 
 export const CreateDiarySchema = DiarySchema.omit({
@@ -122,10 +128,9 @@ export const ContactTagSchema = BaseEntitySchema.extend({
 
 export const ContactSchema = BaseEntitySchema.extend({
   name: z.string().min(1, '이름은 필수입니다').max(100),
-  phone_number: z.string().regex(
-    /^[\+]?[0-9\-\s\(\)]{10,20}$/,
-    '올바른 전화번호 형식을 입력하세요'
-  ),
+  phone_number: z
+    .string()
+    .regex(/^[\+]?[0-9\-\s\(\)]{10,20}$/, '올바른 전화번호 형식을 입력하세요'),
   email: z.string().email('올바른 이메일 형식을 입력하세요').optional(),
   address: z.string().max(500).optional(),
   memo: z.string().max(1000).optional(),
@@ -193,12 +198,19 @@ export const RoutineTaskSchema = BaseEntitySchema.extend({
 export const RoutineSchema = BaseEntitySchema.extend({
   title: z.string().min(1, '루틴 제목은 필수입니다').max(100),
   description: z.string().max(500).optional(),
-  start_time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, '올바른 시간 형식(HH:MM)을 입력하세요'),
-  end_time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, '올바른 시간 형식(HH:MM)을 입력하세요'),
+  start_time: z
+    .string()
+    .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, '올바른 시간 형식(HH:MM)을 입력하세요'),
+  end_time: z
+    .string()
+    .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, '올바른 시간 형식(HH:MM)을 입력하세요'),
   repeat_days: z.string().regex(/^[0-6,]*$/, '올바른 요일 형식을 입력하세요'), // 0=일요일, 6=토요일
   is_active: z.number().int().min(0).max(1).default(1),
   notification_enabled: z.number().int().min(0).max(1).default(1),
-  color: z.string().regex(/^#[0-9A-F]{6}$/i).optional(),
+  color: z
+    .string()
+    .regex(/^#[0-9A-F]{6}$/i)
+    .optional(),
 });
 
 export const CreateRoutineSchema = RoutineSchema.omit({
@@ -273,34 +285,35 @@ export type FilterParams = z.infer<typeof FilterSchema>;
 
 export function validateData<T>(schema: z.ZodSchema<T>, data: unknown): T {
   const result = schema.safeParse(data);
-  
+
   if (!result.success) {
     throw new Error(
-      `데이터 검증 실패: ${result.error.issues.map(issue => 
-        `${issue.path.join('.')}: ${issue.message}`
-      ).join(', ')}`
+      `데이터 검증 실패: ${result.error.issues
+        .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
+        .join(', ')}`,
     );
   }
-  
+
   return result.data;
 }
 
-export function validateDataSafe<T>(schema: z.ZodSchema<T>, data: unknown): {
+export function validateDataSafe<T>(
+  schema: z.ZodSchema<T>,
+  data: unknown,
+): {
   success: boolean;
   data?: T;
   errors?: string[];
 } {
   const result = schema.safeParse(data);
-  
+
   if (!result.success) {
     return {
       success: false,
-      errors: result.error.issues.map(issue => 
-        `${issue.path.join('.')}: ${issue.message}`
-      ),
+      errors: result.error.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`),
     };
   }
-  
+
   return {
     success: true,
     data: result.data,

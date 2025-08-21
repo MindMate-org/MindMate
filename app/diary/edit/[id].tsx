@@ -119,11 +119,17 @@ const DiaryEditPage = () => {
         });
       }
 
-      await CustomAlertManager.success(t.locale.startsWith('en') ? 'Diary updated successfully.' : '일기가 수정되었습니다.');
+      await CustomAlertManager.success(
+        t.locale.startsWith('en') ? 'Diary updated successfully.' : '일기가 수정되었습니다.',
+      );
       router.replace('/(tabs)/diary');
     } catch (error) {
       console.error('Diary update failed:', error);
-      CustomAlertManager.error(t.locale.startsWith('en') ? 'An error occurred while updating the diary.' : '일기 수정 중 오류가 발생했습니다.');
+      CustomAlertManager.error(
+        t.locale.startsWith('en')
+          ? 'An error occurred while updating the diary.'
+          : '일기 수정 중 오류가 발생했습니다.',
+      );
     }
   };
 

@@ -83,7 +83,7 @@ const LoadingState: React.FC<LoadingStateProps> = ({
         return {
           marginTop: 16,
           fontSize: 16,
-          fontWeight: '500',
+          fontWeight: '500' as const,
           color: '#FFFFFF',
         };
       case 'compact':

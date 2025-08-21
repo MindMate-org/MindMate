@@ -21,15 +21,15 @@ const isSameWeek = (d1: Date, d2: Date) => {
  * @returns 기간별로 그룹화된 일기 객체
  */
 export const groupDiariesByPeriod = (
-  diaries: any[], 
-  language: SupportedLanguage = 'ko', 
-  selectedDate?: Date
+  diaries: any[],
+  language: SupportedLanguage = 'ko',
+  selectedDate?: Date,
 ) => {
   const t = getTranslations(language);
-  
+
   // 선택된 날짜가 있으면 해당 날짜의 일기만 필터링
-  const filteredDiaries = selectedDate 
-    ? diaries.filter(item => {
+  const filteredDiaries = selectedDate
+    ? diaries.filter((item) => {
         const itemDate = new Date(item.created_at ?? '');
         return (
           itemDate.getFullYear() === selectedDate.getFullYear() &&

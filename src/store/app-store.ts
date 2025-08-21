@@ -53,21 +53,21 @@ export interface AppNotification {
 export interface AppState {
   // 메타데이터
   metadata: AppMetadata;
-  
+
   // 성능 추적
   performance: AppPerformance;
-  
+
   // 피처 플래그
   featureFlags: AppFeatureFlags;
-  
+
   // UI 상태 (기존 global-store에서 이관)
   theme: AppThemeType;
   language: AppLanguageType;
   isOnboarding: boolean;
-  
+
   // 사용자 정보
   userName: string;
-  
+
   // 앱 상태
   isRehydrated: boolean;
   isOnline: boolean;
@@ -76,11 +76,11 @@ export interface AppState {
   modalStack: string[];
   isLoading: boolean;
   notifications: AppNotification[];
-  
+
   // 사용자 활동
   sessionStartTime: string | null;
   lastActivityTime: string | null;
-  
+
   // 기본 앱 액션들
   setRehydrated: (isRehydrated: boolean) => void;
   setOnlineStatus: (isOnline: boolean) => void;
@@ -92,24 +92,24 @@ export interface AppState {
   startSession: () => void;
   updateActivity: () => void;
   endSession: () => void;
-  
+
   // UI 상태 액션들 (기존 global-store에서 이관)
   setTheme: (theme: AppThemeType) => void;
   setLanguage: (language: AppLanguageType) => void;
   setOnboarding: (isOnboarding: boolean) => void;
   setUserName: (userName: string) => void;
   setGlobalLoading: (loading: boolean) => void;
-  
+
   // 알림 관리 액션들
   addNotification: (notification: Omit<AppNotification, 'id' | 'timestamp'>) => void;
   removeNotification: (id: string) => void;
   clearNotifications: () => void;
-  
+
   // 피처 플래그 액션들
   updateFeatureFlag: (flag: keyof AppFeatureFlags, value: any) => void;
   getFeatureFlag: (flag: keyof AppFeatureFlags) => any;
   isFeatureEnabled: (flag: keyof AppFeatureFlags) => boolean;
-  
+
   // 성능 추적 액션들
   recordScreenLoadTime: (screen: string, loadTime: number) => void;
   recordError: () => void;
@@ -133,7 +133,7 @@ export const useAppStore = create<AppState>()(
             deviceId: '',
             installationId: '',
           },
-          
+
           // 성능 추적 초기 상태
           performance: {
             screenLoadTimes: {},
@@ -142,7 +142,7 @@ export const useAppStore = create<AppState>()(
             memoryWarnings: 0,
             lastPerformanceCheck: new Date().toISOString(),
           },
-          
+
           // 피처 플래그 초기 상태
           featureFlags: {
             enablePushNotifications: true,
@@ -153,13 +153,13 @@ export const useAppStore = create<AppState>()(
             enableAIFeatures: false,
             betaFeatures: [],
           },
-          
+
           // UI 상태 초기값 (기존 global-store에서 이관)
           theme: 'system' as AppThemeType,
           language: 'ko' as AppLanguageType,
           isOnboarding: true,
           userName: '',
-          
+
           // 앱 상태 초기값
           isRehydrated: false,
           isOnline: true,
@@ -173,51 +173,50 @@ export const useAppStore = create<AppState>()(
 
           // 기본 앱 액션 구현
           setRehydrated: (isRehydrated) => set({ isRehydrated }),
-          
+
           setOnlineStatus: (isOnline) => set({ isOnline }),
-          
+
           setBackgroundStatus: (isBackground) => set({ isBackground }),
-          
+
           setCurrentScreen: (screen) => {
             set({ currentScreen: screen });
             // 화면 전환 시 활동 시간 업데이트
             get().updateActivity();
           },
-          
+
           pushModal: (modalId) =>
             set((state) => ({
               modalStack: [...state.modalStack, modalId],
             })),
-          
+
           popModal: () =>
             set((state) => ({
               modalStack: state.modalStack.slice(0, -1),
             })),
-          
+
           clearModalStack: () => set({ modalStack: [] }),
-          
+
           startSession: () =>
             set({
               sessionStartTime: new Date().toISOString(),
               lastActivityTime: new Date().toISOString(),
             }),
-          
-          updateActivity: () =>
-            set({ lastActivityTime: new Date().toISOString() }),
-          
+
+          updateActivity: () => set({ lastActivityTime: new Date().toISOString() }),
+
           endSession: () =>
             set({
               sessionStartTime: null,
               lastActivityTime: null,
             }),
-          
+
           // UI 상태 액션 구현 (기존 global-store에서 이관)
           setTheme: (theme) => set({ theme }),
           setLanguage: (language) => set({ language }),
           setOnboarding: (isOnboarding) => set({ isOnboarding }),
           setUserName: (userName) => set({ userName }),
           setGlobalLoading: (isLoading) => set({ isLoading }),
-          
+
           // 알림 관리 액션 구현
           addNotification: (notification) =>
             set((state) => ({
@@ -230,14 +229,14 @@ export const useAppStore = create<AppState>()(
                 },
               ],
             })),
-          
+
           removeNotification: (id) =>
             set((state) => ({
               notifications: state.notifications.filter((notification) => notification.id !== id),
             })),
-          
+
           clearNotifications: () => set({ notifications: [] }),
-          
+
           // 피처 플래그 액션 구현
           updateFeatureFlag: (flag, value) =>
             set((state) => ({
@@ -246,11 +245,11 @@ export const useAppStore = create<AppState>()(
                 [flag]: value,
               },
             })),
-          
+
           getFeatureFlag: (flag) => get().featureFlags[flag],
-          
+
           isFeatureEnabled: (flag) => Boolean(get().featureFlags[flag]),
-          
+
           // 성능 추적 액션 구현
           recordScreenLoadTime: (screen, loadTime) =>
             set((state) => ({
@@ -262,7 +261,7 @@ export const useAppStore = create<AppState>()(
                 },
               },
             })),
-          
+
           recordError: () =>
             set((state) => ({
               performance: {
@@ -270,7 +269,7 @@ export const useAppStore = create<AppState>()(
                 errorCount: state.performance.errorCount + 1,
               },
             })),
-          
+
           recordCrash: () =>
             set((state) => ({
               performance: {
@@ -278,7 +277,7 @@ export const useAppStore = create<AppState>()(
                 crashCount: state.performance.crashCount + 1,
               },
             })),
-          
+
           recordMemoryWarning: () =>
             set((state) => ({
               performance: {
@@ -302,11 +301,11 @@ export const useAppStore = create<AppState>()(
               buildNumber: state.metadata.buildNumber,
             },
           }),
-        }
-      )
+        },
+      ),
     ),
-    { name: 'app-store' }
-  )
+    { name: 'app-store' },
+  ),
 );
 
 // ============================================================================
@@ -323,7 +322,7 @@ export const useRecordScreenLoadTime = () => useAppStore((state) => state.record
 
 // 피처 플래그 관련
 export const useFeatureFlags = () => useAppStore((state) => state.featureFlags);
-export const useFeatureFlag = (flag: keyof AppFeatureFlags) => 
+export const useFeatureFlag = (flag: keyof AppFeatureFlags) =>
   useAppStore((state) => state.featureFlags[flag]);
 export const useIsFeatureEnabled = () => useAppStore((state) => state.isFeatureEnabled);
 
@@ -343,10 +342,11 @@ export const useCurrentScreen = () => useAppStore((state) => state.currentScreen
 export const useModalStack = () => useAppStore((state) => state.modalStack);
 
 // 세션 관련
-export const useSessionInfo = () => useAppStore((state) => ({
-  sessionStartTime: state.sessionStartTime,
-  lastActivityTime: state.lastActivityTime,
-}));
+export const useSessionInfo = () =>
+  useAppStore((state) => ({
+    sessionStartTime: state.sessionStartTime,
+    lastActivityTime: state.lastActivityTime,
+  }));
 
 // 개별 액션 훅들 (성능 최적화)
 export const useSetTheme = () => useAppStore((state) => state.setTheme);
@@ -414,17 +414,18 @@ export const useGlobalActions = () => useAppStore(globalActionsSelector);
  */
 export const initializeApp = async () => {
   const { setRehydrated, startSession, updateFeatureFlag } = useAppStore.getState();
-  
+
   try {
     // 디바이스 정보 설정
-    const deviceId = await AsyncStorage.getItem('deviceId') || 
-      Math.random().toString(36).substr(2, 9);
+    const deviceId =
+      (await AsyncStorage.getItem('deviceId')) || Math.random().toString(36).substr(2, 9);
     await AsyncStorage.setItem('deviceId', deviceId);
-    
-    const installationId = await AsyncStorage.getItem('installationId') || 
+
+    const installationId =
+      (await AsyncStorage.getItem('installationId')) ||
       Date.now().toString() + Math.random().toString(36).substr(2, 9);
     await AsyncStorage.setItem('installationId', installationId);
-    
+
     // 메타데이터 업데이트
     useAppStore.setState((state) => ({
       metadata: {
@@ -433,17 +434,16 @@ export const initializeApp = async () => {
         installationId,
       },
     }));
-    
+
     // 세션 시작
     startSession();
-    
+
     // 피처 플래그 초기화 (서버에서 가져올 수도 있음)
     await loadFeatureFlags();
-    
+
     // 리하이드레이션 완료
     setRehydrated(true);
-    
-    } catch (error) {
+  } catch (error) {
     setRehydrated(true); // 실패해도 앱은 실행되어야 함
   }
 };
@@ -464,8 +464,7 @@ const loadFeatureFlags = async () => {
         },
       }));
     }
-  } catch (error) {
-    }
+  } catch (error) {}
 };
 
 /**
@@ -475,12 +474,11 @@ export const saveFeatureFlags = async (flags: Partial<AppFeatureFlags>) => {
   try {
     const currentFlags = useAppStore.getState().featureFlags;
     const updatedFlags = { ...currentFlags, ...flags };
-    
+
     await AsyncStorage.setItem('featureFlags', JSON.stringify(updatedFlags));
-    
+
     useAppStore.setState({ featureFlags: updatedFlags });
-  } catch (error) {
-    }
+  } catch (error) {}
 };
 
 /**
@@ -488,12 +486,13 @@ export const saveFeatureFlags = async (flags: Partial<AppFeatureFlags>) => {
  */
 export const getPerformanceReport = () => {
   const { performance, metadata } = useAppStore.getState();
-  
-  const averageLoadTime = Object.values(performance.screenLoadTimes).length > 0 
-    ? Object.values(performance.screenLoadTimes).reduce((a, b) => a + b, 0) / 
-      Object.values(performance.screenLoadTimes).length 
-    : 0;
-  
+
+  const averageLoadTime =
+    Object.values(performance.screenLoadTimes).length > 0
+      ? Object.values(performance.screenLoadTimes).reduce((a, b) => a + b, 0) /
+        Object.values(performance.screenLoadTimes).length
+      : 0;
+
   return {
     ...performance,
     averageScreenLoadTime: averageLoadTime,
@@ -507,14 +506,14 @@ export const getPerformanceReport = () => {
  */
 export const getStoreDebugInfo = () => {
   if (!__DEV__) return null;
-  
+
   const state = useAppStore.getState();
-  
+
   return {
     storeSize: JSON.stringify(state).length,
     modalStackDepth: state.modalStack.length,
-    sessionDuration: state.sessionStartTime 
-      ? Date.now() - new Date(state.sessionStartTime).getTime() 
+    sessionDuration: state.sessionStartTime
+      ? Date.now() - new Date(state.sessionStartTime).getTime()
       : 0,
     performanceMetrics: getPerformanceReport(),
   };

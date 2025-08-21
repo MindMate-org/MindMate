@@ -16,7 +16,11 @@ const WEEKDAYS_EN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
  * @param language - 언어 설정
  * @returns 포맷팅된 시간 문자열
  */
-export const formatTime = (date: Date, format: TimeFormat = '12h', language: SupportedLanguage = 'ko'): string => {
+export const formatTime = (
+  date: Date,
+  format: TimeFormat = '12h',
+  language: SupportedLanguage = 'ko',
+): string => {
   const hours = date.getHours();
   const minutes = date.getMinutes().toString().padStart(2, '0');
 
@@ -24,9 +28,7 @@ export const formatTime = (date: Date, format: TimeFormat = '12h', language: Sup
     return `${hours.toString().padStart(2, '0')}:${minutes}`;
   }
 
-  const period = language === 'en' 
-    ? (hours >= 12 ? 'PM' : 'AM')
-    : (hours >= 12 ? '오후' : '오전');
+  const period = language === 'en' ? (hours >= 12 ? 'PM' : 'AM') : hours >= 12 ? '오후' : '오전';
   const displayHours = hours > 12 ? hours - 12 : hours === 0 ? 12 : hours;
   return `${period} ${displayHours}:${minutes}`;
 };
@@ -45,7 +47,20 @@ export const formatDate = (date: Date, language: SupportedLanguage = 'ko'): stri
   const weekday = weekdays[date.getDay()];
 
   if (language === 'en') {
-    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthNames = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return `${weekday}, ${monthNames[date.getMonth()]} ${day}, ${year}`;
   } else {
     return `${year}년 ${month}월 ${day}일 ${weekday}요일`;
@@ -128,7 +143,10 @@ export const formatDateTime = (
  * @param language - 언어 설정
  * @returns 포맷팅된 날짜 시간 문자열
  */
-export const formatDateTimeString = (datetime: string, language: SupportedLanguage = 'ko'): string => {
+export const formatDateTimeString = (
+  datetime: string,
+  language: SupportedLanguage = 'ko',
+): string => {
   return formatDateTime(datetime, 'full', '12h', language);
 };
 

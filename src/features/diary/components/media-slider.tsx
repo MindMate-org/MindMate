@@ -67,8 +67,7 @@ const MediaSlider = ({ media, height = 200 }: MediaSliderProps) => {
           setIsAudioPlaying(false);
         }
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   };
 
   const handleVideoPress = async () => {

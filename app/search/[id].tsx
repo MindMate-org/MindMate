@@ -1,7 +1,24 @@
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { Camera, ChevronLeft, ChevronRight, MapPin, MoreHorizontal, Edit3, Trash2 } from 'lucide-react-native';
+import {
+  Camera,
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+  MoreHorizontal,
+  Edit3,
+  Trash2,
+} from 'lucide-react-native';
 import { useCallback, useState } from 'react';
-import { FlatList, Image, Text, useWindowDimensions, View, SafeAreaView, TouchableOpacity, Pressable } from 'react-native';
+import {
+  FlatList,
+  Image,
+  Text,
+  useWindowDimensions,
+  View,
+  SafeAreaView,
+  TouchableOpacity,
+  Pressable,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Button from '../../src/components/ui/button';
@@ -63,11 +80,17 @@ const ItemDetailScreen = () => {
   const deleteSearchWithAlert = async () => {
     try {
       await fetchDeleteSearchById(+id);
-      await CustomAlertManager.success(t.locale.startsWith('en') ? 'Item deleted successfully.' : '물건이 삭제되었습니다.');
+      await CustomAlertManager.success(
+        t.locale.startsWith('en') ? 'Item deleted successfully.' : '물건이 삭제되었습니다.',
+      );
       router.back();
     } catch (error) {
       console.error('Item delete failed:', error);
-      CustomAlertManager.error(t.locale.startsWith('en') ? 'An error occurred while deleting the item.' : '물건 삭제 중 오류가 발생했습니다.');
+      CustomAlertManager.error(
+        t.locale.startsWith('en')
+          ? 'An error occurred while deleting the item.'
+          : '물건 삭제 중 오류가 발생했습니다.',
+      );
     }
   };
 
@@ -78,13 +101,15 @@ const ItemDetailScreen = () => {
   if (items === null)
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
-        <View style={{ 
-          flex: 1, 
-          alignItems: 'center', 
-          justifyContent: 'center', 
-          paddingHorizontal: 16, 
-          paddingVertical: 32 
-        }}>
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingHorizontal: 16,
+            paddingVertical: 32,
+          }}
+        >
           <Text style={{ color: themeColors.text }}>{t.search.loadingText}</Text>
         </View>
       </SafeAreaView>
@@ -94,26 +119,32 @@ const ItemDetailScreen = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
       {/* 헤더 */}
-      <View style={{
-        marginTop: 32,
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: themeColors.surface,
-        paddingHorizontal: 16,
-        paddingVertical: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: themeColors.border,
-      }}>
+      <View
+        style={{
+          marginTop: 32,
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: themeColors.surface,
+          paddingHorizontal: 16,
+          paddingVertical: 16,
+          borderBottomWidth: 1,
+          borderBottomColor: themeColors.border,
+        }}
+      >
         <TouchableOpacity onPress={() => router.back()}>
           <ChevronLeft size={24} color={themeColors.primary} />
         </TouchableOpacity>
-        <Text style={{
-          flex: 1,
-          textAlign: 'center',
-          fontSize: 18,
-          fontWeight: 'bold',
-          color: themeColors.text,
-        }}>{t.search.itemDetail}</Text>
+        <Text
+          style={{
+            flex: 1,
+            textAlign: 'center',
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: themeColors.text,
+          }}
+        >
+          {t.search.itemDetail}
+        </Text>
         <TouchableOpacity
           onPress={() => setIsMenuVisible(!isMenuVisible)}
           style={{
@@ -125,69 +156,87 @@ const ItemDetailScreen = () => {
           <MoreHorizontal size={24} color={themeColors.primary} />
         </TouchableOpacity>
       </View>
-      
-      <View style={{ 
-        flex: 1, 
-        justifyContent: 'space-between', 
-        backgroundColor: themeColors.background, 
-        paddingHorizontal: 16, 
-        paddingVertical: 32 
-      }}>
+
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'space-between',
+          backgroundColor: themeColors.background,
+          paddingHorizontal: 16,
+          paddingVertical: 32,
+        }}
+      >
         <View style={{ flex: 1 }}>
-          <View style={{ 
-            marginBottom: 48, 
-            width: '100%', 
-            flexDirection: 'row', 
-            alignItems: 'center' 
-          }}>
-            <Text style={{ 
-              marginRight: 16, 
-              fontSize: 20, 
-              fontWeight: 'bold',
-              color: themeColors.text
-            }}>{items.name}</Text>
-            <View style={{
-              height: 32,
-              width: 96,
+          <View
+            style={{
+              marginBottom: 48,
+              width: '100%',
+              flexDirection: 'row',
               alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 16,
-              backgroundColor: themeColors.accent,
-            }}>
-              <Text style={{ 
-                fontSize: 12,
-                color: themeColors.primary
-              }}>{items.category}</Text>
+            }}
+          >
+            <Text
+              style={{
+                marginRight: 16,
+                fontSize: 20,
+                fontWeight: 'bold',
+                color: themeColors.text,
+              }}
+            >
+              {items.name}
+            </Text>
+            <View
+              style={{
+                height: 32,
+                width: 96,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 16,
+                backgroundColor: themeColors.accent,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: themeColors.primary,
+                }}
+              >
+                {items.category}
+              </Text>
             </View>
           </View>
 
           <View style={{ marginBottom: 24 }}>
             {media.length > 0 ? (
               <View>
-                <View style={{
-                  position: 'absolute',
-                  left: 16,
-                  top: '50%',
-                  zIndex: 10,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 20,
-                  backgroundColor: themeColors.primary,
-                  padding: 8,
-                }}>
+                <View
+                  style={{
+                    position: 'absolute',
+                    left: 16,
+                    top: '50%',
+                    zIndex: 10,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 20,
+                    backgroundColor: themeColors.primary,
+                    padding: 8,
+                  }}
+                >
                   <ChevronLeft color={themeColors.primaryText} />
                 </View>
-                <View style={{
-                  position: 'absolute',
-                  right: 16,
-                  top: '50%',
-                  zIndex: 10,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 20,
-                  backgroundColor: themeColors.primary,
-                  padding: 8,
-                }}>
+                <View
+                  style={{
+                    position: 'absolute',
+                    right: 16,
+                    top: '50%',
+                    zIndex: 10,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 20,
+                    backgroundColor: themeColors.primary,
+                    padding: 8,
+                  }}
+                >
                   <ChevronRight color={themeColors.primaryText} />
                 </View>
                 <FlatList
@@ -200,7 +249,7 @@ const ItemDetailScreen = () => {
                   decelerationRate="fast"
                   renderItem={({ item }) => (
                     <View
-                      style={{ 
+                      style={{
                         width: itemWidth,
                         height: 200,
                         alignItems: 'center',
@@ -222,14 +271,16 @@ const ItemDetailScreen = () => {
                 />
               </View>
             ) : (
-              <View style={{
-                height: 200,
-                width: '100%',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 12,
-                backgroundColor: themeColors.accent,
-              }}>
+              <View
+                style={{
+                  height: 200,
+                  width: '100%',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 12,
+                  backgroundColor: themeColors.accent,
+                }}
+              >
                 <Camera size={44} color={themeColors.primary} />
               </View>
             )}
@@ -237,29 +288,39 @@ const ItemDetailScreen = () => {
 
           <View style={{ flexDirection: 'row', gap: 12, marginBottom: 24 }}>
             <MapPin size={18} color={themeColors.primary} />
-            <Text style={{ 
-              fontSize: 14, 
-              fontWeight: 'bold',
-              color: themeColors.text
-            }}>{items.location}</Text>
+            <Text
+              style={{
+                fontSize: 14,
+                fontWeight: 'bold',
+                color: themeColors.text,
+              }}
+            >
+              {items.location}
+            </Text>
           </View>
-          
-          <View style={{
-            height: 168,
-            width: '100%',
-            borderRadius: 12,
-            backgroundColor: themeColors.surface,
-            padding: 24,
-            shadowColor: themeColors.shadow,
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: isDark ? 0.3 : 0.1,
-            shadowRadius: 4,
-            elevation: 3,
-          }}>
-            <Text style={{ 
-              fontSize: 16,
-              color: themeColors.text
-            }}>{items.description}</Text>
+
+          <View
+            style={{
+              height: 168,
+              width: '100%',
+              borderRadius: 12,
+              backgroundColor: themeColors.surface,
+              padding: 24,
+              shadowColor: themeColors.shadow,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: isDark ? 0.3 : 0.1,
+              shadowRadius: 4,
+              elevation: 3,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 16,
+                color: themeColors.text,
+              }}
+            >
+              {items.description}
+            </Text>
           </View>
         </View>
 
@@ -269,21 +330,23 @@ const ItemDetailScreen = () => {
 
       {/* 메뉴 */}
       {isMenuVisible && (
-        <View style={{
-          position: 'absolute',
-          right: 16,
-          top: 80,
-          zIndex: 10,
-          width: 160,
-          borderRadius: 12,
-          backgroundColor: themeColors.surface,
-          padding: 8,
-          shadowColor: themeColors.shadow,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: isDark ? 0.4 : 0.2,
-          shadowRadius: 8,
-          elevation: 8,
-        }}>
+        <View
+          style={{
+            position: 'absolute',
+            right: 16,
+            top: 80,
+            zIndex: 10,
+            width: 160,
+            borderRadius: 12,
+            backgroundColor: themeColors.surface,
+            padding: 8,
+            shadowColor: themeColors.shadow,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: isDark ? 0.4 : 0.2,
+            shadowRadius: 8,
+            elevation: 8,
+          }}
+        >
           <TouchableOpacity
             style={{
               flexDirection: 'row',
@@ -298,14 +361,18 @@ const ItemDetailScreen = () => {
             }}
           >
             <Edit3 size={18} color={themeColors.primary} />
-            <Text style={{
-              marginLeft: 12,
-              fontSize: 14,
-              color: themeColors.text,
-              fontWeight: '500',
-            }}>{t.search.modify}</Text>
+            <Text
+              style={{
+                marginLeft: 12,
+                fontSize: 14,
+                color: themeColors.text,
+                fontWeight: '500',
+              }}
+            >
+              {t.search.modify}
+            </Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             style={{
               flexDirection: 'row',
@@ -320,19 +387,23 @@ const ItemDetailScreen = () => {
             }}
           >
             <Trash2 size={18} color={themeColors.error || '#ef4444'} />
-            <Text style={{
-              marginLeft: 12,
-              fontSize: 14,
-              color: themeColors.error || '#ef4444',
-              fontWeight: '500',
-            }}>{t.search.deleteItem}</Text>
+            <Text
+              style={{
+                marginLeft: 12,
+                fontSize: 14,
+                color: themeColors.error || '#ef4444',
+                fontWeight: '500',
+              }}
+            >
+              {t.search.deleteItem}
+            </Text>
           </TouchableOpacity>
         </View>
       )}
 
       {/* 메뉴 닫기용 오버레이 */}
       {isMenuVisible && (
-        <Pressable 
+        <Pressable
           style={{
             position: 'absolute',
             top: 0,

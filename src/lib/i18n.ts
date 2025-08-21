@@ -1,6 +1,6 @@
 /**
  * 다국어 지원 시스템
- * 
+ *
  * 한국어와 영어를 지원합니다.
  */
 
@@ -42,9 +42,9 @@ interface Translations {
       others: string;
     };
   };
-  
+
   locale: string;
-  
+
   // 탭
   tabs: {
     diary: string;
@@ -53,7 +53,7 @@ interface Translations {
     addressBook: string;
     search: string;
   };
-  
+
   // 일기
   diary: {
     title: string;
@@ -139,7 +139,7 @@ interface Translations {
     loadingBookmarks: string;
     preciousDiariesCount: string;
   };
-  
+
   // 일정
   schedule: {
     title: string;
@@ -176,7 +176,7 @@ interface Translations {
     attachedMedia: string;
     noContent: string;
   };
-  
+
   // 루틴
   routine: {
     title: string;
@@ -252,7 +252,7 @@ interface Translations {
       };
     };
   };
-  
+
   // 주소록
   addressBook: {
     title: string;
@@ -289,7 +289,7 @@ interface Translations {
     registerFirstItem: string;
     registerItem: string;
   };
-  
+
   // 설정
   settings: {
     title: string;
@@ -323,7 +323,7 @@ interface Translations {
     notificationsPending: string;
     notificationSubtitle: string;
   };
-  
+
   // 스타일
   style: {
     title: string;
@@ -338,7 +338,7 @@ interface Translations {
     right: string;
     default: string;
   };
-  
+
   // 랜딩페이지
   landing: {
     welcome: string;
@@ -386,9 +386,9 @@ const ko: Translations = {
       others: '기타',
     },
   },
-  
+
   locale: 'ko-KR',
-  
+
   tabs: {
     diary: '일기',
     schedule: '일정',
@@ -396,7 +396,7 @@ const ko: Translations = {
     addressBook: '주소록',
     search: '물건',
   },
-  
+
   diary: {
     title: '일기',
     create: '일기 작성하기',
@@ -481,7 +481,7 @@ const ko: Translations = {
     loadingBookmarks: '북마크를 불러오는 중...',
     preciousDiariesCount: '개의 소중한 일기',
   },
-  
+
   schedule: {
     title: '일정',
     create: '일정 작성하기',
@@ -517,7 +517,7 @@ const ko: Translations = {
     attachedMedia: '첨부된 미디어',
     noContent: '내용이 없습니다.',
   },
-  
+
   routine: {
     title: '루틴',
     create: '루틴 작성하기',
@@ -592,7 +592,7 @@ const ko: Translations = {
       },
     },
   },
-  
+
   addressBook: {
     title: '주소록',
     contacts: '연락처',
@@ -627,7 +627,7 @@ const ko: Translations = {
     registerFirstItem: '첫 번째 물건을 등록해보세요',
     registerItem: '물건 등록하기',
   },
-  
+
   settings: {
     title: '설정',
     account: '계정',
@@ -660,7 +660,7 @@ const ko: Translations = {
     notificationsPending: '알림 설정 기능이 준비 중입니다.',
     notificationSubtitle: '푸시 알림 설정',
   },
-  
+
   style: {
     title: '스타일 설정',
     font: '폰트',
@@ -674,7 +674,7 @@ const ko: Translations = {
     right: '오른쪽',
     default: '기본',
   },
-  
+
   landing: {
     welcome: 'MIND MATE에 오신 것을 환영합니다',
     subtitle: '마음을 돌보는 스마트한 동반자',
@@ -721,9 +721,9 @@ const en: Translations = {
       others: 'Others',
     },
   },
-  
+
   locale: 'en-US',
-  
+
   tabs: {
     diary: 'Diary',
     schedule: 'Schedule',
@@ -731,7 +731,7 @@ const en: Translations = {
     addressBook: 'Contacts',
     search: 'Items',
   },
-  
+
   diary: {
     title: 'Diary',
     create: 'Create Diary',
@@ -816,7 +816,7 @@ const en: Translations = {
     loadingBookmarks: 'Loading bookmarks...',
     preciousDiariesCount: 'precious diary entries',
   },
-  
+
   schedule: {
     title: 'Schedule',
     create: 'Create Schedule',
@@ -852,7 +852,7 @@ const en: Translations = {
     attachedMedia: 'Attached Media',
     noContent: 'No content available.',
   },
-  
+
   routine: {
     title: 'Routine',
     create: 'Create Routine',
@@ -927,7 +927,7 @@ const en: Translations = {
       },
     },
   },
-  
+
   addressBook: {
     title: 'Address Book',
     contacts: 'Contacts',
@@ -962,7 +962,7 @@ const en: Translations = {
     registerFirstItem: 'Register your first item',
     registerItem: 'Register Item',
   },
-  
+
   settings: {
     title: 'Settings',
     account: 'Account',
@@ -995,7 +995,7 @@ const en: Translations = {
     notificationsPending: 'Notification settings feature is under development.',
     notificationSubtitle: 'Push notification settings',
   },
-  
+
   style: {
     title: 'Style Settings',
     font: 'Font',
@@ -1009,7 +1009,7 @@ const en: Translations = {
     right: 'Right',
     default: 'Default',
   },
-  
+
   landing: {
     welcome: 'Welcome to MIND MATE',
     subtitle: 'Your Smart Companion for Mental Care',

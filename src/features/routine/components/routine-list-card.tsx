@@ -53,12 +53,14 @@ const RoutineListCard: React.FC<RoutineListCardPropsType> = ({
         elevation: 4,
       }}
     >
-      <View style={{
-        width: 8,
-        borderTopLeftRadius: 12,
-        borderBottomLeftRadius: 12,
-        backgroundColor: themeColors.primary,
-      }} />
+      <View
+        style={{
+          width: 8,
+          borderTopLeftRadius: 12,
+          borderBottomLeftRadius: 12,
+          backgroundColor: themeColors.primary,
+        }}
+      />
       <View style={{ position: 'absolute', top: 16, right: 20, flexDirection: 'row', zIndex: 2 }}>
         {onEdit && (
           <TouchableOpacity onPress={onEdit} style={{ marginRight: 8 }}>
@@ -73,18 +75,22 @@ const RoutineListCard: React.FC<RoutineListCardPropsType> = ({
       </View>
       <View style={{ height: '100%', flex: 1, paddingLeft: 16, paddingRight: 16 }}>
         <View style={{ height: '100%', flex: 1, justifyContent: 'center' }}>
-          <Text style={{ 
-            fontSize: 24, 
-            fontWeight: 'bold', 
-            color: themeColors.text, 
-            marginBottom: 4 
-          }}>
+          <Text
+            style={{
+              fontSize: 24,
+              fontWeight: 'bold',
+              color: themeColors.text,
+              marginBottom: 4,
+            }}
+          >
             {title}
           </Text>
-          <Text style={{ 
-            fontSize: 20, 
-            color: themeColors.textSecondary 
-          }}>
+          <Text
+            style={{
+              fontSize: 20,
+              color: themeColors.textSecondary,
+            }}
+          >
             {time} ~{duration}
           </Text>
         </View>

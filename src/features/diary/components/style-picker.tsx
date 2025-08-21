@@ -38,33 +38,40 @@ type StylePickerProps = {
 const StylePicker = ({ visible, onClose, style, onStyleChange }: StylePickerProps) => {
   const { theme: themeColors } = useThemeColors();
   const { t } = useI18n();
-  
+
   return (
     <BaseModal visible={visible} onClose={onClose} height="70%">
-      <ScrollView 
+      <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 20 }}
         style={{ flex: 1 }}
       >
-        <Text style={{ 
-          fontSize: 18, 
-          fontWeight: 'bold', 
-          textAlign: 'center', 
-          marginBottom: 20,
-          color: themeColors.text,
-        }}>
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: 'bold',
+            textAlign: 'center',
+            marginBottom: 20,
+            color: themeColors.text,
+          }}
+        >
           {t.locale.startsWith('en') ? 'Style Settings' : '스타일 설정'}
         </Text>
 
         {/* 폰트 */}
-        <Text style={{ fontWeight: 'bold', fontSize: 14, marginBottom: 10, color: themeColors.primary }}>{t.locale.startsWith('en') ? 'Font' : '폰트'}</Text>
+        <Text
+          style={{ fontWeight: 'bold', fontSize: 14, marginBottom: 10, color: themeColors.primary }}
+        >
+          {t.locale.startsWith('en') ? 'Font' : '폰트'}
+        </Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
           {getFontFamilyOptions(t.locale.startsWith('en')).map((font) => (
             <TouchableOpacity
               key={font.value}
               onPress={() => onStyleChange({ ...style, fontFamily: font.value })}
               style={{
-                backgroundColor: style.fontFamily === font.value ? themeColors.primary : themeColors.accent,
+                backgroundColor:
+                  style.fontFamily === font.value ? themeColors.primary : themeColors.accent,
                 borderRadius: 8,
                 paddingVertical: 10,
                 paddingHorizontal: 16,
@@ -74,7 +81,8 @@ const StylePicker = ({ visible, onClose, style, onStyleChange }: StylePickerProp
             >
               <Text
                 style={{
-                  color: style.fontFamily === font.value ? themeColors.primaryText : themeColors.text,
+                  color:
+                    style.fontFamily === font.value ? themeColors.primaryText : themeColors.text,
                   fontFamily: font.value === 'default' ? undefined : font.value,
                 }}
               >
@@ -85,7 +93,11 @@ const StylePicker = ({ visible, onClose, style, onStyleChange }: StylePickerProp
         </View>
 
         {/* 글자 크기 */}
-        <Text style={{ fontWeight: 'bold', fontSize: 14, marginBottom: 10, color: themeColors.primary }}>{t.locale.startsWith('en') ? 'Font Size' : '글자 크기'}</Text>
+        <Text
+          style={{ fontWeight: 'bold', fontSize: 14, marginBottom: 10, color: themeColors.primary }}
+        >
+          {t.locale.startsWith('en') ? 'Font Size' : '글자 크기'}
+        </Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
           {FONT_SIZE_OPTIONS.map((size) => (
             <TouchableOpacity
@@ -115,7 +127,11 @@ const StylePicker = ({ visible, onClose, style, onStyleChange }: StylePickerProp
         </View>
 
         {/* 텍스트 색상 */}
-        <Text style={{ fontWeight: 'bold', fontSize: 14, marginBottom: 10, color: themeColors.primary }}>{t.locale.startsWith('en') ? 'Text Color' : '텍스트 색상'}</Text>
+        <Text
+          style={{ fontWeight: 'bold', fontSize: 14, marginBottom: 10, color: themeColors.primary }}
+        >
+          {t.locale.startsWith('en') ? 'Text Color' : '텍스트 색상'}
+        </Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 20 }}>
           {TEXT_COLOR_OPTIONS.map((color) => (
             <TouchableOpacity
@@ -136,7 +152,11 @@ const StylePicker = ({ visible, onClose, style, onStyleChange }: StylePickerProp
         </View>
 
         {/* 텍스트 정렬 */}
-        <Text style={{ fontWeight: 'bold', fontSize: 14, marginBottom: 10, color: themeColors.primary }}>{t.locale.startsWith('en') ? 'Text Alignment' : '텍스트 정렬'}</Text>
+        <Text
+          style={{ fontWeight: 'bold', fontSize: 14, marginBottom: 10, color: themeColors.primary }}
+        >
+          {t.locale.startsWith('en') ? 'Text Alignment' : '텍스트 정렬'}
+        </Text>
         <View style={{ flexDirection: 'row', gap: 8, marginBottom: 20 }}>
           {TEXT_ALIGN_OPTIONS.map((align) => (
             <TouchableOpacity
@@ -144,7 +164,8 @@ const StylePicker = ({ visible, onClose, style, onStyleChange }: StylePickerProp
               onPress={() => onStyleChange({ ...style, textAlign: align })}
               style={{
                 flex: 1,
-                backgroundColor: style.textAlign === align ? themeColors.primary : themeColors.accent,
+                backgroundColor:
+                  style.textAlign === align ? themeColors.primary : themeColors.accent,
                 borderRadius: 8,
                 paddingVertical: 12,
                 alignItems: 'center',
@@ -156,14 +177,18 @@ const StylePicker = ({ visible, onClose, style, onStyleChange }: StylePickerProp
                   fontWeight: '600',
                 }}
               >
-{getTextAlignLabels(t.locale.startsWith('en'))[align]}
+                {getTextAlignLabels(t.locale.startsWith('en'))[align]}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
 
         {/* 배경색 */}
-        <Text style={{ fontWeight: 'bold', fontSize: 14, marginBottom: 10, color: themeColors.primary }}>{t.locale.startsWith('en') ? 'Background Color' : '배경색'}</Text>
+        <Text
+          style={{ fontWeight: 'bold', fontSize: 14, marginBottom: 10, color: themeColors.primary }}
+        >
+          {t.locale.startsWith('en') ? 'Background Color' : '배경색'}
+        </Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 20 }}>
           {BACKGROUND_COLOR_OPTIONS.map((color) => (
             <TouchableOpacity
@@ -175,7 +200,8 @@ const StylePicker = ({ visible, onClose, style, onStyleChange }: StylePickerProp
                 borderRadius: 8,
                 backgroundColor: color,
                 borderWidth: 3,
-                borderColor: style.backgroundColor === color ? themeColors.primary : themeColors.accent,
+                borderColor:
+                  style.backgroundColor === color ? themeColors.primary : themeColors.accent,
                 marginRight: 8,
                 marginBottom: 8,
                 shadowColor: '#000',
@@ -189,7 +215,11 @@ const StylePicker = ({ visible, onClose, style, onStyleChange }: StylePickerProp
         </View>
 
         {/* 미리보기 */}
-        <Text style={{ fontWeight: 'bold', fontSize: 14, marginBottom: 10, color: themeColors.primary }}>{t.locale.startsWith('en') ? 'Preview' : '미리보기'}</Text>
+        <Text
+          style={{ fontWeight: 'bold', fontSize: 14, marginBottom: 10, color: themeColors.primary }}
+        >
+          {t.locale.startsWith('en') ? 'Preview' : '미리보기'}
+        </Text>
         <View
           style={{
             backgroundColor: style.backgroundColor,
@@ -209,7 +239,9 @@ const StylePicker = ({ visible, onClose, style, onStyleChange }: StylePickerProp
               lineHeight: style.fontSize * 1.4,
             }}
           >
-            {t.locale.startsWith('en') ? 'This is preview text. Check how your selected style looks.' : '이것은 미리보기 텍스트입니다. 선택한 스타일이 어떻게 보이는지 확인하세요.'}
+            {t.locale.startsWith('en')
+              ? 'This is preview text. Check how your selected style looks.'
+              : '이것은 미리보기 텍스트입니다. 선택한 스타일이 어떻게 보이는지 확인하세요.'}
           </Text>
         </View>
       </ScrollView>

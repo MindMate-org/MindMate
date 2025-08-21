@@ -125,178 +125,239 @@ const StatsPage = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
       {/* 헤더 */}
-      <View style={{
-        marginTop: 32, // 상태바 아래 여백
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        borderBottomWidth: 1,
-        borderBottomColor: themeColors.primary,
-        backgroundColor: themeColors.surface,
-        paddingHorizontal: 16,
-        paddingVertical: 16,
-      }}>
+      <View
+        style={{
+          marginTop: 32, // 상태바 아래 여백
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottomWidth: 1,
+          borderBottomColor: themeColors.primary,
+          backgroundColor: themeColors.surface,
+          paddingHorizontal: 16,
+          paddingVertical: 16,
+        }}
+      >
         <TouchableOpacity onPress={handleBack}>
           <ChevronLeft size={24} color={themeColors.primary} />
         </TouchableOpacity>
-        <Text style={{
-          fontSize: 18,
-          fontWeight: 'bold',
-          color: themeColors.primary,
-        }}>{t.diary.stats}</Text>
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: themeColors.primary,
+          }}
+        >
+          {t.diary.stats}
+        </Text>
         <View style={{ width: 24 }} />
       </View>
 
-      <ScrollView style={{
-        flex: 1,
-        backgroundColor: themeColors.background,
-        paddingHorizontal: 16,
-        paddingTop: 24,
-      }}>
+      <ScrollView
+        style={{
+          flex: 1,
+          backgroundColor: themeColors.background,
+          paddingHorizontal: 16,
+          paddingTop: 24,
+        }}
+      >
         {loading ? (
-          <View style={{
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
             <Text style={{ color: themeColors.textSecondary }}>{t.diary.loading}</Text>
           </View>
         ) : (
           <View style={{ paddingBottom: 80 }}>
             {/* 전체 통계 카드 */}
-            <View style={{
-              marginBottom: 24,
-              flexDirection: 'row',
-              gap: 12,
-            }}>
-              <View style={{
-                flex: 1,
-                alignItems: 'center',
-                borderRadius: 16,
-                backgroundColor: themeColors.surface,
-                padding: 16,
-                shadowColor: themeColors.shadow,
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: isDark ? 0.3 : 0.1,
-                shadowRadius: 4,
-                elevation: 3,
-              }}>
+            <View
+              style={{
+                marginBottom: 24,
+                flexDirection: 'row',
+                gap: 12,
+              }}
+            >
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: 'center',
+                  borderRadius: 16,
+                  backgroundColor: themeColors.surface,
+                  padding: 16,
+                  shadowColor: themeColors.shadow,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: isDark ? 0.3 : 0.1,
+                  shadowRadius: 4,
+                  elevation: 3,
+                }}
+              >
                 <Calendar size={24} color={themeColors.primary} />
-                <Text style={{
-                  marginTop: 8,
-                  fontSize: 24,
-                  fontWeight: 'bold',
-                  color: themeColors.primary,
-                }}>{stats.total}</Text>
-                <Text style={{
-                  fontSize: 14,
-                  color: themeColors.textSecondary,
-                }}>{t.diary.totalDiaries}</Text>
+                <Text
+                  style={{
+                    marginTop: 8,
+                    fontSize: 24,
+                    fontWeight: 'bold',
+                    color: themeColors.primary,
+                  }}
+                >
+                  {stats.total}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: themeColors.textSecondary,
+                  }}
+                >
+                  {t.diary.totalDiaries}
+                </Text>
               </View>
-              <View style={{
-                flex: 1,
-                alignItems: 'center',
-                borderRadius: 16,
-                backgroundColor: themeColors.surface,
-                padding: 16,
-                shadowColor: themeColors.shadow,
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: isDark ? 0.3 : 0.1,
-                shadowRadius: 4,
-                elevation: 3,
-              }}>
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: 'center',
+                  borderRadius: 16,
+                  backgroundColor: themeColors.surface,
+                  padding: 16,
+                  shadowColor: themeColors.shadow,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: isDark ? 0.3 : 0.1,
+                  shadowRadius: 4,
+                  elevation: 3,
+                }}
+              >
                 <TrendingUp size={24} color={themeColors.primary} />
-                <Text style={{
-                  marginTop: 8,
-                  fontSize: 24,
-                  fontWeight: 'bold',
-                  color: themeColors.primary,
-                }}>
+                <Text
+                  style={{
+                    marginTop: 8,
+                    fontSize: 24,
+                    fontWeight: 'bold',
+                    color: themeColors.primary,
+                  }}
+                >
                   {stats.weeklyStreak}
                 </Text>
-                <Text style={{
-                  fontSize: 14,
-                  color: themeColors.textSecondary,
-                }}>{t.diary.consecutiveDays}</Text>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: themeColors.textSecondary,
+                  }}
+                >
+                  {t.diary.consecutiveDays}
+                </Text>
               </View>
-              <View style={{
-                flex: 1,
-                alignItems: 'center',
-                borderRadius: 16,
-                backgroundColor: themeColors.surface,
-                padding: 16,
-                shadowColor: themeColors.shadow,
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: isDark ? 0.3 : 0.1,
-                shadowRadius: 4,
-                elevation: 3,
-              }}>
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: 'center',
+                  borderRadius: 16,
+                  backgroundColor: themeColors.surface,
+                  padding: 16,
+                  shadowColor: themeColors.shadow,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: isDark ? 0.3 : 0.1,
+                  shadowRadius: 4,
+                  elevation: 3,
+                }}
+              >
                 <BarChart3 size={24} color={themeColors.primary} />
-                <Text style={{
-                  marginTop: 8,
-                  fontSize: 24,
-                  fontWeight: 'bold',
-                  color: themeColors.primary,
-                }}>{stats.withMedia}</Text>
-                <Text style={{
-                  fontSize: 14,
-                  color: themeColors.textSecondary,
-                }}>{t.diary.withMedia}</Text>
+                <Text
+                  style={{
+                    marginTop: 8,
+                    fontSize: 24,
+                    fontWeight: 'bold',
+                    color: themeColors.primary,
+                  }}
+                >
+                  {stats.withMedia}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: themeColors.textSecondary,
+                  }}
+                >
+                  {t.diary.withMedia}
+                </Text>
               </View>
             </View>
 
             {/* 기분별 통계 */}
-            <View style={{
-              marginBottom: 24,
-              borderRadius: 16,
-              backgroundColor: themeColors.surface,
-              padding: 16,
-              shadowColor: themeColors.shadow,
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: isDark ? 0.3 : 0.1,
-              shadowRadius: 4,
-              elevation: 3,
-            }}>
-              <Text style={{
-                marginBottom: 16,
-                fontSize: 18,
-                fontWeight: 'bold',
-                color: themeColors.primary,
-              }}>{t.diary.moodStats}</Text>
+            <View
+              style={{
+                marginBottom: 24,
+                borderRadius: 16,
+                backgroundColor: themeColors.surface,
+                padding: 16,
+                shadowColor: themeColors.shadow,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: isDark ? 0.3 : 0.1,
+                shadowRadius: 4,
+                elevation: 3,
+              }}
+            >
+              <Text
+                style={{
+                  marginBottom: 16,
+                  fontSize: 18,
+                  fontWeight: 'bold',
+                  color: themeColors.primary,
+                }}
+              >
+                {t.diary.moodStats}
+              </Text>
               {moodStats.map((mood) => (
-                <View key={mood.value} style={{
-                  marginBottom: 12,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}>
+                <View
+                  key={mood.value}
+                  style={{
+                    marginBottom: 12,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}
+                >
                   <Text style={{ fontSize: 20 }}>{mood.emoji}</Text>
-                  <View style={{
-                    marginLeft: 12,
-                    flex: 1,
-                  }}>
-                    <View style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                    }}>
-                      <Text style={{
-                        fontWeight: '500',
-                        color: themeColors.text,
-                      }}>{mood.label}</Text>
-                      <Text style={{
-                        fontSize: 14,
-                        color: themeColors.textSecondary,
-                      }}>
+                  <View
+                    style={{
+                      marginLeft: 12,
+                      flex: 1,
+                    }}
+                  >
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontWeight: '500',
+                          color: themeColors.text,
+                        }}
+                      >
+                        {mood.label}
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          color: themeColors.textSecondary,
+                        }}
+                      >
                         {mood.count}회 ({mood.percentage.toFixed(1)}%)
                       </Text>
                     </View>
-                    <View style={{
-                      backgroundColor: themeColors.backgroundSecondary,
-                      marginTop: 4,
-                      height: 8,
-                      overflow: 'hidden',
-                      borderRadius: 4,
-                    }}>
+                    <View
+                      style={{
+                        backgroundColor: themeColors.backgroundSecondary,
+                        marginTop: 4,
+                        height: 8,
+                        overflow: 'hidden',
+                        borderRadius: 4,
+                      }}
+                    >
                       <View
                         style={{
                           height: '100%',
@@ -312,122 +373,161 @@ const StatsPage = () => {
             </View>
 
             {/* 월별 작성 통계 */}
-            <View style={{
-              marginBottom: 24,
-              borderRadius: 16,
-              backgroundColor: themeColors.surface,
-              padding: 16,
-              shadowColor: themeColors.shadow,
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: isDark ? 0.3 : 0.1,
-              shadowRadius: 4,
-              elevation: 3,
-            }}>
-              <Text style={{
-                marginBottom: 16,
-                fontSize: 18,
-                fontWeight: 'bold',
-                color: themeColors.primary,
-              }}>{t.diary.recentSixMonths}</Text>
-              <View style={{
-                flexDirection: 'row',
-                alignItems: 'flex-end',
-                justifyContent: 'space-between',
-                height: 120,
-              }}>
+            <View
+              style={{
+                marginBottom: 24,
+                borderRadius: 16,
+                backgroundColor: themeColors.surface,
+                padding: 16,
+                shadowColor: themeColors.shadow,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: isDark ? 0.3 : 0.1,
+                shadowRadius: 4,
+                elevation: 3,
+              }}
+            >
+              <Text
+                style={{
+                  marginBottom: 16,
+                  fontSize: 18,
+                  fontWeight: 'bold',
+                  color: themeColors.primary,
+                }}
+              >
+                {t.diary.recentSixMonths}
+              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'flex-end',
+                  justifyContent: 'space-between',
+                  height: 120,
+                }}
+              >
                 {recentMonths.map((month) => (
-                  <View key={month.key} style={{
-                    flex: 1,
-                    alignItems: 'center',
-                  }}>
+                  <View
+                    key={month.key}
+                    style={{
+                      flex: 1,
+                      alignItems: 'center',
+                    }}
+                  >
                     <View
                       style={{
                         width: 24,
                         borderTopLeftRadius: 4,
                         borderTopRightRadius: 4,
                         height: Math.max((month.count / maxMonthlyCount) * 80, 4),
-                        backgroundColor: month.count > 0 ? themeColors.primary : themeColors.backgroundSecondary,
+                        backgroundColor:
+                          month.count > 0 ? themeColors.primary : themeColors.backgroundSecondary,
                       }}
                     />
-                    <Text style={{
-                      marginTop: 8,
-                      fontSize: 12,
-                      color: themeColors.textSecondary,
-                    }} numberOfLines={1}>
+                    <Text
+                      style={{
+                        marginTop: 8,
+                        fontSize: 12,
+                        color: themeColors.textSecondary,
+                      }}
+                      numberOfLines={1}
+                    >
                       {month.name.replace('년 ', '.')}
                     </Text>
-                    <Text style={{
-                      fontSize: 12,
-                      fontWeight: '500',
-                      color: themeColors.primary,
-                    }}>{month.count}</Text>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontWeight: '500',
+                        color: themeColors.primary,
+                      }}
+                    >
+                      {month.count}
+                    </Text>
                   </View>
                 ))}
               </View>
             </View>
 
             {/* 인사이트 */}
-            <View style={{
-              borderRadius: 16,
-              backgroundColor: themeColors.surface,
-              padding: 16,
-              shadowColor: themeColors.shadow,
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: isDark ? 0.3 : 0.1,
-              shadowRadius: 4,
-              elevation: 3,
-            }}>
-              <Text style={{
-                marginBottom: 12,
-                fontSize: 18,
-                fontWeight: 'bold',
-                color: themeColors.primary,
-              }}>{t.diary.insights}</Text>
+            <View
+              style={{
+                borderRadius: 16,
+                backgroundColor: themeColors.surface,
+                padding: 16,
+                shadowColor: themeColors.shadow,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: isDark ? 0.3 : 0.1,
+                shadowRadius: 4,
+                elevation: 3,
+              }}
+            >
+              <Text
+                style={{
+                  marginBottom: 12,
+                  fontSize: 18,
+                  fontWeight: 'bold',
+                  color: themeColors.primary,
+                }}
+              >
+                {t.diary.insights}
+              </Text>
               <View>
                 {stats.total > 0 && (
                   <>
-                    <Text style={{
-                      fontSize: 14,
-                      color: themeColors.textSecondary,
-                      marginBottom: 4,
-                    }}>
-                      • {t.diary.mostFrequentMood}: {' '}
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        color: themeColors.textSecondary,
+                        marginBottom: 4,
+                      }}
+                    >
+                      • {t.diary.mostFrequentMood}:{' '}
                       {
                         moodStats.find(
                           (m) => m.count === Math.max(...moodStats.map((ms) => ms.count)),
                         )?.label
                       }
                     </Text>
-                    <Text style={{
-                      fontSize: 14,
-                      color: themeColors.textSecondary,
-                      marginBottom: 4,
-                    }}>
-                      • {t.diary.mediaInclusionRate}: {((stats.withMedia / stats.total) * 100).toFixed(1)}%
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        color: themeColors.textSecondary,
+                        marginBottom: 4,
+                      }}
+                    >
+                      • {t.diary.mediaInclusionRate}:{' '}
+                      {((stats.withMedia / stats.total) * 100).toFixed(1)}%
                     </Text>
-                    <Text style={{
-                      fontSize: 14,
-                      color: themeColors.textSecondary,
-                      marginBottom: 4,
-                    }}>
-                      • {t.diary.thisMonthWritten}: {recentMonths[recentMonths.length - 1]?.count || 0}{t.locale.startsWith('en') ? ' entries' : '개'}
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        color: themeColors.textSecondary,
+                        marginBottom: 4,
+                      }}
+                    >
+                      • {t.diary.thisMonthWritten}:{' '}
+                      {recentMonths[recentMonths.length - 1]?.count || 0}
+                      {t.locale.startsWith('en') ? ' entries' : '개'}
                     </Text>
                     {stats.weeklyStreak > 0 && (
-                      <Text style={{
-                        fontSize: 14,
-                        color: '#059669',
-                        marginBottom: 4,
-                      }}>
-                        • 🔥 {stats.weeklyStreak}{t.locale.startsWith('en') ? ' days' : '일'} {t.diary.consecutiveWriting}
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          color: '#059669',
+                          marginBottom: 4,
+                        }}
+                      >
+                        • 🔥 {stats.weeklyStreak}
+                        {t.locale.startsWith('en') ? ' days' : '일'} {t.diary.consecutiveWriting}
                       </Text>
                     )}
                   </>
                 )}
                 {stats.total === 0 && (
-                  <Text style={{
-                    fontSize: 14,
-                    color: themeColors.textSecondary,
-                  }}>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      color: themeColors.textSecondary,
+                    }}
+                  >
                     {t.diary.noEntriesYet}
                   </Text>
                 )}

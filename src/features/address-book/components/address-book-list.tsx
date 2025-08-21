@@ -36,11 +36,11 @@ OptimizedAddressBookItem.displayName = 'OptimizedAddressBookItem';
 const AddressBookList = ({ searchText, onRefresh, isRefreshing }: AddressBookListProps) => {
   const { theme: themeColors } = useThemeColors();
   const { t } = useI18n();
-  
+
   // 디바운스된 검색어 사용
-  const debouncedSearchText = useDebouncedSearch(searchText || '', { 
-    delay: 300, 
-    minLength: 0 
+  const debouncedSearchText = useDebouncedSearch(searchText || '', {
+    delay: 300,
+    minLength: 0,
   });
 
   // 새로운 useQuery 훅 사용
@@ -63,7 +63,7 @@ const AddressBookList = ({ searchText, onRefresh, isRefreshing }: AddressBookLis
           } catch (error) {
             return { ...contact, tags: [] };
           }
-        })
+        }),
       );
       return contactsWithTags;
     },
@@ -72,15 +72,15 @@ const AddressBookList = ({ searchText, onRefresh, isRefreshing }: AddressBookLis
       cacheTime: 10 * 60 * 1000, // 10분간 캐시
       retry: 3,
       refetchOnWindowFocus: false,
-    }
+    },
   );
 
   // 검색 및 정렬 최적화
   const processedContacts = useMemo(() => {
     if (!rawContacts) return [];
-    
+
     let filtered = rawContacts;
-    
+
     // 검색 필터링
     if (debouncedSearchText.trim()) {
       const lowercaseSearchText = debouncedSearchText.toLowerCase();
@@ -91,7 +91,7 @@ const AddressBookList = ({ searchText, onRefresh, isRefreshing }: AddressBookLis
           contact.memo?.toLowerCase().includes(lowercaseSearchText),
       );
     }
-    
+
     // 이름 순으로 정렬
     return filtered.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
   }, [rawContacts, debouncedSearchText]);
@@ -104,16 +104,11 @@ const AddressBookList = ({ searchText, onRefresh, isRefreshing }: AddressBookLis
 
   // FlatList 렌더링 최적화
   const renderItem: ListRenderItem<ContactWithTagsType> = useCallback(
-    ({ item }) => (
-      <OptimizedAddressBookItem contact={item} onRefresh={handleRefresh} />
-    ),
-    [handleRefresh]
+    ({ item }) => <OptimizedAddressBookItem contact={item} onRefresh={handleRefresh} />,
+    [handleRefresh],
   );
 
-  const keyExtractor = useCallback(
-    (item: ContactWithTagsType) => item.id.toString(),
-    []
-  );
+  const keyExtractor = useCallback((item: ContactWithTagsType) => item.id.toString(), []);
 
   const getItemLayout = useCallback(
     (_: any, index: number) => ({
@@ -121,22 +116,17 @@ const AddressBookList = ({ searchText, onRefresh, isRefreshing }: AddressBookLis
       offset: 80 * index,
       index,
     }),
-    []
+    [],
   );
 
   // 에러 상태 처리
   if (isError) {
-    return (
-      <ErrorState
-        message={error?.message || t.common.error}
-        onRetry={handleRefresh}
-      />
-    );
+    return <ErrorState message={error?.message || t.common.error} onRetry={handleRefresh} />;
   }
 
   // 로딩 상태 처리
   if (isLoading && !rawContacts) {
-    return <LoadingState message={t.addressBook.contacts + " " + t.common.loading} />;
+    return <LoadingState message={t.addressBook.contacts + ' ' + t.common.loading} />;
   }
 
   if (!rawContacts) return null;
@@ -144,29 +134,37 @@ const AddressBookList = ({ searchText, onRefresh, isRefreshing }: AddressBookLis
   // 검색 결과가 없는 경우
   if (processedContacts.length === 0 && debouncedSearchText.trim()) {
     return (
-      <View style={{
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingHorizontal: 16
-      }}>
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingHorizontal: 16,
+        }}
+      >
         <Users size={48} color={themeColors.primary} />
-        <Text style={{
-          marginTop: 16,
-          textAlign: 'center',
-          fontSize: 18,
-          color: themeColors.text
-        }}>
-          {t.locale.startsWith('en') 
-            ? `${t.addressBook.noSearchResults} "${debouncedSearchText}"` 
+        <Text
+          style={{
+            marginTop: 16,
+            textAlign: 'center',
+            fontSize: 18,
+            color: themeColors.text,
+          }}
+        >
+          {t.locale.startsWith('en')
+            ? `${t.addressBook.noSearchResults} "${debouncedSearchText}"`
             : `"${debouncedSearchText}"${t.addressBook.noSearchResults}`}
         </Text>
-        <Text style={{
-          marginTop: 8,
-          textAlign: 'center',
-          fontSize: 14,
-          color: themeColors.textSecondary
-        }}>{t.addressBook.tryDifferentSearch}</Text>
+        <Text
+          style={{
+            marginTop: 8,
+            textAlign: 'center',
+            fontSize: 14,
+            color: themeColors.textSecondary,
+          }}
+        >
+          {t.addressBook.tryDifferentSearch}
+        </Text>
       </View>
     );
   }
@@ -174,25 +172,33 @@ const AddressBookList = ({ searchText, onRefresh, isRefreshing }: AddressBookLis
   // 연락처가 없는 경우
   if (processedContacts.length === 0) {
     return (
-      <View style={{
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingHorizontal: 16
-      }}>
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingHorizontal: 16,
+        }}
+      >
         <Users size={48} color={themeColors.primary} />
-        <Text style={{
-          marginTop: 16,
-          textAlign: 'center',
-          fontSize: 18,
-          color: themeColors.primary
-        }}>{t.addressBook.noContacts}</Text>
-        <Text style={{
-          marginTop: 8,
-          textAlign: 'center',
-          fontSize: 14,
-          color: themeColors.textSecondary
-        }}>
+        <Text
+          style={{
+            marginTop: 16,
+            textAlign: 'center',
+            fontSize: 18,
+            color: themeColors.primary,
+          }}
+        >
+          {t.addressBook.noContacts}
+        </Text>
+        <Text
+          style={{
+            marginTop: 8,
+            textAlign: 'center',
+            fontSize: 14,
+            color: themeColors.textSecondary,
+          }}
+        >
           {t.addressBook.addFirstContact}
         </Text>
       </View>

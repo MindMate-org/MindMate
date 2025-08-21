@@ -29,21 +29,28 @@ const AddressBook = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background, paddingBottom: 20 }}>
       {/* 고정 영역들 */}
-      <View style={{ backgroundColor: themeColors.background, paddingHorizontal: 16, paddingBottom: 16, paddingTop: 16 }}>
+      <View
+        style={{
+          backgroundColor: themeColors.background,
+          paddingHorizontal: 16,
+          paddingBottom: 16,
+          paddingTop: 16,
+        }}
+      >
         <AddressBookSelfItem />
         <View style={{ marginTop: 16 }}>
-          <SearchInput 
-            value={searchText} 
-            onChange={setSearchText} 
-            placeholder={t.addressBook.searchPlaceholder} 
+          <SearchInput
+            value={searchText}
+            onChange={setSearchText}
+            placeholder={t.addressBook.searchPlaceholder}
           />
         </View>
       </View>
 
       {/* 스크롤 가능한 영역 - 최적화된 FlatList */}
       <View style={{ flex: 1, backgroundColor: themeColors.background }}>
-        <AddressBookList 
-          searchText={searchText} 
+        <AddressBookList
+          searchText={searchText}
           onRefresh={handleRefresh}
           isRefreshing={isRefreshing}
         />

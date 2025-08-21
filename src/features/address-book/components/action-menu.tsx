@@ -22,7 +22,7 @@ const ActionMenu = ({
   const handleDelete = async () => {
     const confirmed = await CustomAlertManager.confirm(
       isEnglish ? 'Delete Contact' : '연락처 삭제',
-      isEnglish ? 'Are you sure you want to delete this contact?' : '이 연락처를 삭제하시겠습니까?'
+      isEnglish ? 'Are you sure you want to delete this contact?' : '이 연락처를 삭제하시겠습니까?',
     );
     if (confirmed) {
       onDelete();
@@ -36,10 +36,10 @@ const ActionMenu = ({
   };
 
   return (
-    <Modal 
-      visible={isVisible} 
-      transparent={true} 
-      animationType="fade" 
+    <Modal
+      visible={isVisible}
+      transparent={true}
+      animationType="fade"
       onRequestClose={onClose}
       statusBarTranslucent={true}
     >
@@ -54,36 +54,39 @@ const ActionMenu = ({
         }}
         onPress={onClose}
       >
-        <Pressable
-          onPress={(e) => e.stopPropagation()}
-          onStartShouldSetResponder={() => true}
-        >
-          <View style={{
-            minWidth: 280,
-            borderRadius: 20,
-            backgroundColor: themeColors.surface,
-            shadowColor: themeColors.shadow,
-            shadowOffset: { width: 0, height: 12 },
-            shadowOpacity: isDark ? 0.5 : 0.25,
-            shadowRadius: 20,
-            elevation: 12,
-            overflow: 'hidden',
-          }}>
+        <Pressable onPress={(e) => e.stopPropagation()} onStartShouldSetResponder={() => true}>
+          <View
+            style={{
+              minWidth: 280,
+              borderRadius: 20,
+              backgroundColor: themeColors.surface,
+              shadowColor: themeColors.shadow,
+              shadowOffset: { width: 0, height: 12 },
+              shadowOpacity: isDark ? 0.5 : 0.25,
+              shadowRadius: 20,
+              elevation: 12,
+              overflow: 'hidden',
+            }}
+          >
             {/* 헤더 */}
-            <View style={{
-              backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
-              borderBottomWidth: 1,
-              borderBottomColor: themeColors.border,
-              paddingHorizontal: 20,
-              paddingVertical: 16,
-            }}>
-              <Text style={{
-                color: themeColors.textSecondary,
-                fontSize: 15,
-                fontWeight: '600',
-                textAlign: 'center',
-                letterSpacing: 0.3,
-              }}>
+            <View
+              style={{
+                backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+                borderBottomWidth: 1,
+                borderBottomColor: themeColors.border,
+                paddingHorizontal: 20,
+                paddingVertical: 16,
+              }}
+            >
+              <Text
+                style={{
+                  color: themeColors.textSecondary,
+                  fontSize: 15,
+                  fontWeight: '600',
+                  textAlign: 'center',
+                  letterSpacing: 0.3,
+                }}
+              >
                 {isEnglish ? 'Contact Management' : '연락처 관리'}
               </Text>
             </View>
@@ -101,46 +104,54 @@ const ActionMenu = ({
                 }}
                 activeOpacity={0.6}
               >
-                <View style={{
-                  marginRight: 16,
-                  width: 36,
-                  height: 36,
-                  borderRadius: 18,
-                  backgroundColor: themeColors.primary + '15',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
+                <View
+                  style={{
+                    marginRight: 16,
+                    width: 36,
+                    height: 36,
+                    borderRadius: 18,
+                    backgroundColor: themeColors.primary + '15',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
                   <Edit3 size={18} color={themeColors.primary} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{
-                    color: themeColors.text,
-                    fontSize: 16,
-                    fontWeight: '600',
-                    marginBottom: 2,
-                  }}>
+                  <Text
+                    style={{
+                      color: themeColors.text,
+                      fontSize: 16,
+                      fontWeight: '600',
+                      marginBottom: 2,
+                    }}
+                  >
                     {isEnglish ? 'Edit Contact' : '연락처 편집'}
                   </Text>
-                  <Text style={{
-                    color: themeColors.textSecondary,
-                    fontSize: 13,
-                  }}>
+                  <Text
+                    style={{
+                      color: themeColors.textSecondary,
+                      fontSize: 13,
+                    }}
+                  >
                     {isEnglish ? 'Modify contact information' : '연락처 정보를 수정합니다'}
                   </Text>
                 </View>
               </TouchableOpacity>
 
               {/* 구분선 */}
-              <View style={{
-                height: 1,
-                backgroundColor: themeColors.border,
-                marginHorizontal: 20,
-                marginVertical: 4,
-              }} />
+              <View
+                style={{
+                  height: 1,
+                  backgroundColor: themeColors.border,
+                  marginHorizontal: 20,
+                  marginVertical: 4,
+                }}
+              />
 
               {/* 삭제하기 */}
-              <TouchableOpacity 
-                onPress={handleDelete} 
+              <TouchableOpacity
+                onPress={handleDelete}
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -150,31 +161,39 @@ const ActionMenu = ({
                 }}
                 activeOpacity={0.6}
               >
-                <View style={{
-                  marginRight: 16,
-                  width: 36,
-                  height: 36,
-                  borderRadius: 18,
-                  backgroundColor: themeColors.error + '15',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
+                <View
+                  style={{
+                    marginRight: 16,
+                    width: 36,
+                    height: 36,
+                    borderRadius: 18,
+                    backgroundColor: themeColors.error + '15',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
                   <Trash2 size={18} color={themeColors.error} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{
-                    fontSize: 16,
-                    fontWeight: '600',
-                    color: themeColors.error,
-                    marginBottom: 2,
-                  }}>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: '600',
+                      color: themeColors.error,
+                      marginBottom: 2,
+                    }}
+                  >
                     {isEnglish ? 'Delete Contact' : '연락처 삭제'}
                   </Text>
-                  <Text style={{
-                    color: themeColors.textSecondary,
-                    fontSize: 13,
-                  }}>
-                    {isEnglish ? 'Permanently remove this contact' : '이 연락처를 영구적으로 삭제합니다'}
+                  <Text
+                    style={{
+                      color: themeColors.textSecondary,
+                      fontSize: 13,
+                    }}
+                  >
+                    {isEnglish
+                      ? 'Permanently remove this contact'
+                      : '이 연락처를 영구적으로 삭제합니다'}
                   </Text>
                 </View>
               </TouchableOpacity>

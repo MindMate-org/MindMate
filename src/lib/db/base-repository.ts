@@ -7,7 +7,14 @@
  */
 import { SQLiteDatabase } from 'expo-sqlite';
 import { z } from 'zod';
-import { BaseEntity, validateData, PaginatedResponse, PaginationParams, SortParams, FilterParams } from '../../types/api';
+import {
+  BaseEntity,
+  validateData,
+  PaginatedResponse,
+  PaginationParams,
+  SortParams,
+  FilterParams,
+} from '../../types/api';
 
 export interface QueryOptions {
   select?: string[];
@@ -30,7 +37,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
   protected db: SQLiteDatabase;
   protected tableName: string;
   protected schema: z.ZodSchema<T>;
-  
+
   // 쿼리 캐시 (간단한 LRU 캐시)
   private queryCache = new Map<string, { data: any; timestamp: number }>();
   private readonly CACHE_TTL = 5 * 60 * 1000; // 5분
@@ -51,20 +58,20 @@ export abstract class BaseRepository<T extends BaseEntity> {
    */
   async findById(id: number): Promise<T | null> {
     const cacheKey = `${this.tableName}:findById:${id}`;
-    const cached = this.getFromCache(cacheKey);
+    const cached = this.getFromCache<T>(cacheKey);
     if (cached) return cached;
 
     try {
       const result = await this.db.getFirstAsync<any>(
         `SELECT * FROM ${this.tableName} WHERE id = ? LIMIT 1`,
-        [id]
+        [id],
       );
 
       if (!result) return null;
 
       const validated = validateData(this.schema, result);
       this.setCache(cacheKey, validated);
-      
+
       return validated;
     } catch (error) {
       throw new Error(`Failed to find ${this.tableName} by id`);
@@ -77,13 +84,13 @@ export abstract class BaseRepository<T extends BaseEntity> {
   async find(options: QueryOptions = {}): Promise<T[]> {
     const query = this.buildSelectQuery(options);
     const cacheKey = `${this.tableName}:find:${JSON.stringify(options)}`;
-    const cached = this.getFromCache(cacheKey);
+    const cached = this.getFromCache<T[]>(cacheKey);
     if (cached) return cached;
 
     try {
       const results = await this.db.getAllAsync<any>(query.sql, query.params);
-      const validated = results.map(result => validateData(this.schema, result));
-      
+      const validated = results.map((result) => validateData(this.schema, result));
+
       this.setCache(cacheKey, validated);
       return validated;
     } catch (error) {
@@ -96,7 +103,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
    */
   async findPaginated(
     pagination: PaginationParams,
-    options: QueryOptions = {}
+    options: QueryOptions = {},
   ): Promise<PaginatedResponse<T>> {
     const { page, limit } = pagination;
     const offset = (page - 1) * limit;
@@ -104,8 +111,8 @@ export abstract class BaseRepository<T extends BaseEntity> {
     // 총 개수 조회
     const countQuery = this.buildCountQuery(options);
     const totalResult = await this.db.getFirstAsync<{ count: number }>(
-      countQuery.sql, 
-      countQuery.params
+      countQuery.sql,
+      countQuery.params,
     );
     const total = totalResult?.count || 0;
 
@@ -147,7 +154,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
 
     try {
       const result = await this.db.runAsync(sql, params);
-      
+
       if (!result.lastInsertRowId) {
         throw new Error('Failed to get insert ID');
       }
@@ -174,7 +181,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
     if (dataArray.length === 0) return [];
 
     const now = new Date().toISOString();
-    const insertDataArray = dataArray.map(data => ({
+    const insertDataArray = dataArray.map((data) => ({
       ...data,
       created_at: now,
       updated_at: now,
@@ -187,7 +194,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
         for (const insertData of insertDataArray) {
           const { sql, params } = this.buildInsertQuery(insertData);
           const result = await tx.runAsync(sql, params);
-          
+
           if (result.lastInsertRowId) {
             const created = await this.findById(result.lastInsertRowId);
             if (created) {
@@ -244,10 +251,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
    */
   async delete(id: number): Promise<boolean> {
     try {
-      const result = await this.db.runAsync(
-        `DELETE FROM ${this.tableName} WHERE id = ?`,
-        [id]
-      );
+      const result = await this.db.runAsync(`DELETE FROM ${this.tableName} WHERE id = ?`, [id]);
 
       // 캐시 무효화
       this.invalidateCache();
@@ -262,9 +266,9 @@ export abstract class BaseRepository<T extends BaseEntity> {
    * 소프트 삭제 (is_deleted 플래그 사용)
    */
   async softDelete(id: number): Promise<T> {
-    return this.update(id, { 
-      is_deleted: 1, 
-      deleted_at: new Date().toISOString() 
+    return this.update(id, {
+      is_deleted: 1,
+      deleted_at: new Date().toISOString(),
     } as any);
   }
 
@@ -274,7 +278,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
 
   private buildSelectQuery(options: QueryOptions): { sql: string; params: any[] } {
     const { select, where, orderBy, limit, offset, joins } = options;
-    
+
     let sql = `SELECT ${select ? select.join(', ') : '*'} FROM ${this.tableName}`;
     const params: any[] = [];
 
@@ -300,7 +304,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
           }
         }
       });
-      
+
       if (conditions.length > 0) {
         sql += ` WHERE ${conditions.join(' AND ')}`;
       }
@@ -308,7 +312,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
 
     // ORDER BY
     if (orderBy && orderBy.length > 0) {
-      const orders = orderBy.map(sort => `${sort.field} ${sort.direction.toUpperCase()}`);
+      const orders = orderBy.map((sort) => `${sort.field} ${sort.direction.toUpperCase()}`);
       sql += ` ORDER BY ${orders.join(', ')}`;
     }
 
@@ -316,7 +320,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
     if (limit) {
       sql += ` LIMIT ?`;
       params.push(limit);
-      
+
       if (offset) {
         sql += ` OFFSET ?`;
         params.push(offset);
@@ -328,7 +332,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
 
   private buildCountQuery(options: QueryOptions): { sql: string; params: any[] } {
     const { where, joins } = options;
-    
+
     let sql = `SELECT COUNT(*) as count FROM ${this.tableName}`;
     const params: any[] = [];
 
@@ -354,7 +358,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
           }
         }
       });
-      
+
       if (conditions.length > 0) {
         sql += ` WHERE ${conditions.join(' AND ')}`;
       }
@@ -369,17 +373,17 @@ export abstract class BaseRepository<T extends BaseEntity> {
     const params = Object.values(data);
 
     const sql = `INSERT INTO ${this.tableName} (${fields.join(', ')}) VALUES (${placeholders.join(', ')})`;
-    
+
     return { sql, params };
   }
 
   private buildUpdateQuery(id: number, data: any): { sql: string; params: any[] } {
     const fields = Object.keys(data);
-    const setClause = fields.map(field => `${field} = ?`).join(', ');
+    const setClause = fields.map((field) => `${field} = ?`).join(', ');
     const params = [...Object.values(data), id];
 
     const sql = `UPDATE ${this.tableName} SET ${setClause} WHERE id = ?`;
-    
+
     return { sql, params };
   }
 
@@ -389,11 +393,15 @@ export abstract class BaseRepository<T extends BaseEntity> {
 
   async transaction<R>(
     callback: (tx: SQLiteDatabase) => Promise<R>,
-    options?: TransactionOptions
+    options?: TransactionOptions,
   ): Promise<R> {
     try {
+      let result: R;
       // expo-sqlite의 트랜잭션 사용
-      return await this.db.withTransactionAsync(callback);
+      await this.db.withTransactionAsync(async () => {
+        result = await callback(this.db);
+      });
+      return result!;
     } catch (error) {
       throw error;
     }
@@ -421,7 +429,9 @@ export abstract class BaseRepository<T extends BaseEntity> {
     if (this.queryCache.size >= this.MAX_CACHE_SIZE) {
       // 가장 오래된 항목 제거
       const oldestKey = this.queryCache.keys().next().value;
-      this.queryCache.delete(oldestKey);
+      if (oldestKey) {
+        this.queryCache.delete(oldestKey);
+      }
     }
 
     this.queryCache.set(key, {
@@ -444,9 +454,9 @@ export abstract class BaseRepository<T extends BaseEntity> {
   async exists(id: number): Promise<boolean> {
     const result = await this.db.getFirstAsync<{ count: number }>(
       `SELECT COUNT(*) as count FROM ${this.tableName} WHERE id = ? LIMIT 1`,
-      [id]
+      [id],
     );
-    
+
     return (result?.count || 0) > 0;
   }
 
@@ -455,11 +465,8 @@ export abstract class BaseRepository<T extends BaseEntity> {
    */
   async count(where?: Record<string, any>): Promise<number> {
     const query = this.buildCountQuery({ where });
-    const result = await this.db.getFirstAsync<{ count: number }>(
-      query.sql,
-      query.params
-    );
-    
+    const result = await this.db.getFirstAsync<{ count: number }>(query.sql, query.params);
+
     return result?.count || 0;
   }
 
@@ -472,7 +479,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
     }
 
     await this.db.execAsync(`DELETE FROM ${this.tableName}`);
-    await this.db.execAsync(`DELETE FROM sqlite_sequence WHERE name = ?`, [this.tableName]);
+    await this.db.runAsync(`DELETE FROM sqlite_sequence WHERE name = ?`, [this.tableName]);
     this.invalidateCache();
   }
 

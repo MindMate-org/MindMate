@@ -66,9 +66,9 @@ const RoutineForm = () => {
   const handleCompleteRoutine = async () => {
     const confirmed = await CustomAlertManager.confirm(
       '루틴 완료',
-      '모든 하위 작업이 완료되었습니다! 루틴을 완료 처리하시겠습니까?'
+      '모든 하위 작업이 완료되었습니다! 루틴을 완료 처리하시겠습니까?',
     );
-    
+
     if (confirmed) {
       // TODO: 루틴 완료 처리 로직 (루틴 실행 기록 저장)
       CustomAlertManager.success('루틴을 성공적으로 완료했습니다.');
@@ -79,7 +79,7 @@ const RoutineForm = () => {
   const handleBack = async () => {
     const confirmed = await CustomAlertManager.confirm(
       t.locale.startsWith('en') ? 'Confirm' : '확인',
-      t.locale.startsWith('en') ? 'Do you want to exit the routine?' : '루틴을 나가시겠습니까?'
+      t.locale.startsWith('en') ? 'Do you want to exit the routine?' : '루틴을 나가시겠습니까?',
     );
     if (confirmed) {
       router.back();
@@ -97,23 +97,29 @@ const RoutineForm = () => {
     useCallback(() => {
       const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
       return () => subscription.remove();
-    }, [handleBackPress])
+    }, [handleBackPress]),
   );
 
   // 로딩 상태
   if (isLoading) {
     return (
-      <SafeAreaView style={{ 
-        flex: 1, 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        backgroundColor: themeColors.background 
-      }}>
+      <SafeAreaView
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: themeColors.background,
+        }}
+      >
         <ActivityIndicator size="large" color={themeColors.primary} />
-        <Text style={{ 
-          color: themeColors.textSecondary, 
-          marginTop: 16 
-        }}>루틴을 불러오는 중...</Text>
+        <Text
+          style={{
+            color: themeColors.textSecondary,
+            marginTop: 16,
+          }}
+        >
+          루틴을 불러오는 중...
+        </Text>
       </SafeAreaView>
     );
   }
@@ -121,25 +127,31 @@ const RoutineForm = () => {
   // 에러 상태
   if (error) {
     return (
-      <SafeAreaView style={{ 
-        flex: 1, 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        backgroundColor: themeColors.background,
-        paddingHorizontal: 16 
-      }}>
-        <Text style={{ 
-          marginBottom: 16, 
-          textAlign: 'center', 
-          color: '#EF4444' 
-        }}>{error}</Text>
-        <TouchableOpacity 
-          style={{ 
-            borderRadius: 8, 
-            backgroundColor: themeColors.primary, 
-            paddingHorizontal: 16, 
-            paddingVertical: 8 
-          }} 
+      <SafeAreaView
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: themeColors.background,
+          paddingHorizontal: 16,
+        }}
+      >
+        <Text
+          style={{
+            marginBottom: 16,
+            textAlign: 'center',
+            color: '#EF4444',
+          }}
+        >
+          {error}
+        </Text>
+        <TouchableOpacity
+          style={{
+            borderRadius: 8,
+            backgroundColor: themeColors.primary,
+            paddingHorizontal: 16,
+            paddingVertical: 8,
+          }}
           onPress={refetch}
         >
           <Text style={{ color: themeColors.primaryText }}>{t.common.retry}</Text>
@@ -151,12 +163,14 @@ const RoutineForm = () => {
   // 루틴 데이터가 없는 경우
   if (!routine) {
     return (
-      <SafeAreaView style={{ 
-        flex: 1, 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        backgroundColor: themeColors.background 
-      }}>
+      <SafeAreaView
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: themeColors.background,
+        }}
+      >
         <Text style={{ color: themeColors.textSecondary }}>루틴을 찾을 수 없습니다.</Text>
       </SafeAreaView>
     );
@@ -189,30 +203,38 @@ const RoutineForm = () => {
   const totalCount = subTaskChecks.length;
 
   return (
-    <SafeAreaView style={{ 
-      flex: 1, 
-      backgroundColor: themeColors.background 
-    }}>
-      {/* 헤더 */}
-      <View style={{
-        flexDirection: 'row',
-        alignItems: 'center',
+    <SafeAreaView
+      style={{
+        flex: 1,
         backgroundColor: themeColors.background,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        marginTop: 32,
-      }}>
-        <TouchableOpacity 
-          onPress={handleBack} 
+      }}
+    >
+      {/* 헤더 */}
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: themeColors.background,
+          paddingHorizontal: 16,
+          paddingVertical: 12,
+          marginTop: 32,
+        }}
+      >
+        <TouchableOpacity
+          onPress={handleBack}
           style={{ flexDirection: 'row', alignItems: 'center' }}
         >
           <ArrowLeft size={24} color={themeColors.primary} />
-          <Text style={{
-            marginLeft: 8,
-            fontSize: 18,
-            fontWeight: '500',
-            color: themeColors.primary,
-          }}>{routine?.name || t.routine.title}</Text>
+          <Text
+            style={{
+              marginLeft: 8,
+              fontSize: 18,
+              fontWeight: '500',
+              color: themeColors.primary,
+            }}
+          >
+            {routine?.name || t.routine.title}
+          </Text>
         </TouchableOpacity>
       </View>
       <ScrollView
@@ -220,53 +242,69 @@ const RoutineForm = () => {
         contentContainerStyle={{ alignItems: 'center', paddingBottom: 32 }}
       >
         {/* 카드 */}
-        <View style={{
-          width: '92%',
-          borderRadius: 16,
-          backgroundColor: themeColors.surface,
-          paddingHorizontal: 24,
-          paddingVertical: 24,
-          shadowColor: themeColors.shadow,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: isDark ? 0.3 : 0.1,
-          shadowRadius: 8,
-          elevation: 8,
-        }}>
+        <View
+          style={{
+            width: '92%',
+            borderRadius: 16,
+            backgroundColor: themeColors.surface,
+            paddingHorizontal: 24,
+            paddingVertical: 24,
+            shadowColor: themeColors.shadow,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: isDark ? 0.3 : 0.1,
+            shadowRadius: 8,
+            elevation: 8,
+          }}
+        >
           {/* 제목/이미지 */}
-          <View style={{
-            marginBottom: 8,
-            flexDirection: 'row',
-            alignItems: 'flex-start',
-            justifyContent: 'space-between',
-          }}>
+          <View
+            style={{
+              marginBottom: 8,
+              flexDirection: 'row',
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+            }}
+          >
             <View style={{ flex: 1 }}>
-              <Text style={{
-                marginBottom: 4,
-                fontSize: 22,
-                fontWeight: '800',
-                color: themeColors.text,
-              }}>{routine.name}</Text>
-              <View style={{
-                marginBottom: 8,
-                height: 8,
-                width: 64,
-                borderRadius: 4,
-                backgroundColor: themeColors.accent,
-              }} />
-              <Text style={{
-                marginBottom: 4,
-                fontSize: 14,
-                color: themeColors.primary,
-              }}>
+              <Text
+                style={{
+                  marginBottom: 4,
+                  fontSize: 22,
+                  fontWeight: '800',
+                  color: themeColors.text,
+                }}
+              >
+                {routine.name}
+              </Text>
+              <View
+                style={{
+                  marginBottom: 8,
+                  height: 8,
+                  width: 64,
+                  borderRadius: 4,
+                  backgroundColor: themeColors.accent,
+                }}
+              />
+              <Text
+                style={{
+                  marginBottom: 4,
+                  fontSize: 14,
+                  color: themeColors.primary,
+                }}
+              >
                 {routine.createdAt && routine.deadline
                   ? `${routine.createdAt.slice(0, 10)} ~ ${routine.deadline}`
                   : ''}
               </Text>
-              <Text style={{
-                marginBottom: 4,
-                fontSize: 14,
-                color: themeColors.primary,
-              }}>{routine.repeatCycle} 30분</Text>
+              <Text
+                style={{
+                  marginBottom: 4,
+                  fontSize: 14,
+                  color: themeColors.primary,
+                }}
+              >
+                {routine.repeatCycle} 30분
+              </Text>
             </View>
             {routine.imageUrl && (
               <Image
@@ -278,94 +316,121 @@ const RoutineForm = () => {
           </View>
 
           {/* 상세 */}
-          <Text style={{
-            marginBottom: 4,
-            marginTop: 8,
-            fontSize: 15,
-            fontWeight: 'bold',
-            color: themeColors.primary,
-          }}>상세</Text>
-          <View style={{
-            marginBottom: 12,
-            borderRadius: 12,
-            backgroundColor: themeColors.backgroundSecondary,
-            paddingHorizontal: 16,
-            paddingVertical: 12,
-            shadowColor: themeColors.shadow,
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: isDark ? 0.2 : 0.1,
-            shadowRadius: 2,
-            elevation: 2,
-          }}>
-            <Text style={{
+          <Text
+            style={{
+              marginBottom: 4,
+              marginTop: 8,
               fontSize: 15,
-              color: themeColors.text,
-            }}>{routine.details || '설명이 없습니다.'}</Text>
+              fontWeight: 'bold',
+              color: themeColors.primary,
+            }}
+          >
+            상세
+          </Text>
+          <View
+            style={{
+              marginBottom: 12,
+              borderRadius: 12,
+              backgroundColor: themeColors.backgroundSecondary,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+              shadowColor: themeColors.shadow,
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: isDark ? 0.2 : 0.1,
+              shadowRadius: 2,
+              elevation: 2,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 15,
+                color: themeColors.text,
+              }}
+            >
+              {routine.details || '설명이 없습니다.'}
+            </Text>
           </View>
 
           {/* 알림 */}
-          <View style={{
-            marginBottom: 16,
-            flexDirection: 'row',
-            alignItems: 'center',
-            borderRadius: 12,
-            backgroundColor: themeColors.backgroundSecondary,
-            paddingHorizontal: 16,
-            paddingVertical: 12,
-            shadowColor: themeColors.shadow,
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: isDark ? 0.2 : 0.1,
-            shadowRadius: 2,
-            elevation: 2,
-          }}>
+          <View
+            style={{
+              marginBottom: 16,
+              flexDirection: 'row',
+              alignItems: 'center',
+              borderRadius: 12,
+              backgroundColor: themeColors.backgroundSecondary,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+              shadowColor: themeColors.shadow,
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: isDark ? 0.2 : 0.1,
+              shadowRadius: 2,
+              elevation: 2,
+            }}
+          >
             <Ionicons
               name="alarm-outline"
               size={20}
               color={routine.alarmTime ? '#FF4848' : themeColors.textSecondary}
               style={{ marginRight: 8 }}
             />
-            <Text style={{
-              fontSize: 16,
-              color: themeColors.text,
-            }}>
+            <Text
+              style={{
+                fontSize: 16,
+                color: themeColors.text,
+              }}
+            >
               {routine.alarmTime ? routine.alarmTime.replace(':', ' : ') : '알림 없음'}
             </Text>
           </View>
 
           {/* 하위 작업 */}
-          <Text style={{
-            marginBottom: 8,
-            fontSize: 15,
-            fontWeight: 'bold',
-            color: themeColors.primary,
-          }}>하위 작업</Text>
+          <Text
+            style={{
+              marginBottom: 8,
+              fontSize: 15,
+              fontWeight: 'bold',
+              color: themeColors.primary,
+            }}
+          >
+            하위 작업
+          </Text>
           <View style={{ gap: 8 }}>
             {routine.subTasks.map((task, index) => (
-              <View key={task.id} style={{
-                marginBottom: 8,
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
-                <View style={{
-                  flex: 1,
+              <View
+                key={task.id}
+                style={{
+                  marginBottom: 8,
                   flexDirection: 'row',
                   alignItems: 'center',
-                  justifyContent: 'space-between',
-                  borderRadius: 12,
-                  backgroundColor: themeColors.backgroundSecondary,
-                  paddingHorizontal: 16,
-                  paddingVertical: 12,
-                  shadowColor: themeColors.shadow,
-                  shadowOffset: { width: 0, height: 1 },
-                  shadowOpacity: isDark ? 0.2 : 0.1,
-                  shadowRadius: 2,
-                  elevation: 2,
-                }}>
-                  <Text style={{
-                    fontSize: 16,
-                    fontWeight: 'bold',
-                    color: themeColors.text,
-                  }}>{task.title}</Text>
+                }}
+              >
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    borderRadius: 12,
+                    backgroundColor: themeColors.backgroundSecondary,
+                    paddingHorizontal: 16,
+                    paddingVertical: 12,
+                    shadowColor: themeColors.shadow,
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: isDark ? 0.2 : 0.1,
+                    shadowRadius: 2,
+                    elevation: 2,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                      color: themeColors.text,
+                    }}
+                  >
+                    {task.title}
+                  </Text>
                   <TouchableOpacity
                     onPress={() => handleSubTaskToggle(index, !subTaskChecks[index])}
                   >

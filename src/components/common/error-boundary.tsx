@@ -68,32 +68,38 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({ error, retry }) =>
   const isDev = __DEV__;
 
   return (
-    <View style={{
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: 20,
-      backgroundColor: '#f8fafc',
-    }}>
+    <View
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+        backgroundColor: '#f8fafc',
+      }}
+    >
       <AlertTriangle size={64} color="#ef4444" />
-      
-      <Text style={{
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#1f2937',
-        marginTop: 16,
-        textAlign: 'center',
-      }}>
+
+      <Text
+        style={{
+          fontSize: 24,
+          fontWeight: 'bold',
+          color: '#1f2937',
+          marginTop: 16,
+          textAlign: 'center',
+        }}
+      >
         앱에 문제가 발생했습니다
       </Text>
-      
-      <Text style={{
-        fontSize: 16,
-        color: '#6b7280',
-        marginTop: 8,
-        textAlign: 'center',
-        lineHeight: 24,
-      }}>
+
+      <Text
+        style={{
+          fontSize: 16,
+          color: '#6b7280',
+          marginTop: 8,
+          textAlign: 'center',
+          lineHeight: 24,
+        }}
+      >
         예상치 못한 오류가 발생했습니다.{'\n'}
         잠시 후 다시 시도해주세요.
       </Text>
@@ -111,19 +117,21 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({ error, retry }) =>
         }}
       >
         <RefreshCw size={20} color="#ffffff" />
-        <Text style={{
-          color: '#ffffff',
-          fontSize: 16,
-          fontWeight: '600',
-          marginLeft: 8,
-        }}>
+        <Text
+          style={{
+            color: '#ffffff',
+            fontSize: 16,
+            fontWeight: '600',
+            marginLeft: 8,
+          }}
+        >
           다시 시도
         </Text>
       </TouchableOpacity>
 
       {/* 개발 환경에서만 에러 상세 정보 표시 */}
       {isDev && error && (
-        <ScrollView 
+        <ScrollView
           style={{
             maxHeight: 200,
             width: '100%',
@@ -133,20 +141,24 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({ error, retry }) =>
             padding: 12,
           }}
         >
-          <Text style={{
-            color: '#ef4444',
-            fontSize: 14,
-            fontFamily: 'monospace',
-          }}>
+          <Text
+            style={{
+              color: '#ef4444',
+              fontSize: 14,
+              fontFamily: 'monospace',
+            }}
+          >
             {error.toString()}
           </Text>
           {error.stack && (
-            <Text style={{
-              color: '#9ca3af',
-              fontSize: 12,
-              fontFamily: 'monospace',
-              marginTop: 8,
-            }}>
+            <Text
+              style={{
+                color: '#9ca3af',
+                fontSize: 12,
+                fontFamily: 'monospace',
+                marginTop: 8,
+              }}
+            >
               {error.stack}
             </Text>
           )}
@@ -164,21 +176,25 @@ export const FeatureErrorBoundary: React.FC<{
   return (
     <ErrorBoundary
       fallback={(error, retry) => (
-        <View style={{
-          padding: 20,
-          alignItems: 'center',
-          backgroundColor: '#fef2f2',
-          borderRadius: 8,
-          margin: 16,
-        }}>
+        <View
+          style={{
+            padding: 20,
+            alignItems: 'center',
+            backgroundColor: '#fef2f2',
+            borderRadius: 8,
+            margin: 16,
+          }}
+        >
           <AlertTriangle size={40} color="#ef4444" />
-          <Text style={{
-            fontSize: 16,
-            fontWeight: '600',
-            color: '#dc2626',
-            marginTop: 8,
-            textAlign: 'center',
-          }}>
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: '600',
+              color: '#dc2626',
+              marginTop: 8,
+              textAlign: 'center',
+            }}
+          >
             {featureName} 기능에 문제가 발생했습니다
           </Text>
           <TouchableOpacity
@@ -195,8 +211,7 @@ export const FeatureErrorBoundary: React.FC<{
           </TouchableOpacity>
         </View>
       )}
-      onError={(error) => {
-        }}
+      onError={(error) => {}}
     >
       {children}
     </ErrorBoundary>

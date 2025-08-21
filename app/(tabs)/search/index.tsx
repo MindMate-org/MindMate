@@ -51,7 +51,8 @@ const HomeScreen = () => {
 
     return items.filter((item) => {
       // 전체인 경우 항상 통과, 특정 카테고리인 경우 일치 여부 검사
-      const matchesCategory = selectCategory === t.common.categories.all || item.category === selectCategory;
+      const matchesCategory =
+        selectCategory === t.common.categories.all || item.category === selectCategory;
 
       // search가 빈 문자열이면 항상 통과, 아니면 포함 여부 검사
       const matchesSearch = !normalizedSearch || item.name.toLowerCase().includes(normalizedSearch);
@@ -69,24 +70,26 @@ const HomeScreen = () => {
 
   const getBackgroundColor = (color: string) => {
     const colorMap: { [key: string]: string } = {
-      'paleCobalt': '#576BCD',
-      'foggyBlue': '#9BB5D6',
-      'paleYellow': '#F5E6A8',
-      'pink': '#F4A6CD',
-      'teal': '#14b8a6',
+      paleCobalt: '#576BCD',
+      foggyBlue: '#9BB5D6',
+      paleYellow: '#F5E6A8',
+      pink: '#F4A6CD',
+      teal: '#14b8a6',
     };
     return colorMap[color] || '#576BCD';
   };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
-      <View style={{ 
-        flex: 1, 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        padding: 16,
-        paddingTop: 24 
-      }}>
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 16,
+          paddingTop: 24,
+        }}
+      >
         <View className="mb-4 w-full">
           <SearchInput
             value={input}
@@ -96,13 +99,15 @@ const HomeScreen = () => {
           />
         </View>
 
-        <View style={{ 
-          marginBottom: 32, 
-          width: '100%', 
-          flexDirection: 'row', 
-          justifyContent: 'space-between', 
-          gap: 4 
-        }}>
+        <View
+          style={{
+            marginBottom: 32,
+            width: '100%',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            gap: 4,
+          }}
+        >
           {searchCategories.map((category, index) => {
             const isSelected = selectCategory === category.label;
             return (
@@ -132,11 +137,13 @@ const HomeScreen = () => {
                   }}
                   isSelected={isSelected}
                 />
-                <Text style={{
-                  fontSize: 12,
-                  fontWeight: '500',
-                  color: themeColors.text,
-                }}>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontWeight: '500',
+                    color: themeColors.text,
+                  }}
+                >
                   {category.label}
                 </Text>
               </TouchableOpacity>
@@ -146,24 +153,36 @@ const HomeScreen = () => {
 
         <ScrollView className="w-full">
           {displayItems.length === 0 && (
-            <View style={{
-              marginTop: 40,
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}>
-              <View style={{ marginBottom: 12 }}>{Icon && <Icon size={48} color={themeColors.textSecondary} />}</View>
-              <Text style={{
-                marginBottom: 8,
-                fontSize: 18,
-                color: themeColors.text,
-                textAlign: 'center'
-              }}>{t.search.noItemsYet}</Text>
-              <Text style={{
-                marginBottom: 12,
-                fontSize: 14,
-                color: themeColors.textSecondary,
-                textAlign: 'center'
-              }}>{t.search.registerFirstItem}</Text>
+            <View
+              style={{
+                marginTop: 40,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <View style={{ marginBottom: 12 }}>
+                {Icon && <Icon size={48} color={themeColors.textSecondary} />}
+              </View>
+              <Text
+                style={{
+                  marginBottom: 8,
+                  fontSize: 18,
+                  color: themeColors.text,
+                  textAlign: 'center',
+                }}
+              >
+                {t.search.noItemsYet}
+              </Text>
+              <Text
+                style={{
+                  marginBottom: 12,
+                  fontSize: 14,
+                  color: themeColors.textSecondary,
+                  textAlign: 'center',
+                }}
+              >
+                {t.search.registerFirstItem}
+              </Text>
               <Button onPress={handleCreateItem} className="w-3/5">
                 <Text className="text-white">{t.search.registerItem}</Text>
               </Button>
@@ -202,11 +221,15 @@ const HomeScreen = () => {
           onPress={() => handleCreateItem()}
           activeOpacity={0.8}
         >
-          <Text style={{
-            fontSize: 28,
-            fontWeight: '300',
-            color: themeColors.primaryText,
-          }}>+</Text>
+          <Text
+            style={{
+              fontSize: 28,
+              fontWeight: '300',
+              color: themeColors.primaryText,
+            }}
+          >
+            +
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

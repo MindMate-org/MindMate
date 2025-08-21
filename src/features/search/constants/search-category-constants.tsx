@@ -3,7 +3,7 @@ import { getTranslations, SupportedLanguage } from '../../../lib/i18n';
 
 export const getSearchCategories = (language: SupportedLanguage) => {
   const t = getTranslations(language);
-  
+
   return [
     { icon: Package, label: t.common.categories.all, color: 'paleCobalt' },
     { icon: Key, label: t.common.categories.personal, color: 'foggyBlue' },

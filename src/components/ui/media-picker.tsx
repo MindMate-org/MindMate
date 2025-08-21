@@ -121,7 +121,11 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
         {isLoading ? (
           <ActivityIndicator size="small" color={themeColors.primaryText} />
         ) : (
-          <Plus color={themeColors.primaryText} size={variant === 'compact' ? 16 : 20} strokeWidth={3} />
+          <Plus
+            color={themeColors.primaryText}
+            size={variant === 'compact' ? 16 : 20}
+            strokeWidth={3}
+          />
         )}
       </TouchableOpacity>
     );
@@ -168,30 +172,39 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
   return (
     <View style={{ width: '100%' }}>
       {label && (
-        <Text style={{
-          marginBottom: 8,
-          fontSize: 14,
-          fontWeight: '500',
-          color: themeColors.text,
-        }}>{label}</Text>
+        <Text
+          style={{
+            marginBottom: 8,
+            fontSize: 14,
+            fontWeight: '500',
+            color: themeColors.text,
+          }}
+        >
+          {label}
+        </Text>
       )}
 
-      <View style={{
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 8,
-      }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          gap: 8,
+        }}
+      >
         {mediaList.map((media, index) => renderMediaItem(media, index))}
         {renderAddButton()}
       </View>
 
       {maxCount > 1 && (
-        <Text style={{
-          marginTop: 8,
-          fontSize: 12,
-          color: themeColors.textSecondary,
-        }}>
-          {mediaList.length}/{maxCount}{t.locale.startsWith('en') ? ' selected' : '개 선택됨'}
+        <Text
+          style={{
+            marginTop: 8,
+            fontSize: 12,
+            color: themeColors.textSecondary,
+          }}
+        >
+          {mediaList.length}/{maxCount}
+          {t.locale.startsWith('en') ? ' selected' : '개 선택됨'}
         </Text>
       )}
     </View>

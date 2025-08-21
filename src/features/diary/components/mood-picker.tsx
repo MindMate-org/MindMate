@@ -26,21 +26,27 @@ type MoodPickerProps = {
 const MoodPicker = ({ visible, onClose, onSelect }: MoodPickerProps) => {
   const { theme: themeColors } = useThemeColors();
   const { t } = useI18n();
-  
+
   return (
     <BaseModal visible={visible} onClose={onClose} height="50%" preventOutsideTouch>
-      <Text style={{
-        marginBottom: 16,
-        textAlign: 'center',
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: themeColors.text,
-      }}>{t.locale.startsWith('en') ? 'Select your mood today' : '오늘의 기분을 선택하세요'}</Text>
-      <View style={{
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-around',
-      }}>
+      <Text
+        style={{
+          marginBottom: 16,
+          textAlign: 'center',
+          fontSize: 18,
+          fontWeight: 'bold',
+          color: themeColors.text,
+        }}
+      >
+        {t.locale.startsWith('en') ? 'Select your mood today' : '오늘의 기분을 선택하세요'}
+      </Text>
+      <View
+        style={{
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          justifyContent: 'space-around',
+        }}
+      >
         {getMoodOptions(t.locale).map((mood) => (
           <TouchableOpacity
             key={mood.value}
@@ -52,16 +58,24 @@ const MoodPicker = ({ visible, onClose, onSelect }: MoodPickerProps) => {
             }}
           >
             <Text style={{ fontSize: 36 }}>{mood.emoji}</Text>
-            <Text style={{
-              marginTop: 8,
-              fontSize: 16,
-              color: themeColors.text,
-            }}>{mood.label}</Text>
-            <Text style={{
-              textAlign: 'center',
-              fontSize: 12,
-              color: themeColors.textSecondary,
-            }}>{mood.description}</Text>
+            <Text
+              style={{
+                marginTop: 8,
+                fontSize: 16,
+                color: themeColors.text,
+              }}
+            >
+              {mood.label}
+            </Text>
+            <Text
+              style={{
+                textAlign: 'center',
+                fontSize: 12,
+                color: themeColors.textSecondary,
+              }}
+            >
+              {mood.description}
+            </Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -83,10 +97,14 @@ const MoodDisplay = ({ mood }: { mood: MoodType }) => {
   return (
     <>
       <Text style={{ fontSize: 20 }}>{selectedMood?.emoji}</Text>
-      <Text style={{
-        fontSize: 14,
-        color: themeColors.text,
-      }}>{selectedMood?.label}</Text>
+      <Text
+        style={{
+          fontSize: 14,
+          color: themeColors.text,
+        }}
+      >
+        {selectedMood?.label}
+      </Text>
     </>
   );
 };
@@ -102,10 +120,14 @@ const EmptyMoodDisplay = () => {
   return (
     <>
       <Smile size={20} color={themeColors.primary} />
-      <Text style={{
-        fontSize: 14,
-        color: themeColors.text,
-      }}>{t.locale.startsWith('en') ? "Today's Mood" : '오늘의 기분'}</Text>
+      <Text
+        style={{
+          fontSize: 14,
+          color: themeColors.text,
+        }}
+      >
+        {t.locale.startsWith('en') ? "Today's Mood" : '오늘의 기분'}
+      </Text>
     </>
   );
 };

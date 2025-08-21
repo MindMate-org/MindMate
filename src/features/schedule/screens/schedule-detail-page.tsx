@@ -103,7 +103,6 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
 
   const handleBack = useCallback(() => router.back(), [router]);
 
-
   if (isLoading) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
@@ -127,25 +126,31 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
     <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
       {/* 헤더 */}
       <FadeInView>
-        <View style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          backgroundColor: themeColors.surface,
-          paddingHorizontal: 16,
-          paddingVertical: 16,
-          marginTop: 32,
-          borderBottomWidth: 1,
-          borderBottomColor: themeColors.border,
-        }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            backgroundColor: themeColors.surface,
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+            marginTop: 32,
+            borderBottomWidth: 1,
+            borderBottomColor: themeColors.border,
+          }}
+        >
           <TouchableOpacity onPress={handleBack} style={{ borderRadius: 20, padding: 8 }}>
             <ChevronLeft size={24} color={themeColors.primary} />
           </TouchableOpacity>
-          <Text style={{
-            fontSize: 18,
-            fontWeight: 'bold',
-            color: themeColors.text,
-          }}>{t.schedule.scheduleDetail}</Text>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: 'bold',
+              color: themeColors.text,
+            }}
+          >
+            {t.schedule.scheduleDetail}
+          </Text>
           <TouchableOpacity
             onPress={() => setShowMenu(!showMenu)}
             style={{
@@ -161,21 +166,23 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
 
       {/* 메뉴 */}
       {showMenu && (
-        <FadeInView style={{
-          position: 'absolute',
-          right: 16,
-          top: 80,
-          zIndex: 10,
-          width: 160,
-          borderRadius: 12,
-          backgroundColor: themeColors.surface,
-          padding: 8,
-          shadowColor: themeColors.shadow,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: isDark ? 0.3 : 0.1,
-          shadowRadius: 8,
-          elevation: 8,
-        }}>
+        <FadeInView
+          style={{
+            position: 'absolute',
+            right: 16,
+            top: 80,
+            zIndex: 10,
+            width: 160,
+            borderRadius: 12,
+            backgroundColor: themeColors.surface,
+            padding: 8,
+            shadowColor: themeColors.shadow,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: isDark ? 0.3 : 0.1,
+            shadowRadius: 8,
+            elevation: 8,
+          }}
+        >
           <TouchableOpacity
             style={{
               flexDirection: 'row',
@@ -190,12 +197,16 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
             }}
           >
             <Edit3 size={18} color={themeColors.primary} />
-            <Text style={{
-              marginLeft: 12,
-              fontSize: 14,
-              fontWeight: '500',
-              color: themeColors.text,
-            }}>{t.common.edit}</Text>
+            <Text
+              style={{
+                marginLeft: 12,
+                fontSize: 14,
+                fontWeight: '500',
+                color: themeColors.text,
+              }}
+            >
+              {t.common.edit}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={{
@@ -211,12 +222,16 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
             }}
           >
             <Trash2 size={18} color={themeColors.error} />
-            <Text style={{
-              marginLeft: 12,
-              fontSize: 14,
-              fontWeight: '500',
-              color: themeColors.error,
-            }}>{t.common.delete}</Text>
+            <Text
+              style={{
+                marginLeft: 12,
+                fontSize: 14,
+                fontWeight: '500',
+                color: themeColors.error,
+              }}
+            >
+              {t.common.delete}
+            </Text>
           </TouchableOpacity>
         </FadeInView>
       )}
@@ -224,38 +239,56 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 40 }}>
         {/* 날짜 헤더 */}
         <FadeInView delay={100} style={{ marginHorizontal: 16, marginTop: 16 }}>
-          <View style={{
-            backgroundColor: themeColors.surface,
-            borderRadius: 12,
-            padding: 16,
-            shadowColor: themeColors.shadow,
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: isDark ? 0.3 : 0.1,
-            shadowRadius: 4,
-            elevation: 3,
-            marginBottom: 16,
-          }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <View
+            style={{
+              backgroundColor: themeColors.surface,
+              borderRadius: 12,
+              padding: 16,
+              shadowColor: themeColors.shadow,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: isDark ? 0.3 : 0.1,
+              shadowRadius: 4,
+              elevation: 3,
+              marginBottom: 16,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
               <View>
                 <Text style={{ color: themeColors.textSecondary, fontSize: 14 }}>
                   {formatDateTimeString(schedule.time, t.locale.startsWith('en') ? 'en' : 'ko')}
                 </Text>
-                <View style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginTop: 8,
-                  backgroundColor: schedule.is_completed === 1 ? themeColors.success + '20' : themeColors.warning + '20',
-                  paddingHorizontal: 12,
-                  paddingVertical: 6,
-                  borderRadius: 20,
-                  alignSelf: 'flex-start',
-                }}>
-                  <Text style={{
-                    color: schedule.is_completed === 1 ? themeColors.success : themeColors.warning,
-                    fontSize: 12,
-                    fontWeight: '600',
-                  }}>
-                    {schedule.is_completed === 1 ? t.schedule.completedStatus : t.schedule.pendingStatus}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginTop: 8,
+                    backgroundColor:
+                      schedule.is_completed === 1
+                        ? themeColors.success + '20'
+                        : themeColors.warning + '20',
+                    paddingHorizontal: 12,
+                    paddingVertical: 6,
+                    borderRadius: 20,
+                    alignSelf: 'flex-start',
+                  }}
+                >
+                  <Text
+                    style={{
+                      color:
+                        schedule.is_completed === 1 ? themeColors.success : themeColors.warning,
+                      fontSize: 12,
+                      fontWeight: '600',
+                    }}
+                  >
+                    {schedule.is_completed === 1
+                      ? t.schedule.completedStatus
+                      : t.schedule.pendingStatus}
                   </Text>
                 </View>
               </View>
@@ -265,74 +298,90 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
 
         {/* 메인 콘텐츠 카드 */}
         <FadeInView delay={200} style={{ marginHorizontal: 16 }}>
-          <View style={{
-            borderRadius: 12,
-            padding: 24,
-            backgroundColor: themeColors.surface,
-            shadowColor: themeColors.shadow,
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: isDark ? 0.3 : 0.15,
-            shadowRadius: 12,
-            elevation: 8,
-          }}>
+          <View
+            style={{
+              borderRadius: 12,
+              padding: 24,
+              backgroundColor: themeColors.surface,
+              shadowColor: themeColors.shadow,
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: isDark ? 0.3 : 0.15,
+              shadowRadius: 12,
+              elevation: 8,
+            }}
+          >
             {/* 제목 */}
-            <Text style={{
-              fontSize: 24,
-              fontWeight: 'bold',
-              color: themeColors.text,
-              marginBottom: 24,
-              lineHeight: 32,
-            }}>
+            <Text
+              style={{
+                fontSize: 24,
+                fontWeight: 'bold',
+                color: themeColors.text,
+                marginBottom: 24,
+                lineHeight: 32,
+              }}
+            >
               {schedule.title}
             </Text>
 
             {/* 내용 */}
-            <Text style={{
-              fontSize: 16,
-              color: themeColors.textSecondary,
-              lineHeight: 24,
-              marginBottom: 24,
-            }}>
+            <Text
+              style={{
+                fontSize: 16,
+                color: themeColors.textSecondary,
+                lineHeight: 24,
+                marginBottom: 24,
+              }}
+            >
               {schedule.contents || t.schedule.noContent}
             </Text>
 
             {/* 위치 및 동행 정보 */}
             {(schedule.location || schedule.companion) && (
-              <View style={{
-                marginBottom: 24,
-                paddingTop: 16,
-                borderTopWidth: 1,
-                borderTopColor: themeColors.border,
-              }}>
+              <View
+                style={{
+                  marginBottom: 24,
+                  paddingTop: 16,
+                  borderTopWidth: 1,
+                  borderTopColor: themeColors.border,
+                }}
+              >
                 {schedule.location && (
-                  <View style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginBottom: 12,
-                  }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginBottom: 12,
+                    }}
+                  >
                     <MapPin size={18} color={themeColors.primary} />
-                    <Text style={{
-                      marginLeft: 12,
-                      fontSize: 14,
-                      color: themeColors.text,
-                      fontWeight: '500',
-                    }}>
+                    <Text
+                      style={{
+                        marginLeft: 12,
+                        fontSize: 14,
+                        color: themeColors.text,
+                        fontWeight: '500',
+                      }}
+                    >
                       {schedule.location}
                     </Text>
                   </View>
                 )}
                 {schedule.companion && (
-                  <View style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                  }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}
+                  >
                     <Text style={{ fontSize: 18 }}>👥</Text>
-                    <Text style={{
-                      marginLeft: 12,
-                      fontSize: 14,
-                      color: themeColors.text,
-                      fontWeight: '500',
-                    }}>
+                    <Text
+                      style={{
+                        marginLeft: 12,
+                        fontSize: 14,
+                        color: themeColors.text,
+                        fontWeight: '500',
+                      }}
+                    >
                       {schedule.companion}
                     </Text>
                   </View>
@@ -344,11 +393,15 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
             {media.length > 0 && (
               <View style={{ marginTop: 16 }}>
                 <View style={{ marginBottom: 12 }}>
-                  <Text style={{
-                    fontSize: 14,
-                    fontWeight: '600',
-                    color: themeColors.textSecondary,
-                  }}>{t.schedule.attachedMedia}</Text>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontWeight: '600',
+                      color: themeColors.textSecondary,
+                    }}
+                  >
+                    {t.schedule.attachedMedia}
+                  </Text>
                 </View>
                 <MediaSlider
                   media={media.map((m) => ({
@@ -363,7 +416,7 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
           </View>
         </FadeInView>
       </ScrollView>
-      
+
       {/* 메뉴 닫기용 오버레이 */}
       {showMenu && (
         <Pressable

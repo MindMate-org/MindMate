@@ -47,15 +47,19 @@ export const pickMedia = async () => {
   const { language } = useGlobalStore.getState();
   const t = getTranslations(language);
   const isEnglish = language.startsWith('en');
-  
+
   const options = [
     isEnglish ? 'Take Photo' : '카메라로 촬영',
     isEnglish ? 'Choose from Gallery' : '갤러리에서 선택',
-    isEnglish ? 'Cancel' : '취소'
+    isEnglish ? 'Cancel' : '취소',
   ];
 
   if (status !== 'granted') {
-    CustomAlertManager.error(isEnglish ? 'Please allow gallery access in system settings.' : '시스템 설정에서 갤러리 접근 권한을 허용해 주세요.');
+    CustomAlertManager.error(
+      isEnglish
+        ? 'Please allow gallery access in system settings.'
+        : '시스템 설정에서 갤러리 접근 권한을 허용해 주세요.',
+    );
     return;
   }
   return new Promise((resolve) => {
@@ -63,49 +67,50 @@ export const pickMedia = async () => {
       isEnglish ? 'Add Media' : '미디어 추가',
       isEnglish ? 'Choose how to add media.' : '미디어를 추가할 방법을 선택하세요.',
       [
-      {
-        text: options[0],
-        onPress: async () => {
-          try {
-            const result = await ImagePicker.launchCameraAsync({
-              mediaTypes: ['images', 'videos', 'livePhotos'],
-              // allowsEditing: true,
-              // aspect: [4, 3],
-              quality: 1,
-            });
-            if (!result.canceled) {
-              const uri = result.assets[0].uri;
-              const type = result.assets[0].type;
-              const newImage = { uri, type };
-              return resolve(newImage);
+        {
+          text: options[0],
+          onPress: async () => {
+            try {
+              const result = await ImagePicker.launchCameraAsync({
+                mediaTypes: ['images', 'videos', 'livePhotos'],
+                // allowsEditing: true,
+                // aspect: [4, 3],
+                quality: 1,
+              });
+              if (!result.canceled) {
+                const uri = result.assets[0].uri;
+                const type = result.assets[0].type;
+                const newImage = { uri, type };
+                return resolve(newImage);
+              }
+            } catch (error) {
+              CustomAlertManager.error(isEnglish ? 'Image upload error' : '이미지 업로드 에러');
             }
-          } catch (error) {
-            CustomAlertManager.error(isEnglish ? 'Image upload error' : '이미지 업로드 에러');
-          }
+          },
         },
-      },
-      {
-        text: options[1],
-        onPress: async () => {
-          try {
-            const result = await ImagePicker.launchImageLibraryAsync({
-              mediaTypes: ['images', 'videos', 'livePhotos'],
-              // allowsEditing: true,
-              // aspect: [4, 3],
-              quality: 1,
-            });
-            if (!result.canceled) {
-              const uri = result.assets[0].uri;
-              const type = result.assets[0].type;
-              const newImage = { uri, type };
-              return resolve(newImage);
+        {
+          text: options[1],
+          onPress: async () => {
+            try {
+              const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ['images', 'videos', 'livePhotos'],
+                // allowsEditing: true,
+                // aspect: [4, 3],
+                quality: 1,
+              });
+              if (!result.canceled) {
+                const uri = result.assets[0].uri;
+                const type = result.assets[0].type;
+                const newImage = { uri, type };
+                return resolve(newImage);
+              }
+            } catch (error) {
+              CustomAlertManager.error(isEnglish ? 'Image upload error' : '이미지 업로드 에러');
             }
-          } catch (error) {
-            CustomAlertManager.error(isEnglish ? 'Image upload error' : '이미지 업로드 에러');
-          }
+          },
         },
-      },
-      { text: options[2], style: 'cancel' },
-    ]);
+        { text: options[2], style: 'cancel' },
+      ],
+    );
   });
 };
