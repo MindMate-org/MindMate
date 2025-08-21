@@ -1,8 +1,9 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Alert } from 'react-native';
 
 import { EntryForm, EntryFormDataType } from '../../src/components/common/entry-form';
+import { CustomAlertManager } from '../../src/components/ui/custom-alert';
+import { useI18n } from '../../src/hooks/use-i18n';
 import { DiaryService } from '../../src/features/diary/services';
 
 /**
@@ -13,6 +14,7 @@ import { DiaryService } from '../../src/features/diary/services';
  */
 const DiaryCreatePage = () => {
   const router = useRouter();
+  const { t } = useI18n();
 
   const handleSubmit = async (data: EntryFormDataType, audioUri?: string) => {
     try {
@@ -43,12 +45,11 @@ const DiaryCreatePage = () => {
         });
       }
 
-      Alert.alert('성공', '일기가 저장되었습니다.', [
-        { text: '확인', onPress: () => router.replace('/(tabs)/diary') },
-      ]);
+      await CustomAlertManager.success(t.locale.startsWith('en') ? 'Diary saved successfully.' : '일기가 저장되었습니다.');
+      router.replace('/(tabs)/diary');
     } catch (error) {
-      console.error('일기 저장 실패:', error);
-      Alert.alert('오류', '일기 저장 중 오류가 발생했습니다.');
+      console.error('Diary save failed:', error);
+      CustomAlertManager.error(t.locale.startsWith('en') ? 'An error occurred while saving the diary.' : '일기 저장 중 오류가 발생했습니다.');
     }
   };
 
@@ -58,7 +59,7 @@ const DiaryCreatePage = () => {
 
   return (
     <EntryForm
-      title="일기 작성하기"
+      title={t.diary.create}
       onSubmit={handleSubmit}
       onCancel={handleCancel}
       showMoodPicker={true}

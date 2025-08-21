@@ -2,6 +2,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { withLayoutContext } from 'expo-router';
 
 import CustomTopTabBar from '../../src/components/custom-top-tab-bar';
+import { ANIMATION_CONFIG } from '../../src/constants/animations';
 
 const { Navigator } = createMaterialTopTabNavigator();
 
@@ -13,16 +14,14 @@ export default function TabLayout() {
       tabBar={(props) => <CustomTopTabBar {...props} />}
       screenOptions={{
         lazy: true,
+        ...ANIMATION_CONFIG.tabTransition,
       }}
     >
-      <MaterialTopTabs.Screen name="diary" options={{ title: '일기', tabBarLabel: '일기' }} />
-      <MaterialTopTabs.Screen name="schedule" options={{ title: '일정', tabBarLabel: '일정' }} />
-      <MaterialTopTabs.Screen name="routine" options={{ title: '루틴', tabBarLabel: '루틴' }} />
-      <MaterialTopTabs.Screen name="search" options={{ title: '찾기', tabBarLabel: '찾기' }} />
-      <MaterialTopTabs.Screen
-        name="address-book"
-        options={{ title: '주소록', tabBarLabel: '주소록' }}
-      />
+      <MaterialTopTabs.Screen name="diary" />
+      <MaterialTopTabs.Screen name="schedule" />
+      <MaterialTopTabs.Screen name="routine" />
+      <MaterialTopTabs.Screen name="search" />
+      <MaterialTopTabs.Screen name="address-book" />
     </MaterialTopTabs>
   );
 }

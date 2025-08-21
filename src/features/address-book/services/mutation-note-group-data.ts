@@ -6,16 +6,42 @@ import { db } from '@/src/hooks/use-initialize-database';
 // 노트 그룹 생성
 export const createNoteGroup = async (contactId: string, title: string): Promise<NoteGroupType> => {
   try {
+    console.log('=== createNoteGroup 시작 ===');
+    console.log('contactId:', contactId, 'title:', title);
+    
+    // contactId를 정수로 변환
+    const contactIdInt = parseInt(contactId, 10);
+    console.log('contactIdInt:', contactIdInt);
+    
+    if (isNaN(contactIdInt)) {
+      throw new Error(`Invalid contactId: ${contactId}`);
+    }
+    
     const result = await db.runAsync('INSERT INTO note_group (contact_id, title) VALUES (?, ?)', [
-      contactId,
+      contactIdInt,
       title,
     ]);
+    
+    console.log('INSERT 성공, lastInsertRowId:', result.lastInsertRowId);
 
-    // 생성된 note_group 반환
-    const newNoteGroup = await getNoteGroupsByContactId(result.lastInsertRowId.toString());
-    return newNoteGroup[0];
+    // 생성된 note_group 반환 (방금 생성된 그룹 ID로 조회)
+    const createdGroup = await db.getFirstAsync<NoteGroupType>(
+      'SELECT * FROM note_group WHERE group_id = ?',
+      [result.lastInsertRowId]
+    );
+    
+    console.log('조회된 그룹:', createdGroup);
+    
+    if (!createdGroup) {
+      throw new Error('Created group not found');
+    }
+    
+    console.log('=== createNoteGroup 완료 ===');
+    return createdGroup;
   } catch (error) {
+    console.error('=== createNoteGroup 실패 ===');
     console.error('노트 그룹 생성 실패:', error);
+    console.error('Error details:', error instanceof Error ? error.message : String(error));
     throw error;
   }
 };
@@ -40,7 +66,7 @@ export const updateNoteGroup = async (
     }
 
     if (updateFields.length === 0) {
-      throw new Error('수정할 데이터가 없습니다.');
+      throw new Error('No data to update');
     }
 
     updateValues.push(groupId); // WHERE 조건용 group_id
@@ -48,9 +74,17 @@ export const updateNoteGroup = async (
 
     await db.runAsync(sql, updateValues);
 
-    // 수정된 note_group 반환
-    const updatedNoteGroup = await getNoteGroupsByContactId(groupId);
-    return updatedNoteGroup[0];
+    // 수정된 note_group 반환 (그룹 ID로 직접 조회)
+    const updatedNoteGroup = await db.getFirstAsync<NoteGroupType>(
+      'SELECT * FROM note_group WHERE group_id = ?',
+      [groupId]
+    );
+    
+    if (!updatedNoteGroup) {
+      throw new Error('Updated group not found');
+    }
+    
+    return updatedNoteGroup;
   } catch (error) {
     console.error('노트 그룹 수정 실패:', error);
     throw error;
@@ -94,7 +128,7 @@ export const createNoteItem = async (
     // 생성된 note_item 반환
     const newNoteItem = await getNoteItemById(result.lastInsertRowId.toString());
     if (!newNoteItem) {
-      throw new Error('생성된 노트 아이템을 찾을 수 없습니다');
+      throw new Error('Created note item not found');
     }
     return newNoteItem;
   } catch (error) {
@@ -127,7 +161,7 @@ export const updateNoteItem = async (
     }
 
     if (updateFields.length === 0) {
-      throw new Error('수정할 데이터가 없습니다.');
+      throw new Error('No data to update');
     }
 
     updateValues.push(itemId); // WHERE 조건용 item_id
@@ -138,7 +172,7 @@ export const updateNoteItem = async (
     // 수정된 note_item 반환
     const updatedNoteItem = await getNoteItemById(itemId);
     if (!updatedNoteItem) {
-      throw new Error('수정된 노트 아이템을 찾을 수 없습니다');
+      throw new Error('Updated note item not found');
     }
     return updatedNoteItem;
   } catch (error) {

@@ -3,7 +3,8 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 
 import { useThemeColors } from '../../../components/providers/theme-provider';
-import { MoodType, MOOD_OPTIONS } from '../types';
+import { useI18n } from '../../../hooks/use-i18n';
+import { MoodType, MOOD_OPTIONS, getMoodOptions } from '../types';
 import BaseModal from './base-modal';
 
 type MoodPickerProps = {
@@ -24,22 +25,23 @@ type MoodPickerProps = {
  */
 const MoodPicker = ({ visible, onClose, onSelect }: MoodPickerProps) => {
   const { theme: themeColors } = useThemeColors();
+  const { t } = useI18n();
   
   return (
-    <BaseModal visible={visible} onClose={onClose} height="40%" preventOutsideTouch>
+    <BaseModal visible={visible} onClose={onClose} height="50%" preventOutsideTouch>
       <Text style={{
         marginBottom: 16,
         textAlign: 'center',
         fontSize: 18,
         fontWeight: 'bold',
         color: themeColors.text,
-      }}>오늘의 기분을 선택하세요</Text>
+      }}>{t.locale.startsWith('en') ? 'Select your mood today' : '오늘의 기분을 선택하세요'}</Text>
       <View style={{
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-around',
       }}>
-        {MOOD_OPTIONS.map((mood) => (
+        {getMoodOptions(t.locale).map((mood) => (
           <TouchableOpacity
             key={mood.value}
             onPress={() => onSelect(mood.value)}
@@ -76,7 +78,8 @@ const MoodPicker = ({ visible, onClose, onSelect }: MoodPickerProps) => {
  */
 const MoodDisplay = ({ mood }: { mood: MoodType }) => {
   const { theme: themeColors } = useThemeColors();
-  const selectedMood = MOOD_OPTIONS.find((m) => m.value === mood);
+  const { t } = useI18n();
+  const selectedMood = getMoodOptions(t.locale).find((m) => m.value === mood);
   return (
     <>
       <Text style={{ fontSize: 20 }}>{selectedMood?.emoji}</Text>
@@ -95,13 +98,14 @@ const MoodDisplay = ({ mood }: { mood: MoodType }) => {
  */
 const EmptyMoodDisplay = () => {
   const { theme: themeColors } = useThemeColors();
+  const { t } = useI18n();
   return (
     <>
       <Smile size={20} color={themeColors.primary} />
       <Text style={{
         fontSize: 14,
         color: themeColors.text,
-      }}>오늘의 기분</Text>
+      }}>{t.locale.startsWith('en') ? "Today's Mood" : '오늘의 기분'}</Text>
     </>
   );
 };

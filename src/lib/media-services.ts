@@ -1,8 +1,10 @@
 import * as ImagePicker from 'expo-image-picker';
-import { Alert } from 'react-native';
 
 import { db } from '../hooks/use-initialize-database';
 import { MediaType } from '../types/common-db-types';
+import { getTranslations } from './i18n';
+import { useGlobalStore } from '../store/global-store';
+import { CustomAlertManager } from '../components/ui/custom-alert';
 
 type fetchInsertMediaType = {
   media: MediaType[];
@@ -42,14 +44,25 @@ export const fetchInsertMedia = async (
  */
 export const pickMedia = async () => {
   const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-  const options = ['카메라로 촬영', '갤러리에서 선택', '취소'];
+  const { language } = useGlobalStore.getState();
+  const t = getTranslations(language);
+  const isEnglish = language.startsWith('en');
+  
+  const options = [
+    isEnglish ? 'Take Photo' : '카메라로 촬영',
+    isEnglish ? 'Choose from Gallery' : '갤러리에서 선택',
+    isEnglish ? 'Cancel' : '취소'
+  ];
 
   if (status !== 'granted') {
-    alert('시스템 설정에서 갤러리 접근 권한을 허용해 주세요.');
+    CustomAlertManager.error(isEnglish ? 'Please allow gallery access in system settings.' : '시스템 설정에서 갤러리 접근 권한을 허용해 주세요.');
     return;
   }
   return new Promise((resolve) => {
-    Alert.alert('미디어 추가', '미디어를 추가할 방법을 선택하세요.', [
+    CustomAlertManager.alert(
+      isEnglish ? 'Add Media' : '미디어 추가',
+      isEnglish ? 'Choose how to add media.' : '미디어를 추가할 방법을 선택하세요.',
+      [
       {
         text: options[0],
         onPress: async () => {
@@ -67,7 +80,7 @@ export const pickMedia = async () => {
               return resolve(newImage);
             }
           } catch (error) {
-            alert('이미지 업로드 에러');
+            CustomAlertManager.error(isEnglish ? 'Image upload error' : '이미지 업로드 에러');
           }
         },
       },
@@ -89,7 +102,7 @@ export const pickMedia = async () => {
               return resolve(newImage);
             }
           } catch (error) {
-            alert('이미지 업로드 에러');
+            CustomAlertManager.error(isEnglish ? 'Image upload error' : '이미지 업로드 에러');
           }
         },
       },

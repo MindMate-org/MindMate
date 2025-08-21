@@ -4,9 +4,27 @@ import { ChevronRight } from 'lucide-react-native';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import { useThemeColors } from '../../../components/providers/theme-provider';
+import { useI18n } from '../../../hooks/use-i18n';
 
 import SearchCategoryButton from './search-category-button';
 import { getCategoryData } from '../utils/getCategoryData';
+
+const colorMap: Record<string, string> = {
+  black: '#000000',
+  gray: '#6B7280',
+  white: '#9CA3AF',
+  teal: '#14B8A6',
+  paleYellow: '#F59E0B',
+  pink: '#EC4899',
+  turquoise: '#06B6D4',
+  foggyBlue: '#93C5FD',
+  paleCobalt: '#576BCD',
+  red: '#EF4444',
+};
+
+const getColorValue = (colorName: string): string => {
+  return colorMap[colorName] || colorMap.paleCobalt;
+};
 
 type SearchItemCardProps = {
   id: string;
@@ -17,19 +35,20 @@ type SearchItemCardProps = {
 
 const SearchItemCard = ({ id, category, name, location }: SearchItemCardProps) => {
   const { theme: themeColors } = useThemeColors();
+  const { t } = useI18n();
   
   const handlePress = () => {
     router.push(`/search/${id}`);
   };
 
-  const { color } = getCategoryData(category);
+  const { icon: Icon, color } = getCategoryData(category, t.locale.startsWith('en') ? 'en' : 'ko');
 
   return (
     <CommonBox color={color}>
       <TouchableOpacity onPress={handlePress}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <View style={{ marginRight: 16 }}>
-            <SearchCategoryButton label={category} isSelected={false} />
+          <View style={{ marginRight: 16, padding: 8 }}>
+            {Icon ? <Icon size={24} color={themeColors.primary} /> : <SearchCategoryButton label={category} isSelected={false} />}
           </View>
 
           <View style={{ flex: 1 }}>
@@ -47,7 +66,7 @@ const SearchItemCard = ({ id, category, name, location }: SearchItemCardProps) =
               <Text style={{ 
                 width: 96, 
                 borderRadius: 6, 
-                backgroundColor: color, 
+                backgroundColor: getColorValue(color), 
                 textAlign: 'center', 
                 fontSize: 12,
                 color: '#FFFFFF',

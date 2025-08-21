@@ -3,6 +3,7 @@ import React from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
 
 import { useThemeColors } from '../../../components/providers/theme-provider';
+import { useI18n } from '../../../hooks/use-i18n';
 import { Colors } from '../../../constants/colors';
 import { RecordingStateType } from '../types';
 
@@ -22,6 +23,7 @@ const MediaButtons = ({
   recordingState,
 }: MediaButtonsProps) => {
   const { theme: themeColors } = useThemeColors();
+  const { t } = useI18n();
   
   return (
     <View style={{
@@ -96,7 +98,7 @@ const MediaButtons = ({
               opacity: recordingState.isRecording ? 1 : 0,
             }}
           >
-            {recordingState.duration}초
+{recordingState.duration}{t.locale.startsWith('en') ? 's' : '초'}
           </Text>
         </View>
       </View>

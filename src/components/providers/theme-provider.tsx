@@ -8,7 +8,7 @@ import React, { useEffect, useMemo } from 'react';
 import { StatusBar, useColorScheme, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { useGlobalStore } from '../../store/global-store';
+import { useTheme } from '../../store/app-store';
 
 export interface ThemeColors {
   // 배경색
@@ -42,8 +42,8 @@ export interface ThemeColors {
 }
 
 const lightTheme: ThemeColors = {
-  background: '#FFFFFF',
-  backgroundSecondary: '#F8FAFC',
+  background: '#F0F3FF',
+  backgroundSecondary: '#F0F3FF',
   surface: '#FFFFFF',
   surfaceSecondary: '#F1F5F9',
   
@@ -78,7 +78,7 @@ const darkTheme: ThemeColors = {
   
   primary: '#6366F1',
   primaryText: '#FFFFFF',
-  accent: '#1E293B',
+  accent: '#374151',
   
   success: '#22C55E',
   warning: '#EAB308',
@@ -114,7 +114,7 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const { theme: themePreference } = useGlobalStore();
+  const themePreference = useTheme();
   const systemColorScheme = useColorScheme();
   
   const isDark = useMemo(() => {

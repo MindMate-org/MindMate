@@ -14,7 +14,7 @@ import { formatDateTimeString } from '../../../lib/date-utils';
 import ExportModal from '../components/export-modal';
 import { MediaSlider } from '../components/media-slider';
 import { DiaryService } from '../services';
-import { MOOD_OPTIONS } from '../types';
+import { MOOD_OPTIONS, getMoodOptions } from '../types';
 
 type DiaryDetailType = Awaited<ReturnType<typeof DiaryService.getDiaryById>>;
 type DiaryMediaType = Awaited<ReturnType<typeof DiaryService.getMediaByDiaryId>>;
@@ -40,8 +40,8 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
   // useMemo must be called at top level to avoid hooks order violation
   const mood = useMemo(() => {
     if (!diary) return null;
-    return MOOD_OPTIONS.find((m) => m.value === diary.mood);
-  }, [diary]);
+    return getMoodOptions(t.locale).find((m) => m.value === diary.mood);
+  }, [diary, t.locale]);
 
   useEffect(() => {
     if (id && typeof id === 'string') {
@@ -140,7 +140,7 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
       {/* 헤더 */}
       <FadeInView>
         <View style={{
@@ -150,6 +150,7 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
           backgroundColor: themeColors.surface,
           paddingHorizontal: 16,
           paddingVertical: 16,
+          marginTop: 32,
         }}>
           <TouchableOpacity onPress={handleBack} style={{
             borderRadius: 20,
@@ -268,7 +269,7 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
               fontSize: 14,
               fontWeight: '500',
               color: themeColors.error,
-            }}>{t.common.delete}</Text>
+            }}>{t.diary.trash}</Text>
           </TouchableOpacity>
         </FadeInView>
       )}
@@ -293,7 +294,7 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
                   color: themeColors.textSecondary,
                   fontSize: 14,
                 }}>
-                  {formatDateTimeString(diary.created_at || '')}
+{formatDateTimeString(diary.created_at || '', t.locale.startsWith('en') ? 'en' : 'ko')}
                 </Text>
                 {diary.is_favorite === 1 && (
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>

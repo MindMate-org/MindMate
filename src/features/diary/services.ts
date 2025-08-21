@@ -318,37 +318,38 @@ export class DiaryService {
 
       console.log('일기+미디어 조회 시작');
 
-      // 최적화된 쿼리: CTE(Common Table Expression) 사용하여 성능 개선
-      const result = await db.getAllAsync<
-        DiaryTableType & { media_uri: string | null; media_type: string | null }
-      >(
-        `WITH media_priority AS (
-           SELECT 
-             owner_id,
-             file_path,
-             media_type,
-             ROW_NUMBER() OVER (
-               PARTITION BY owner_id 
-               ORDER BY 
-                 CASE media_type 
-                   WHEN 'image' THEN 1 
-                   WHEN 'video' THEN 2 
-                   ELSE 3 
-                 END, 
-                 id
-             ) as rn
-           FROM media
-           WHERE owner_type = 'diary'
-         )
-         SELECT d.*, 
-                mp.file_path as media_uri,
-                mp.media_type
-         FROM diaries d
-         LEFT JOIN media_priority mp ON mp.owner_id = d.id AND mp.rn = 1
-         WHERE d.deleted_at IS NULL
+      // 먼저 모든 일기를 가져옴
+      const diaries = await db.getAllAsync<DiaryTableType>(
+        `SELECT * FROM diaries 
+         WHERE deleted_at IS NULL
          ORDER BY 
-           CASE WHEN d.updated_at IS NOT NULL THEN d.updated_at ELSE d.created_at END DESC`,
+           CASE WHEN updated_at IS NOT NULL THEN updated_at ELSE created_at END DESC`
       );
+
+      // 각 일기에 대해 첫 번째 미디어를 찾아서 추가
+      const result: (DiaryTableType & { media_uri: string | null; media_type: string | null })[] = [];
+      
+      for (const diary of diaries) {
+        // 각 일기의 첫 번째 미디어 찾기 (이미지 우선)
+        const media = await db.getFirstAsync<{ file_path: string; media_type: string }>(
+          `SELECT file_path, media_type FROM media 
+           WHERE owner_id = ? AND owner_type = 'diary'
+           ORDER BY 
+             CASE media_type 
+               WHEN 'image' THEN 1 
+               WHEN 'video' THEN 2 
+               ELSE 3 
+             END, id
+           LIMIT 1`,
+          [diary.id]
+        );
+
+        result.push({
+          ...diary,
+          media_uri: media?.file_path || null,
+          media_type: media?.media_type || null,
+        });
+      }
 
       console.log(`일기+미디어 조회 완료: ${result?.length || 0}개`);
       return result || [];

@@ -2,6 +2,8 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 
 import { useThemeColors } from '../providers/theme-provider';
+import { useI18n } from '../../hooks/use-i18n';
+import { getWeekDays, formatMonthYear } from '../../constants/date';
 
 interface EnhancedCalendarProps {
   selectedDate: Date;
@@ -9,14 +11,13 @@ interface EnhancedCalendarProps {
   onClose: () => void;
 }
 
-const WEEK_DAYS = ['일', '월', '화', '수', '목', '금', '토'];
-
 const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
   selectedDate,
   onDateSelect,
   onClose,
 }) => {
   const { theme: themeColors, isDark } = useThemeColors();
+  const { t } = useI18n();
   const [currentMonth, setCurrentMonth] = useState(
     new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1),
   );
@@ -91,6 +92,9 @@ const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
     [selectedDate],
   );
 
+  // Get localized week days
+  const weekDays = getWeekDays(t.locale);
+
   return (
     <View style={{ width: '100%' }}>
       {/* 헤더 */}
@@ -119,7 +123,7 @@ const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
           fontSize: 20,
           fontWeight: 'bold',
         }}>
-          {currentMonth.getFullYear()}년 {currentMonth.getMonth() + 1}월
+          {formatMonthYear(currentMonth, t.locale)}
         </Text>
         <TouchableOpacity 
           onPress={goToNextMonth} 
@@ -142,7 +146,7 @@ const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
         marginBottom: 16,
         flexDirection: 'row',
       }}>
-        {WEEK_DAYS.map((day, index) => (
+        {weekDays.map((day, index) => (
           <View key={day} style={{
             flex: 1,
             alignItems: 'center',

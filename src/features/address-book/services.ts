@@ -230,12 +230,15 @@ export class AddressBookService {
   }
 
   /**
-   * 태그를 삭제합니다
+   * 태그를 삭제합니다 (관련 연락처 관계도 함께 삭제)
    * @param id 태그 ID
    * @returns Promise<void>
    */
   static async fetchDeleteTag(id: number): Promise<void> {
     try {
+      // 먼저 contact_tag 관계를 삭제
+      await db.runAsync(`DELETE FROM contact_tag WHERE tag_id = ?`, [id]);
+      // 그다음 태그 자체를 삭제
       await db.runAsync(`DELETE FROM tag WHERE id = ?`, [id]);
     } catch (error) {
       console.error('태그 삭제 실패:', error);

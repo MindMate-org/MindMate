@@ -2,6 +2,9 @@ import { Plus, X } from 'lucide-react-native';
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 
+import { useThemeColors } from '../providers/theme-provider';
+import { useI18n } from '../../hooks/use-i18n';
+
 export type MediaItem = {
   uri: string;
   type?: string;
@@ -39,13 +42,15 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
   mediaList,
   onAddMedia,
   onRemoveMedia,
-  maxCount = 3,
+  maxCount = 5,
   variant = 'default',
   isLoading = false,
   className = '',
   label = '사진 추가',
   disabled = false,
 }) => {
+  const { theme: themeColors, isDark } = useThemeColors();
+  const { t } = useI18n();
   const getItemSize = () => {
     switch (variant) {
       case 'compact':
@@ -58,14 +63,49 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
     }
   };
 
+  const getItemSizeStyle = () => {
+    switch (variant) {
+      case 'compact':
+        return { height: 64, width: 64 };
+      case 'large':
+        return { height: 96, width: 96 };
+      case 'default':
+      default:
+        return { height: 72, width: 72 };
+    }
+  };
+
   const getAddButtonStyles = () => {
-    return `${getItemSize()} items-center justify-center rounded-xl bg-paleCobalt shadow-dropShadow ${
-      disabled ? 'opacity-50' : ''
-    }`;
+    return {
+      ...getItemSizeStyle(),
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
+      borderRadius: 12,
+      backgroundColor: themeColors.primary,
+      shadowColor: themeColors.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: isDark ? 0.3 : 0.1,
+      shadowRadius: 4,
+      elevation: 4,
+      opacity: disabled ? 0.5 : 1,
+    };
   };
 
   const getImageContainerStyles = () => {
-    return `${getItemSize()} relative items-center justify-center rounded-xl bg-white shadow-dropShadow overflow-hidden`;
+    return {
+      ...getItemSizeStyle(),
+      position: 'relative' as const,
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
+      borderRadius: 12,
+      backgroundColor: themeColors.surface,
+      shadowColor: themeColors.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: isDark ? 0.3 : 0.1,
+      shadowRadius: 4,
+      elevation: 4,
+      overflow: 'hidden' as const,
+    };
   };
 
   const renderAddButton = () => {
@@ -73,52 +113,85 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
 
     return (
       <TouchableOpacity
-        className={getAddButtonStyles()}
+        style={getAddButtonStyles()}
         onPress={onAddMedia}
         disabled={disabled || isLoading}
         activeOpacity={0.7}
       >
         {isLoading ? (
-          <ActivityIndicator size="small" color="white" />
+          <ActivityIndicator size="small" color={themeColors.primaryText} />
         ) : (
-          <Plus color="white" size={variant === 'compact' ? 16 : 20} strokeWidth={3} />
+          <Plus color={themeColors.primaryText} size={variant === 'compact' ? 16 : 20} strokeWidth={3} />
         )}
       </TouchableOpacity>
     );
   };
 
   const renderMediaItem = (media: MediaItem, index: number) => (
-    <View key={media.id || index} className={getImageContainerStyles()}>
+    <View key={media.id || index} style={getImageContainerStyles()}>
       <Image
         source={{ uri: media.uri }}
-        className={`${getItemSize()} rounded-xl`}
+        style={{
+          ...getItemSizeStyle(),
+          borderRadius: 12,
+        }}
         resizeMode="cover"
       />
 
       {/* 삭제 버튼 */}
       <TouchableOpacity
-        className="absolute -right-2 -top-2 h-6 w-6 items-center justify-center rounded-full bg-red-500 shadow-md"
+        style={{
+          position: 'absolute',
+          right: -8,
+          top: -8,
+          height: 24,
+          width: 24,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 12,
+          backgroundColor: themeColors.error,
+          shadowColor: themeColors.shadow,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.25,
+          shadowRadius: 4,
+          elevation: 4,
+        }}
         onPress={() => onRemoveMedia(index)}
         disabled={disabled}
         activeOpacity={0.7}
       >
-        <X color="white" size={12} strokeWidth={2} />
+        <X color={themeColors.primaryText} size={12} strokeWidth={2} />
       </TouchableOpacity>
     </View>
   );
 
   return (
-    <View className={`${className}`}>
-      {label && <Text className="text-gray-700 mb-2 text-sm font-medium">{label}</Text>}
+    <View style={{ width: '100%' }}>
+      {label && (
+        <Text style={{
+          marginBottom: 8,
+          fontSize: 14,
+          fontWeight: '500',
+          color: themeColors.text,
+        }}>{label}</Text>
+      )}
 
-      <View className="flex-row flex-wrap gap-2">
+      <View style={{
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+      }}>
         {mediaList.map((media, index) => renderMediaItem(media, index))}
         {renderAddButton()}
       </View>
 
       {maxCount > 1 && (
-        <Text className="text-gray-500 mt-2 text-xs">
-          {mediaList.length}/{maxCount}개 선택됨
+        <Text style={{
+          marginTop: 8,
+          fontSize: 12,
+          color: themeColors.textSecondary,
+        }}>
+          {mediaList.length}/{maxCount}{t.locale.startsWith('en') ? ' selected' : '개 선택됨'}
         </Text>
       )}
     </View>

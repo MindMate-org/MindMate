@@ -5,6 +5,8 @@ import { View, Text, ScrollView, SafeAreaView, ActivityIndicator } from 'react-n
 import { TouchableOpacity } from 'react-native';
 
 import { Colors } from '../../src/constants/colors';
+import { useThemeColors } from '../../src/components/providers/theme-provider';
+import { useI18n } from '../../src/hooks/use-i18n';
 import { DiaryListItem } from '../../src/features/diary/components/diary-list-item';
 import { DiaryService } from '../../src/features/diary/services';
 import { groupDiariesByPeriod } from '../../src/features/diary/utils/diary-grouping';
@@ -32,6 +34,8 @@ import { formatDateTimeString } from '../../src/lib/date-utils';
  */
 const FavoritesPage = () => {
   const router = useRouter();
+  const { theme: themeColors, isDark } = useThemeColors();
+  const { t } = useI18n();
   const [favoriteDiaries, setFavoriteDiaries] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -69,61 +73,116 @@ const FavoritesPage = () => {
   });
 
   // 그룹화
-  const grouped = groupDiariesByPeriod(sortedDiaries);
+  const grouped = groupDiariesByPeriod(sortedDiaries, t.locale.startsWith('en') ? 'en' : 'ko');
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
       {/* 헤더 */}
-      <View className="mt-8 flex-row items-center justify-between border-b-2 border-turquoise bg-white px-4 py-4">
+      <View style={{
+        marginTop: 32, // 상태바 아래 여백
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderBottomWidth: 1,
+        borderBottomColor: themeColors.primary,
+        backgroundColor: themeColors.surface,
+        paddingHorizontal: 16,
+        paddingVertical: 16,
+      }}>
         <TouchableOpacity onPress={handleBack}>
-          <ChevronLeft size={24} color={Colors.paleCobalt} />
+          <ChevronLeft size={24} color={themeColors.primary} />
         </TouchableOpacity>
-        <Text className="text-lg font-bold text-paleCobalt">북마크</Text>
+        <Text style={{
+          fontSize: 18,
+          fontWeight: 'bold',
+          color: themeColors.primary,
+        }}>{t.diary.bookmarks}</Text>
         <View style={{ width: 24 }} />
       </View>
 
-      <View className="flex-1 bg-turquoise">
+      <View style={{ flex: 1, backgroundColor: themeColors.background }}>
         <ScrollView
           contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 120 }}
         >
           {loading ? (
-            <View className="flex-1 items-center justify-center" style={{ marginTop: 100 }}>
-              <ActivityIndicator size="large" color="#576bcd" />
-              <Text className="mt-4 text-center text-base text-paleCobalt">
-                북마크를 불러오는 중...
+            <View style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginTop: 100,
+            }}>
+              <ActivityIndicator size="large" color={themeColors.primary} />
+              <Text style={{
+                marginTop: 16,
+                textAlign: 'center',
+                fontSize: 16,
+                color: themeColors.primary,
+              }}>
+                {t.diary.loadingBookmarks}
               </Text>
             </View>
           ) : favoriteDiaries.length === 0 ? (
-            <View className="flex-1 items-center justify-center" style={{ marginTop: 100 }}>
-              <Star size={64} color={Colors.gray} />
-              <Text className="mt-4 text-lg text-gray">북마크가 비어있습니다</Text>
-              <Text className="mt-2 text-sm text-gray">
-                중요한 일기에 ⭐ 버튼을 눌러 북마크에 추가하세요
+            <View style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginTop: 100,
+            }}>
+              <Star size={64} color={themeColors.textSecondary} />
+              <Text style={{
+                marginTop: 16,
+                fontSize: 18,
+                color: themeColors.textSecondary,
+              }}>{t.diary.bookmarkEmpty}</Text>
+              <Text style={{
+                marginTop: 8,
+                fontSize: 14,
+                color: themeColors.textSecondary,
+              }}>
+                {t.diary.addBookmarkHint}
               </Text>
             </View>
           ) : (
             <>
               {/* 북마크 개수 */}
-              <View className="mb-4 flex-row items-center gap-2">
-                <Heart size={20} color={Colors.paleCobalt} />
-                <Text className="text-sm font-bold text-paleCobalt">
-                  총 {favoriteDiaries.length}개의 소중한 일기
+              <View style={{
+                marginBottom: 16,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 8,
+              }}>
+                <Heart size={20} color={themeColors.primary} />
+                <Text style={{
+                  fontSize: 14,
+                  fontWeight: 'bold',
+                  color: themeColors.primary,
+                }}>
+                  {t.locale.startsWith('en') ? `${favoriteDiaries.length} ${t.diary.preciousDiariesCount}` : `총 ${favoriteDiaries.length}${t.diary.preciousDiariesCount}`}
                 </Text>
               </View>
 
               {/* 섹션별 목록 */}
               {Object.keys(grouped).map((section) => (
-                <View key={section} className="mb-6">
-                  <View className="mb-3 flex-row items-center gap-2">
+                <View key={section} style={{ marginBottom: 24 }}>
+                  <View style={{
+                    marginBottom: 12,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 8,
+                  }}>
                     <Star size={18} color="#FFD700" fill="#FFD700" />
-                    <Text className="text-sm font-bold text-paleCobalt">{section}</Text>
+                    <Text style={{
+                      fontSize: 14,
+                      fontWeight: 'bold',
+                      color: themeColors.primary,
+                    }}>{section}</Text>
                   </View>
                   {grouped[section].map((item: any) => (
                     <DiaryListItem
                       key={item.id}
                       item={item}
                       onPress={() => router.push(`/diary/${item.id}`)}
-                      formatDateTime={formatDateTimeString}
+                      formatDateTime={(datetime: string) => formatDateTimeString(datetime, t.locale.startsWith('en') ? 'en' : 'ko')}
                     />
                   ))}
                 </View>

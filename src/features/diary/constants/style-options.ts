@@ -23,6 +23,19 @@ export const FONT_FAMILY_OPTIONS = [
 ] as const;
 
 /**
+ * 언어별 폰트 패밀리 옵션 가져오기
+ */
+export const getFontFamilyOptions = (isEnglish: boolean) => [
+  { value: 'default', label: isEnglish ? 'Default' : '기본' },
+  { value: 'System', label: isEnglish ? 'System' : '시스템' },
+  { value: 'Georgia', label: isEnglish ? 'Georgia' : '조지아' },
+  { value: 'Times New Roman', label: isEnglish ? 'Times' : '타임즈' },
+  { value: 'Courier New', label: isEnglish ? 'Courier' : '쿠리어' },
+  { value: 'Helvetica', label: isEnglish ? 'Helvetica' : '헬베티카' },
+  { value: 'Arial', label: isEnglish ? 'Arial' : '아리얼' },
+] as const;
+
+/**
  * 텍스트 정렬 옵션
  */
 export const TEXT_ALIGN_OPTIONS: Array<'left' | 'center' | 'right'> = ['left', 'center', 'right'];
@@ -35,6 +48,15 @@ export const TEXT_ALIGN_LABELS: Record<'left' | 'center' | 'right', string> = {
   center: '가운데',
   right: '오른쪽',
 } as const;
+
+/**
+ * 언어별 텍스트 정렬 라벨 가져오기
+ */
+export const getTextAlignLabels = (isEnglish: boolean): Record<'left' | 'center' | 'right', string> => ({
+  left: isEnglish ? 'Left' : '왼쪽',
+  center: isEnglish ? 'Center' : '가운데',
+  right: isEnglish ? 'Right' : '오른쪽',
+});
 
 /**
  * 사용 가능한 텍스트 색상 옵션
@@ -66,7 +88,7 @@ export const BACKGROUND_COLOR_OPTIONS = [
   '#FAF5FF', // 연한 보라
   '#FDF2F8', // 연한 핑크
   '#F5F7FF', // 연한 블루
-  '#FFE5BC', // 연한 오렌지
+  '#BDC7FF', // 연한 퍼플-블루
   '#C9EFEF', // 연한 터키석
   '#FFD7DD', // 연한 핑크
   '#E0E7FF', // 인디고

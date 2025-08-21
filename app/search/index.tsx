@@ -7,17 +7,24 @@ import FadeInView from '@/src/components/ui/fade-in-view';
 import SearchInput from '@/src/components/ui/search-input';
 import SearchCategoryButton from '@/src/features/search/components/search-category-button';
 import SearchItemCard from '@/src/features/search/components/search-item-card';
-import { searchCategories } from '@/src/features/search/constants/search-category-constants';
+import { getSearchCategories } from '@/src/features/search/constants/search-category-constants';
 import { SearchData } from '@/src/features/search/db/search-db-types';
 import { getCategoryData } from '@/src/features/search/utils/getCategoryData';
 import { db } from '@/src/hooks/use-initialize-database';
+import { useI18n } from '@/src/hooks/use-i18n';
 
 const HomeScreen = () => {
+  const { t } = useI18n();
   const [items, setItems] = useState<SearchData[]>([]); // 전체
   const [input, setInput] = useState(''); // 검색어
   const [search, setSearch] = useState(''); // 제출 시 검색어
   const [selectCategory, setSelectCategory] = useState(''); // 선택된 카테고리
   const router = useRouter();
+  
+  const searchCategories = useMemo(() => 
+    getSearchCategories(t.locale.startsWith('en') ? 'en' : 'ko'), 
+    [t.locale]
+  );
 
   const handleCreateItem = () => {
     router.push('/search/search-form');
@@ -32,8 +39,8 @@ const HomeScreen = () => {
   useFocusEffect(
     useCallback(() => {
       getSearchItems();
-      setSelectCategory('전체');
-    }, []),
+      setSelectCategory(t.common.categories.all);
+    }, [t.common.categories.all]),
   );
 
   useEffect(() => {
@@ -46,8 +53,8 @@ const HomeScreen = () => {
     const normalizedSearch = search.trim().toLowerCase();
 
     return items.filter((item) => {
-      // 전체(‘전체’)인 경우 항상 통과, 특정 카테고리인 경우 일치 여부 검사
-      const matchesCategory = selectCategory === '전체' || item.category === selectCategory;
+      // 전체인 경우 항상 통과, 특정 카테고리인 경우 일치 여부 검사
+      const matchesCategory = selectCategory === t.common.categories.all || item.category === selectCategory;
 
       // search가 빈 문자열이면 항상 통과, 아니면 포함 여부 검사
       const matchesSearch = !normalizedSearch || item.name.toLowerCase().includes(normalizedSearch);
@@ -56,7 +63,7 @@ const HomeScreen = () => {
     });
   }, [items, selectCategory, search]);
 
-  const { icon: Icon } = getCategoryData(selectCategory);
+  const { icon: Icon } = getCategoryData(selectCategory, t.locale.startsWith('en') ? 'en' : 'ko');
 
   const resetSearch = () => {
     setInput('');
@@ -76,7 +83,7 @@ const HomeScreen = () => {
       </View>
 
       <View className="mb-8 w-full flex-row justify-between gap-1">
-        {searchCategories.map((category, index) => {
+        {searchCategories.map((category: any, index: number) => {
           const isSelected = selectCategory === category.label;
           return (
             <View

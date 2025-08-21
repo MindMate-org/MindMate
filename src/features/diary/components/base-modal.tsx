@@ -66,8 +66,8 @@ const BaseModal: React.FC<BaseModalProps> = ({
             backgroundColor: themeColors.surface,
             borderTopLeftRadius: 24,
             borderTopRightRadius: 24,
-            paddingHorizontal: 24,
-            paddingTop: 24,
+            paddingHorizontal: height === '100%' ? 24 : 24,
+            paddingTop: height === '100%' ? 60 : 24,
             paddingBottom: 0,
             height: height as any, // Allow percentage height values
             position: 'absolute',

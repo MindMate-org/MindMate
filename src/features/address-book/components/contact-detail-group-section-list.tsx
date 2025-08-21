@@ -12,6 +12,7 @@ import { NoteGroupType, NoteItemType } from '../types/address-book-type';
 
 import Button from '@/src/components/ui/button';
 import CommonBox from '@/src/components/ui/common-box';
+import { useThemeColors } from '@/src/components/providers/theme-provider';
 import { useAsyncDataGet } from '@/src/hooks/use-async-data-get';
 
 const ContactDetailGroupSectionList = ({
@@ -27,15 +28,16 @@ const ContactDetailGroupSectionList = ({
   }, [id]);
   const { data, refetch: allGroupRefetch } = useAsyncDataGet<NoteGroupType[]>(
     getNoteGroupsByContactIdCallback,
+    false // 캐시 비활성화
   );
 
   useEffect(() => {
     allGroupRefetch();
   }, [isModalVisible]);
 
-  if (!data) return null;
+  if (!data || !Array.isArray(data)) return null;
   return (
-    <ScrollView className="flex-1">
+    <ScrollView style={{ flex: 1 }}>
       {data.map((groupInfo) => {
         return (
           <ContactDetailGroupList
@@ -56,6 +58,7 @@ const ContactDetailGroupList = ({
   group: NoteGroupType;
   refetch: () => void;
 }) => {
+  const { theme: themeColors } = useThemeColors();
   const getNoteItemsByGroupIdCallback = useCallback(async () => {
     const data = await getNoteItemsByGroupId(group.group_id.toString());
     return data;
@@ -65,6 +68,7 @@ const ContactDetailGroupList = ({
 
   const { data, refetch: noteItemRefetch } = useAsyncDataGet<NoteItemType[]>(
     getNoteItemsByGroupIdCallback,
+    false // 캐시 비활성화
   );
   const handleDeleteContactDetailGroup = async () => {
     await deleteNoteGroup(group.group_id.toString());
@@ -73,16 +77,25 @@ const ContactDetailGroupList = ({
   };
 
   return (
-    <View className="gap-2 p-4">
-      <View className="flex-row justify-between">
-        <Text className="mb-2 text-sm font-normal">{group.title}</Text>
+    <View style={{ gap: 8, padding: 16 }}>
+      <View style={{ 
+        flexDirection: 'row', 
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}>
+        <Text style={{
+          marginBottom: 8,
+          fontSize: 14,
+          fontWeight: '400',
+          color: themeColors.text,
+        }}>{group.title}</Text>
         <TouchableOpacity onPress={() => setIsActionMenuVisible(true)}>
-          <EllipsisVertical size={20} color="#666" />
+          <EllipsisVertical size={20} color={themeColors.textSecondary} />
         </TouchableOpacity>
       </View>
-      {data?.map((item) => {
+      {data && Array.isArray(data) ? data.map((item) => {
         return <ContactDetailGroupItem key={item.item_id} item={item} refetch={noteItemRefetch} />;
-      })}
+      }) : null}
       <AddContactDetailGroupItemButton refetch={noteItemRefetch} group={group} />
       {isModalVisible && (
         <EditContactDetailGroupModal
@@ -114,12 +127,13 @@ const AddContactDetailGroupItemButton = ({
   refetch: () => void;
   group: NoteGroupType;
 }) => {
+  const { theme: themeColors } = useThemeColors();
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   return (
     <>
       <Button onPress={() => setIsModalVisible(true)}>
-        <Text>+추가하기</Text>
+        <Text style={{ color: themeColors.primaryText }}>+추가하기</Text>
       </Button>
       {isModalVisible && (
         <EditContactDetailGroupItemModal
@@ -134,6 +148,7 @@ const AddContactDetailGroupItemButton = ({
 };
 
 const ContactDetailGroupItem = ({ item, refetch }: { item: NoteItemType; refetch: () => void }) => {
+  const { theme: themeColors } = useThemeColors();
   const [isActionMenuVisible, setIsActionMenuVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
 
@@ -151,14 +166,26 @@ const ContactDetailGroupItem = ({ item, refetch }: { item: NoteItemType; refetch
 
   return (
     <CommonBox>
-      <View className="gap-3">
-        <View className="flex-row justify-between">
-          <Text className="text-lg font-bold">{item.title}</Text>
+      <View style={{ gap: 12 }}>
+        <View style={{ 
+          flexDirection: 'row', 
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <Text style={{
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: themeColors.text,
+          }}>{item.title}</Text>
           <TouchableOpacity onPress={() => setIsActionMenuVisible(true)}>
-            <EllipsisVertical size={20} color="#666" />
+            <EllipsisVertical size={20} color={themeColors.textSecondary} />
           </TouchableOpacity>
         </View>
-        <Text className="text-sm font-normal">{item.content}</Text>
+        <Text style={{
+          fontSize: 14,
+          fontWeight: '400',
+          color: themeColors.text,
+        }}>{item.content}</Text>
       </View>
       {isActionMenuVisible && (
         <ActionMenu

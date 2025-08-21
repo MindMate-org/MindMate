@@ -3,6 +3,7 @@ import React from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 
 import { useThemeColors } from '../../../components/providers/theme-provider';
+import { useI18n } from '../../../hooks/use-i18n';
 import { Colors } from '../../../constants/colors';
 
 interface AlarmSectionProps {
@@ -11,6 +12,8 @@ interface AlarmSectionProps {
   onLocationChange: (location: string) => void;
   onCompanionChange: (companion: string) => void;
   onAlarmPress?: () => void;
+  scheduledTime?: Date;
+  notificationEnabled?: boolean;
 }
 
 /**
@@ -25,8 +28,37 @@ export const AlarmSection: React.FC<AlarmSectionProps> = ({
   onLocationChange,
   onCompanionChange,
   onAlarmPress,
+  scheduledTime,
+  notificationEnabled = false,
 }) => {
   const { theme: themeColors } = useThemeColors();
+  const { t } = useI18n();
+
+  const getNotificationText = () => {
+    if (!scheduledTime) {
+      return t.locale.startsWith('en') ? 'No advance notifications' : '미리 알림 받지 않음';
+    }
+    
+    const timeString = scheduledTime.toLocaleString(
+      t.locale.startsWith('en') ? 'en-US' : 'ko-KR',
+      {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      }
+    );
+    
+    if (notificationEnabled) {
+      return t.locale.startsWith('en') 
+        ? `Notify at ${timeString}` 
+        : `${timeString}에 알림`;
+    } else {
+      return t.locale.startsWith('en') 
+        ? `Scheduled for ${timeString} (No notification)` 
+        : `${timeString} 예정 (알림 없음)`;
+    }
+  };
   
   return (
     <View style={{
@@ -47,7 +79,7 @@ export const AlarmSection: React.FC<AlarmSectionProps> = ({
             fontSize: 16,
             color: themeColors.text,
           }}
-          placeholder="서울시 마포구 마포나루길 467"
+          placeholder={t.locale.startsWith('en') ? '467 Maponaru-gil, Mapo-gu, Seoul' : '서울시 마포구 마포나루길 467'}
           placeholderTextColor={themeColors.textSecondary}
           value={location}
           onChangeText={onLocationChange}
@@ -62,12 +94,12 @@ export const AlarmSection: React.FC<AlarmSectionProps> = ({
         }}
         onPress={onAlarmPress}
       >
-        <Bell size={20} color={themeColors.primary} />
+        <Bell size={20} color={notificationEnabled ? themeColors.primary : themeColors.textSecondary} />
         <Text style={{
           marginLeft: 12,
           fontSize: 16,
-          color: themeColors.text,
-        }}>미리 알림 받지 않음</Text>
+          color: notificationEnabled ? themeColors.text : themeColors.textSecondary,
+        }}>{getNotificationText()}</Text>
       </TouchableOpacity>
 
       {/* 참가자 */}
@@ -83,7 +115,7 @@ export const AlarmSection: React.FC<AlarmSectionProps> = ({
             fontSize: 16,
             color: themeColors.text,
           }}
-          placeholder="참가자 입력"
+          placeholder={t.locale.startsWith('en') ? 'Enter participants' : '참가자 입력'}
           placeholderTextColor={themeColors.textSecondary}
           value={companion}
           onChangeText={onCompanionChange}

@@ -140,3 +140,64 @@ export const getTagById = async (tagId: number): Promise<TagType | null> => {
     throw error;
   }
 };
+
+// 중복 태그 정리 함수 (강화 버전)
+export const cleanupDuplicateTags = async (): Promise<void> => {
+  try {
+    console.log('중복 태그 정리 시작...');
+    
+    // 모든 태그 조회
+    const allTags = await db.getAllAsync('SELECT id, name FROM tag ORDER BY id') as TagType[];
+    console.log('전체 태그:', allTags.map(tag => `${tag.name} (${tag.id})`));
+    
+    // 이름으로 그룹화 (대소문자 구분 없이, 공백 제거)
+    const tagGroups = new Map<string, TagType[]>();
+    
+    allTags.forEach(tag => {
+      const normalizedName = tag.name.trim().toLowerCase();
+      if (!tagGroups.has(normalizedName)) {
+        tagGroups.set(normalizedName, []);
+      }
+      tagGroups.get(normalizedName)!.push(tag);
+    });
+    
+    // 중복이 있는 그룹 처리
+    for (const [normalizedName, tags] of tagGroups) {
+      if (tags.length > 1) {
+        console.log(`중복 태그 발견: ${normalizedName}, IDs: ${tags.map(t => t.id).join(', ')}`);
+        
+        // 가장 작은 ID를 유지
+        const keepTag = tags.reduce((min, current) => current.id < min.id ? current : min);
+        const deleteTagIds = tags.filter(tag => tag.id !== keepTag.id).map(tag => tag.id);
+        
+        console.log(`유지할 태그: ${keepTag.name} (${keepTag.id}), 삭제할 태그 IDs: ${deleteTagIds.join(', ')}`);
+        
+        // 삭제할 태그들의 연결을 유지할 태그로 이동
+        for (const deleteId of deleteTagIds) {
+          // 기존 연결을 유지할 태그로 업데이트 (중복 방지)
+          await db.runAsync(`
+            UPDATE OR IGNORE contact_tag 
+            SET tag_id = ? 
+            WHERE tag_id = ?
+          `, [keepTag.id, deleteId]);
+          
+          // 남은 중복 연결 제거
+          await db.runAsync(`
+            DELETE FROM contact_tag 
+            WHERE tag_id = ?
+          `, [deleteId]);
+          
+          // 중복 태그 삭제
+          await db.runAsync('DELETE FROM tag WHERE id = ?', [deleteId]);
+          
+          console.log(`삭제 완료: 태그 ID ${deleteId}`);
+        }
+      }
+    }
+
+    console.log('중복 태그 정리 완료');
+  } catch (error) {
+    console.error('중복 태그 정리 실패:', error);
+    throw error;
+  }
+};

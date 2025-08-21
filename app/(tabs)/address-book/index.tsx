@@ -11,6 +11,7 @@ import AddressBookSelfItem from '../../../src/features/address-book/components/a
 
 const AddressBook = () => {
   const [searchText, setSearchText] = useState('');
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const router = useRouter();
   const { theme: themeColors, isDark } = useThemeColors();
   const { t } = useI18n();
@@ -19,10 +20,16 @@ const AddressBook = () => {
     router.push('/address-book/edit/new');
   };
 
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    // 추가적인 새로고침 로직이 있다면 여기에
+    setTimeout(() => setIsRefreshing(false), 1000);
+  };
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF', paddingBottom: 20 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background, paddingBottom: 20 }}>
       {/* 고정 영역들 */}
-      <View style={{ backgroundColor: isDark ? themeColors.background : '#F0F3FF', paddingHorizontal: 16, paddingBottom: 16, paddingTop: 8 }}>
+      <View style={{ backgroundColor: themeColors.background, paddingHorizontal: 16, paddingBottom: 16, paddingTop: 16 }}>
         <AddressBookSelfItem />
         <View style={{ marginTop: 16 }}>
           <SearchInput 
@@ -33,9 +40,13 @@ const AddressBook = () => {
         </View>
       </View>
 
-      {/* 스크롤 가능한 영역 */}
-      <View style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
-        <AddressBookList searchText={searchText} />
+      {/* 스크롤 가능한 영역 - 최적화된 FlatList */}
+      <View style={{ flex: 1, backgroundColor: themeColors.background }}>
+        <AddressBookList 
+          searchText={searchText} 
+          onRefresh={handleRefresh}
+          isRefreshing={isRefreshing}
+        />
       </View>
 
       {/* 추가하기 버튼 */}

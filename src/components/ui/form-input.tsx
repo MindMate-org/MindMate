@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, TextInput, TextInputProps } from 'react-native';
 
+import { useThemeColors } from '../providers/theme-provider';
+
 export type FormInputVariant = 'default' | 'search' | 'compact';
 
 export interface FormInputPropsType extends Omit<TextInputProps, 'style'> {
@@ -46,40 +48,53 @@ const FormInput: React.FC<FormInputPropsType> = ({
   required = false,
   ...textInputProps
 }) => {
+  const { theme: themeColors, isDark } = useThemeColors();
+
   const getInputStyles = () => {
-    const baseStyles = 'bg-white rounded-lg px-4 py-3 text-base text-gray-800';
-
-    switch (variant) {
-      case 'search':
-        return `${baseStyles} rounded-xl shadow-dropShadow border-0`;
-      case 'compact':
-        return `${baseStyles} py-2 text-sm`;
-      case 'default':
-      default:
-        return `${baseStyles} border border-gray-300 shadow-sm focus:border-paleCobalt focus:shadow-md`;
-    }
-  };
-
-  const getBorderStyle = () => {
-    if (error) return 'border-red-500';
-    if (disabled) return 'border-gray-200';
-    return '';
-  };
-
-  const getTextColor = () => {
-    if (disabled) return 'text-gray-400';
-    return 'text-gray-800';
+    return {
+      backgroundColor: themeColors.surface,
+      borderRadius: variant === 'search' ? 12 : 8,
+      paddingHorizontal: 16,
+      paddingVertical: variant === 'compact' ? 8 : 12,
+      fontSize: variant === 'compact' ? 14 : 16,
+      color: disabled ? themeColors.textSecondary : themeColors.text,
+      borderWidth: variant === 'search' ? 0 : 1,
+      borderColor: error 
+        ? themeColors.error 
+        : disabled 
+        ? themeColors.border 
+        : themeColors.border,
+      shadowColor: themeColors.shadow,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: isDark ? 0.2 : 0.1,
+      shadowRadius: 2,
+      elevation: 1,
+    };
   };
 
   const inputHeight = multiline && height ? { minHeight: height } : {};
 
   return (
-    <View className={`w-full ${className}`}>
+    <View style={{ width: '100%' }}>
       {/* 라벨 */}
       {label && (
-        <View className="mb-2 flex-row items-center">
-          <Text className="text-gray-700 text-sm font-medium">{label}</Text>
-          {required && <Text className="ml-1 text-sm text-red-500">*</Text>}
+        <View style={{
+          marginBottom: 8,
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}>
+          <Text style={{
+            fontSize: 14,
+            fontWeight: '500',
+            color: themeColors.text,
+          }}>{label}</Text>
+          {required && (
+            <Text style={{
+              marginLeft: 4,
+              fontSize: 14,
+              color: themeColors.error,
+            }}>*</Text>
+          )}
         </View>
       )}
 
@@ -88,19 +103,26 @@ const FormInput: React.FC<FormInputPropsType> = ({
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor="#9CA3AF"
+        placeholderTextColor={themeColors.textSecondary}
         multiline={multiline}
         textAlignVertical={multiline ? 'top' : 'center'}
         editable={!disabled}
-        className={`${getInputStyles()} ${getBorderStyle()} ${getTextColor()} ${
-          disabled ? 'opacity-50' : ''
-        }`}
-        style={inputHeight}
+        style={{
+          ...getInputStyles(),
+          ...inputHeight,
+          opacity: disabled ? 0.5 : 1,
+        }}
         {...textInputProps}
       />
 
       {/* 에러 메시지 */}
-      {error && <Text className="mt-1 text-xs text-red-500">{error}</Text>}
+      {error && (
+        <Text style={{
+          marginTop: 4,
+          fontSize: 12,
+          color: themeColors.error,
+        }}>{error}</Text>
+      )}
     </View>
   );
 };

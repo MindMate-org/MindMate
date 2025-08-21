@@ -7,11 +7,13 @@ import { useState, useEffect } from 'react';
 import { RoutineQueryOptions } from '../db/routine-db-types';
 import { fetchGetRoutines, fetchGetRoutineById } from '../services';
 import { RoutineType } from '../types';
+import { useI18n } from '../../../hooks/use-i18n';
 
 /**
  * 루틴 목록 조회 훅
  */
 export const useRoutineQuery = (options: RoutineQueryOptions = {}) => {
+  const { t } = useI18n();
   const [routines, setRoutines] = useState<RoutineType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +26,7 @@ export const useRoutineQuery = (options: RoutineQueryOptions = {}) => {
       const data = await fetchGetRoutines(options);
       setRoutines(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '루틴 목록을 가져오는데 실패했습니다.');
+      setError(err instanceof Error ? err.message : t.routine.routineListFailed);
     } finally {
       setIsLoading(false);
     }
@@ -47,6 +49,7 @@ export const useRoutineQuery = (options: RoutineQueryOptions = {}) => {
  * 루틴 상세 조회 훅
  */
 export const useRoutineDetailQuery = (id: string | null) => {
+  const { t } = useI18n();
   const [routine, setRoutine] = useState<RoutineType | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -63,7 +66,7 @@ export const useRoutineDetailQuery = (id: string | null) => {
       const data = await fetchGetRoutineById(id);
       setRoutine(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '루틴 상세 정보를 가져오는데 실패했습니다.');
+      setError(err instanceof Error ? err.message : t.routine.loadFailed);
     } finally {
       setIsLoading(false);
     }

@@ -1,8 +1,10 @@
 import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';
-import { Image, TouchableOpacity, View, Text, Alert } from 'react-native';
+import { Image, TouchableOpacity, View, Text } from 'react-native';
 
 import { updateContact } from '../services/mutation-contact-data';
+import { useI18n } from '../../../hooks/use-i18n';
+import { CustomAlertManager } from '../../../components/ui/custom-alert';
 
 import BottomModal from '@/src/components/ui/bottom-modal';
 
@@ -15,6 +17,7 @@ const AddressBookImage = ({
   id?: string;
   setUrl?: (url: string) => void;
 }) => {
+  const { t } = useI18n();
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   return (
@@ -54,12 +57,17 @@ const EditAddressBookImageModal = ({
   id?: string;
   setUrl?: (url: string) => void;
 }) => {
+  const { t } = useI18n();
   const handleSelectImage = () => {
-    Alert.alert('이미지 선택', '이미지를 어떻게 선택하시겠습니까?', [
-      { text: '취소', style: 'cancel' },
-      { text: '갤러리에서 선택', onPress: openGallery },
-      { text: '카메라로 촬영', onPress: openCamera },
-    ]);
+    CustomAlertManager.alert(
+      t.locale.startsWith('en') ? 'Select Image' : '이미지 선택', 
+      t.locale.startsWith('en') ? 'How would you like to select an image?' : '이미지를 어떻게 선택하시겠습니까?', 
+      [
+        { text: t.locale.startsWith('en') ? 'Cancel' : '취소', style: 'cancel' },
+        { text: t.locale.startsWith('en') ? 'Gallery' : '갤러리에서 선택', onPress: openGallery },
+        { text: t.locale.startsWith('en') ? 'Camera' : '카메라로 촬영', onPress: openCamera },
+      ]
+    );
   };
 
   const openGallery = async () => {
@@ -68,7 +76,10 @@ const EditAddressBookImageModal = ({
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
       if (permissionResult.granted === false) {
-        Alert.alert('권한 필요', '갤러리 접근 권한이 필요합니다.');
+        CustomAlertManager.error(
+          t.locale.startsWith('en') ? 'Gallery access permission is required.' : '갤러리 접근 권한이 필요합니다.',
+          t.locale.startsWith('en') ? 'Permission Required' : '권한 필요'
+        );
         return;
       }
 
@@ -86,7 +97,10 @@ const EditAddressBookImageModal = ({
       }
     } catch (error) {
       console.error('갤러리 열기 오류:', error);
-      Alert.alert('오류', '갤러리를 열 수 없습니다.');
+      CustomAlertManager.error(
+        t.locale.startsWith('en') ? 'Cannot open gallery.' : '갤러리를 열 수 없습니다.',
+        t.locale.startsWith('en') ? 'Error' : '오류'
+      );
     }
   };
 
@@ -96,7 +110,10 @@ const EditAddressBookImageModal = ({
       const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
 
       if (permissionResult.granted === false) {
-        Alert.alert('권한 필요', '카메라 접근 권한이 필요합니다.');
+        CustomAlertManager.error(
+          t.locale.startsWith('en') ? 'Camera access permission is required.' : '카메라 접근 권한이 필요합니다.',
+          t.locale.startsWith('en') ? 'Permission Required' : '권한 필요'
+        );
         return;
       }
 
@@ -113,7 +130,10 @@ const EditAddressBookImageModal = ({
       }
     } catch (error) {
       console.error('카메라 열기 오류:', error);
-      Alert.alert('오류', '카메라를 열 수 없습니다.');
+      CustomAlertManager.error(
+        t.locale.startsWith('en') ? 'Cannot open camera.' : '카메라를 열 수 없습니다.',
+        t.locale.startsWith('en') ? 'Error' : '오류'
+      );
     }
   };
 
@@ -123,7 +143,7 @@ const EditAddressBookImageModal = ({
     if (setUrl) {
       setUrl(imageToUpdate);
     }
-    if (id) {
+    if (id && id !== '0') {
       updateContact(id, { profile_image: imageToUpdate });
     }
 

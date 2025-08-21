@@ -1,136 +1,58 @@
-import * as Notifications from 'expo-notifications';
-import { useState } from 'react';
-import { Alert } from 'react-native';
-
-import { PlatformChecker } from '../../../utils/platform-checker';
+import { notificationService } from '../../../lib/notification-service';
 import type { ScheduleType } from '../types/schedule-types';
 
-// 일정 알림 훅
+// 일정 알림 훅 (새로운 통합 시스템 사용)
 export const useScheduleAlarm = () => {
-  const [isInitialized, setIsInitialized] = useState(false);
-
-  // 알림 초기화
-  const initializeAlarms = async () => {
-    try {
-      // Expo Go + Android 환경에서는 경고 메시지 표시하고 로컬 알림만 사용
-      if (PlatformChecker.isExpoGo() && PlatformChecker.isAndroid()) {
-        console.warn('⚠️ Expo Go에서는 Android 푸시 알림이 지원되지 않습니다. 로컬 알림만 사용됩니다.');
-        // 로컬 알림은 여전히 작동하므로 계속 진행
-      }
-
-      // 푸시 알림이 지원되지 않는 환경에서도 로컬 알림은 계속 진행
-      if (!PlatformChecker.isPushNotificationSupported()) {
-        console.log('📱 로컬 알림만 사용 가능한 환경입니다.');
-      }
-
-      // 알림 권한 요청
-      const { status: existingStatus } = await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-
-      if (existingStatus !== 'granted') {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-      }
-
-      if (finalStatus !== 'granted') {
-        Alert.alert('권한 필요', '알림 기능을 사용하려면 알림 권한이 필요합니다.');
-        return false;
-      }
-
-      // 알림 설정
-      Notifications.setNotificationHandler({
-        handleNotification: async () => ({
-          shouldShowAlert: true,
-          shouldPlaySound: true,
-          shouldSetBadge: false,
-          shouldShowBanner: true,
-          shouldShowList: true,
-        }),
-      });
-
-      setIsInitialized(true);
-      return true;
-    } catch (error) {
-      console.error('일정 알림 초기화 실패:', error);
-      return false;
-    }
-  };
-
   // 일정 알림 설정
-  const scheduleAlarm = async (schedule: ScheduleType) => {
-    if (!isInitialized) {
-      const initialized = await initializeAlarms();
-      if (!initialized) return false;
-    }
-
+  const scheduleAlarm = async (schedule: ScheduleType): Promise<boolean> => {
     try {
-      // 기존 알림 제거
-      await cancelAlarm(schedule.id);
-
-      // 일정 시간을 로컬 시간대로 정확히 파싱
+      // 일정 시간을 Date 객체로 변환
       const scheduleDateTime = new Date(schedule.time);
       const now = new Date();
 
-      // 로컬 시간대로 알람 시간 설정 (UTC 오프셋 보정)
-      const alarmDate = new Date(scheduleDateTime.getTime());
-
       // 과거 시간이면 알림 설정하지 않음
-      if (alarmDate <= now) {
-        console.log(`과거 일정이므로 알림 설정하지 않음: ${schedule.title}`);
-        return true;
+      if (scheduleDateTime <= now) {
+        console.log(`⚠️ 과거 일정이므로 알림 설정하지 않음: ${schedule.title}`);
+        return true; // 과거 시간도 정상 처리로 간주
       }
 
-      console.log(
-        '[일정 알림 예약] 일정 시간:',
-        scheduleDateTime.toLocaleString('ko-KR'),
-        '예약된 알람:',
-        alarmDate.toLocaleString('ko-KR'),
-        '정확한 시간:',
-        `${alarmDate.getHours()}:${alarmDate.getMinutes()}:${alarmDate.getSeconds()}`,
+      // 통합 알림 서비스 사용
+      const success = await notificationService.scheduleNotification(
+        schedule.id.toString(),
+        'schedule',
+        '일정 알림',
+        `"${schedule.title}" 일정이 시작됩니다!`,
+        scheduleDateTime,
+        false // 일정은 일회성 알림
       );
 
-      // 알림 ID를 고유하게 생성
-      const alarmId = `schedule_${schedule.id}_${Date.now()}`;
+      if (success) {
+        console.log(`✅ 일정 알림 설정 완료: ${schedule.title} - ${scheduleDateTime.toLocaleString('ko-KR')}`);
+      } else {
+        console.error(`❌ 일정 알림 설정 실패: ${schedule.title}`);
+      }
 
-      // 일정 알림 스케줄링
-      await Notifications.scheduleNotificationAsync({
-        identifier: alarmId,
-        content: {
-          title: '일정 알림',
-          body: `"${schedule.title}" 일정이 시작됩니다!`,
-          data: {
-            scheduleId: schedule.id,
-            scheduleTitle: schedule.title,
-            type: 'schedule_alarm',
-          },
-        },
-        trigger: { date: alarmDate } as any,
-      });
-
-      console.log(`일정 알림 설정 완료: ${schedule.title} - ${alarmDate.toLocaleString()}`);
-      return true;
+      return success;
     } catch (error) {
-      console.error('일정 알림 설정 실패:', error);
+      console.error('❌ 일정 알림 설정 중 오류:', error);
       return false;
     }
   };
 
   // 일정 알림 취소
-  const cancelAlarm = async (scheduleId: number) => {
+  const cancelAlarm = async (scheduleId: number): Promise<boolean> => {
     try {
-      const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
-      const scheduleAlarms = scheduledNotifications.filter(
-        (notification) => notification.content.data?.scheduleId === scheduleId,
-      );
-
-      for (const alarm of scheduleAlarms) {
-        await Notifications.cancelScheduledNotificationAsync(alarm.identifier);
+      const success = await notificationService.cancelNotification(scheduleId.toString(), 'schedule');
+      
+      if (success) {
+        console.log(`✅ 일정 알림 취소 완료: ${scheduleId}`);
+      } else {
+        console.error(`❌ 일정 알림 취소 실패: ${scheduleId}`);
       }
 
-      console.log(`일정 알림 취소 완료: ${scheduleId}`);
-      return true;
+      return success;
     } catch (error) {
-      console.error('일정 알림 취소 실패:', error);
+      console.error('❌ 일정 알림 취소 중 오류:', error);
       return false;
     }
   };
@@ -138,42 +60,47 @@ export const useScheduleAlarm = () => {
   // 특정 일정의 알림 조회
   const getScheduleAlarms = async (scheduleId: number) => {
     try {
-      const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
-      return scheduledNotifications.filter(
-        (notification) => notification.content.data?.scheduleId === scheduleId,
-      );
+      return await notificationService.getScheduledNotifications(scheduleId.toString(), 'schedule');
     } catch (error) {
-      console.error('일정 알림 조회 실패:', error);
+      console.error('❌ 일정 알림 조회 중 오류:', error);
       return [];
     }
   };
 
   // 모든 일정 알림 취소
-  const cancelAllScheduleAlarms = async () => {
+  const cancelAllScheduleAlarms = async (): Promise<boolean> => {
     try {
-      const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
-      const scheduleAlarms = scheduledNotifications.filter(
-        (notification) => notification.content.data?.type === 'schedule_alarm',
-      );
-
-      for (const alarm of scheduleAlarms) {
-        await Notifications.cancelScheduledNotificationAsync(alarm.identifier);
+      // 모든 일정 알림 조회 후 취소
+      const allScheduleAlarms = await notificationService.getScheduledNotifications(undefined, 'schedule');
+      
+      let successCount = 0;
+      for (const alarm of allScheduleAlarms) {
+        const scheduleId = alarm.content.data?.itemId;
+        if (scheduleId) {
+          const success = await notificationService.cancelNotification(String(scheduleId), 'schedule');
+          if (success) successCount++;
+        }
       }
 
-      console.log('모든 일정 알림 취소 완료');
+      console.log(`✅ ${successCount}개 일정 알림 취소 완료`);
       return true;
     } catch (error) {
-      console.error('모든 일정 알림 취소 실패:', error);
+      console.error('❌ 모든 일정 알림 취소 중 오류:', error);
       return false;
     }
   };
 
+  // 알림 서비스 초기화
+  const initializeAlarms = async (): Promise<boolean> => {
+    return await notificationService.initialize();
+  };
+
   return {
-    isInitialized,
-    initializeAlarms,
     scheduleAlarm,
     cancelAlarm,
     getScheduleAlarms,
     cancelAllScheduleAlarms,
+    initializeAlarms,
+    isInitialized: true, // 새 시스템에서는 항상 초기화됨
   };
 };

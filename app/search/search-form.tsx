@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   Keyboard,
@@ -12,15 +12,19 @@ import {
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
+  BackHandler,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 import { useThemeColors } from '../../src/components/providers/theme-provider';
-import Toast from 'react-native-toast-message';
+import { useI18n } from '../../src/hooks/use-i18n';
+import { Ionicons } from '@expo/vector-icons';
+import { CustomAlertManager } from '../../src/components/ui/custom-alert';
 
 import FormInput from '../../src/components/ui/form-input';
 import MediaPicker, { MediaItem } from '../../src/components/ui/media-picker';
 import SearchCategoryPicker from '../../src/features/search/components/search-category-picker';
-import { searchCategories } from '../../src/features/search/constants/search-category-constants';
+import { getSearchCategories } from '../../src/features/search/constants/search-category-constants';
 import { SearchCategoryLabel } from '../../src/features/search/db/search-db-types';
 import {
   fetchGetMediaById,
@@ -30,7 +34,7 @@ import {
 } from '../../src/features/search/search-services';
 import {
   SearchFormSchema,
-  searchFormSchema,
+  createSearchFormSchema,
 } from '../../src/features/search/utils/search-form-schema';
 import { db } from '../../src/hooks/use-initialize-database';
 import { fetchInsertMedia, pickMedia } from '../../src/lib/media-services';
@@ -39,9 +43,13 @@ import { MediaType } from '../../src/types/common-db-types';
 const SearchForm = () => {
   const router = useRouter();
   const { theme: themeColors, isDark } = useThemeColors();
+  const { t } = useI18n();
   const [images, setImages] = useState<MediaItem[]>([]);
   const params = useLocalSearchParams();
   const id = params.id;
+
+  // 카테고리 리스트를 i18n으로 초기화
+  const searchCategories = getSearchCategories(t.locale.startsWith('en') ? 'en' : 'ko');
 
   // dropdown 상태
   const [open, setOpen] = useState(false);
@@ -67,7 +75,8 @@ const SearchForm = () => {
         description: search.description ?? '',
       });
     } catch (error) {
-      alert('폼 초기화 오류:');
+      console.error('Form initialization error:', error);
+      CustomAlertManager.error(t.locale.startsWith('en') ? 'Form initialization error.' : '폼 초기화 오류가 발생했습니다.');
     }
   };
   useEffect(() => {
@@ -82,7 +91,7 @@ const SearchForm = () => {
     reset,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(searchFormSchema),
+    resolver: zodResolver(createSearchFormSchema(t.locale.startsWith('en') ? 'en' : 'ko')),
     defaultValues: {
       name: '',
       category: '',
@@ -104,16 +113,12 @@ const SearchForm = () => {
           await fetchInsertMedia(mediaItems, 'search', lastInsertRowId);
         }
       });
+      
+      await CustomAlertManager.success(t.locale.startsWith('en') ? 'Item saved successfully.' : '물건이 저장되었습니다.');
       router.back();
-      Toast.show({
-        type: 'success',
-        text1: '등록이 완료되었습니다.',
-      });
     } catch (error) {
-      Toast.show({
-        type: 'error',
-        text1: '등록에 실패했습니다.',
-      });
+      console.error('Item save failed:', error);
+      CustomAlertManager.error(t.locale.startsWith('en') ? 'An error occurred while saving the item.' : '물건 저장 중 오류가 발생했습니다.');
       return;
     }
   };
@@ -126,16 +131,12 @@ const SearchForm = () => {
         type: item.type as 'image' | 'video' | 'livePhoto' | 'pairedVideo' | undefined,
       }));
       await fetchUpdateSearchById(+id, data, mediaItems);
+      
+      await CustomAlertManager.success(t.locale.startsWith('en') ? 'Item updated successfully.' : '물건이 수정되었습니다.');
       router.back();
-      Toast.show({
-        type: 'success',
-        text1: '수정이 완료되었습니다.',
-      });
     } catch (error) {
-      Toast.show({
-        type: 'error',
-        text1: '수정에 실패했습니다.',
-      });
+      console.error('Item update failed:', error);
+      CustomAlertManager.error(t.locale.startsWith('en') ? 'An error occurred while updating the item.' : '물건 수정 중 오류가 발생했습니다.');
       return;
     }
   };
@@ -155,28 +156,92 @@ const SearchForm = () => {
     return setImages((prev) => prev.filter((_, i) => i !== idx));
   };
 
+  // 뒤로가기 처리
+  const handleCancel = async () => {
+    const confirmed = await CustomAlertManager.confirm(
+      t.locale.startsWith('en') ? 'Confirm' : '확인',
+      t.locale.startsWith('en') ? 'Do you want to cancel writing?' : '작성을 취소하시겠습니까?'
+    );
+    if (confirmed) {
+      router.back();
+    }
+  };
+
+  // 안드로이드 하드웨어 뒤로가기 버튼 처리
+  const handleBackPress = useCallback(() => {
+    handleCancel();
+    return true;
+  }, []);
+
+  // 화면이 포커스될 때 BackHandler 등록/해제
+  useFocusEffect(
+    useCallback(() => {
+      const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+      return () => subscription.remove();
+    }, [handleBackPress])
+  );
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView style={{ 
-        flex: 1, 
-        backgroundColor: isDark ? themeColors.background : '#F0F3FF',
-        paddingHorizontal: 16,
-        paddingTop: 32,
-      }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
+        {/* 헤더 */}
+        <View style={{
+          paddingTop: 40, // 상태바 아래 여백
+          borderTopLeftRadius: 12,
+          borderTopRightRadius: 12,
+          backgroundColor: themeColors.surface,
+          paddingHorizontal: 16,
+          paddingVertical: 16,
+          shadowColor: themeColors.shadow,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: isDark ? 0.3 : 0.1,
+          shadowRadius: 4,
+          elevation: 2,
+        }}>
+          <View style={{
+            marginTop: 0,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'relative',
+          }}>
+            <TouchableOpacity
+              onPress={handleCancel}
+              style={{ position: 'absolute', left: 0 }}
+            >
+              <Ionicons name="arrow-back" size={24} color={themeColors.primary} />
+            </TouchableOpacity>
+            <Text style={{
+              fontSize: 18,
+              fontWeight: 'bold',
+              color: themeColors.primary,
+            }}>
+              {id ? (t.locale.startsWith('en') ? 'Edit Item' : '물건 수정') : (t.locale.startsWith('en') ? 'Register Item' : '물건 등록')}
+            </Text>
+          </View>
+        </View>
+
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
           style={{ flex: 1 }}
         >
-          <ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps="handled">
+          <ScrollView 
+            style={{ 
+              flex: 1, 
+              backgroundColor: themeColors.surface,
+              paddingHorizontal: 16,
+            }} 
+            keyboardShouldPersistTaps="handled"
+          >
             <View style={{ paddingBottom: 24 }}>
               <Controller
                 control={control}
                 name="name"
                 render={({ field: { onChange, value, onBlur } }) => (
                   <FormInput
-                    label="물건 이름"
-                    placeholder="물건 이름을 입력해 주세요"
+                    label={t.locale.startsWith('en') ? 'Item Name' : '물건 이름'}
+                    placeholder={t.locale.startsWith('en') ? 'Please enter item name' : '물건 이름을 입력해 주세요'}
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -195,9 +260,10 @@ const SearchForm = () => {
                 gap: 8,
               }}>
                 <Text style={{
-                  fontSize: 18,
-                  color: themeColors.primary,
-                }}>카테고리</Text>
+                  fontSize: 14,
+                  fontWeight: '500',
+                  color: themeColors.text,
+                }}>{t.locale.startsWith('en') ? 'Category' : '카테고리'}</Text>
                 <Controller
                   name="category"
                   control={control}
@@ -213,9 +279,12 @@ const SearchForm = () => {
                     />
                   )}
                 />
-                <View className="h-5">
+                <View style={{ height: 20 }}>
                   {errors.category && (
-                    <Text className="text-ss text-red-500">{errors.category.message}</Text>
+                    <Text style={{
+                      fontSize: 12,
+                      color: themeColors.error,
+                    }}>{errors.category.message}</Text>
                   )}
                 </View>
               </View>
@@ -224,8 +293,8 @@ const SearchForm = () => {
                 name="location"
                 render={({ field: { onChange, value, onBlur } }) => (
                   <FormInput
-                    label="간략한 위치"
-                    placeholder="간략한 위치를 입력해 주세요"
+                    label={t.locale.startsWith('en') ? 'Brief Location' : '간략한 위치'}
+                    placeholder={t.locale.startsWith('en') ? 'Please enter brief location' : '간략한 위치를 입력해 주세요'}
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -240,8 +309,8 @@ const SearchForm = () => {
                 name="description"
                 render={({ field: { onChange, value } }) => (
                   <FormInput
-                    label="상세 위치"
-                    placeholder="상세 위치를 입력해 주세요"
+                    label={t.locale.startsWith('en') ? 'Detailed Location' : '상세 위치'}
+                    placeholder={t.locale.startsWith('en') ? 'Please enter detailed location' : '상세 위치를 입력해 주세요'}
                     value={value ?? ''}
                     onChangeText={onChange}
                     variant="search"
@@ -252,13 +321,16 @@ const SearchForm = () => {
                 )}
               />
 
-              <View className="mb-8 w-full">
+              <View style={{ 
+                marginBottom: 32, 
+                width: '100%' 
+              }}>
                 <MediaPicker
                   mediaList={images}
                   onAddMedia={handleAddImage}
                   onRemoveMedia={handleRemoveImage}
                   maxCount={3}
-                  label="사진 추가"
+                  label={t.locale.startsWith('en') ? 'Add Photo' : '사진 추가'}
                   className="mb-4"
                 />
               </View>
@@ -266,7 +338,8 @@ const SearchForm = () => {
             <View style={{ 
               width: '100%', 
               flexDirection: 'row', 
-              gap: 12 
+              gap: 12,
+              marginTop: 24
             }}>
               <TouchableOpacity
                 style={{
@@ -287,7 +360,7 @@ const SearchForm = () => {
                   fontWeight: '500',
                   color: themeColors.primaryText,
                 }}>
-                  {id ? '수정하기' : '등록하기'}
+                  {id ? (t.locale.startsWith('en') ? 'Update' : '수정하기') : (t.locale.startsWith('en') ? 'Register' : '등록하기')}
                 </Text>
               </TouchableOpacity>
 
@@ -295,17 +368,17 @@ const SearchForm = () => {
                 style={{
                   flex: 1,
                   borderRadius: 12,
-                  backgroundColor: themeColors.accent,
+                  backgroundColor: '#FEF3C7',
                   paddingVertical: 12,
                 }}
-                onPress={() => router.back()}
+                onPress={handleCancel}
               >
                 <Text style={{
                   textAlign: 'center',
                   fontSize: 16,
                   fontWeight: '500',
-                  color: themeColors.primary,
-                }}>취소하기</Text>
+                  color: '#576BCD',
+                }}>{t.locale.startsWith('en') ? 'Cancel' : '취소하기'}</Text>
               </TouchableOpacity>
             </View>
           </ScrollView>

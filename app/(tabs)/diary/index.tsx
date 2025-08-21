@@ -11,7 +11,8 @@ import {
   Calendar,
 } from 'lucide-react-native';
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Pressable, ActivityIndicator, TouchableOpacity } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { useThemeColors } from '../../../src/components/providers/theme-provider';
 import { useI18n } from '../../../src/hooks/use-i18n';
@@ -48,6 +49,8 @@ const DiaryListPage = () => {
   const { theme: themeColors, isDark } = useThemeColors();
   const { t } = useI18n();
   const [diaries, setDiaries] = useState<any[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [filteredDiaries, setFilteredDiaries] = useState<any[]>([]);
   const [sortOrder, setSortOrder] = useState<SortOrderType>('desc');
   const [showSearchModal, setShowSearchModal] = useState(false);
@@ -134,20 +137,79 @@ const DiaryListPage = () => {
   }, [filteredDiaries, sortOrder]);
 
   // 그룹화를 useMemo로 최적화
-  const grouped = useMemo(() => groupDiariesByPeriod(sortedDiaries), [sortedDiaries]);
+  const grouped = useMemo(() => 
+    groupDiariesByPeriod(sortedDiaries, t.locale.startsWith('en') ? 'en' : 'ko', selectedDate), 
+    [sortedDiaries, t.locale, selectedDate]
+  );
 
   return (
-    <View style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
+    <View style={{ flex: 1, backgroundColor: themeColors.background }}>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
           paddingHorizontal: 12,
-          paddingTop: 12,
+          paddingTop: 24,
           paddingBottom: 80,
         }}
       >
         {/* 기능 버튼들 */}
         <View style={{ marginBottom: 16 }}>
+          <View style={{ flexDirection: 'row', marginBottom: 8 }}>
+            <Pressable
+              onPress={() => setShowDatePicker(true)}
+              style={{
+                minHeight: 40,
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 8,
+                backgroundColor: selectedDate ? themeColors.primary : themeColors.surface,
+                paddingHorizontal: 8,
+                paddingVertical: 8,
+                shadowColor: themeColors.shadow,
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: isDark ? 0.3 : 0.1,
+                shadowRadius: 2,
+                elevation: 2,
+                marginRight: 8,
+              }}
+            >
+              <Calendar color={selectedDate ? themeColors.primaryText : themeColors.primary} size={14} />
+              <Text style={{ 
+                fontSize: 12, 
+                fontWeight: '500', 
+                color: selectedDate ? themeColors.primaryText : themeColors.text,
+                marginLeft: 4,
+              }}>
+                {selectedDate ? selectedDate.toLocaleDateString(t.locale) : t.diary.filterByDate || '날짜 선택'}
+              </Text>
+            </Pressable>
+            {selectedDate && (
+              <Pressable
+                onPress={() => setSelectedDate(undefined)}
+                style={{
+                  minHeight: 40,
+                  paddingHorizontal: 12,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 8,
+                  backgroundColor: themeColors.surface,
+                  shadowColor: themeColors.shadow,
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: isDark ? 0.3 : 0.1,
+                  shadowRadius: 2,
+                  elevation: 2,
+                }}
+              >
+                <Text style={{ 
+                  fontSize: 12, 
+                  fontWeight: '500', 
+                  color: themeColors.text,
+                }}>{t.diary.reset}</Text>
+              </Pressable>
+            )}
+          </View>
           <View style={{ flexDirection: 'row' }}>
             <Pressable
               onPress={() => router.push('/diary/trash')}
@@ -175,7 +237,7 @@ const DiaryListPage = () => {
                 fontWeight: '500', 
                 color: themeColors.text,
                 marginLeft: 4,
-              }}>{t.common.delete}</Text>
+              }}>{t.diary.trash}</Text>
             </Pressable>
             <Pressable
               onPress={() => router.push('/diary/stats')}
@@ -409,7 +471,7 @@ const DiaryListPage = () => {
                     {t.diary.writingTips}
                   </Text>
                   <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                    <View style={{ flexDirection: 'row', maxWidth: 320 }}>
+                    <View style={{ flexDirection: 'row', maxWidth: 320, gap: 12 }}>
                       <View
                         style={{
                           flex: 1,
@@ -531,10 +593,6 @@ const DiaryListPage = () => {
                   alignItems: 'center',
                   marginLeft: 8,
                   marginBottom: 4,
-                  backgroundColor: themeColors.accent,
-                  paddingHorizontal: 12,
-                  paddingVertical: 6,
-                  borderRadius: 8,
                 }}>
                   <Feather name="calendar" size={18} color={themeColors.primary} />
                   <Text style={{
@@ -574,7 +632,7 @@ const DiaryListPage = () => {
                   key={item.id}
                   item={item}
                   onPress={() => router.push(`/diary/${item.id}`)}
-                  formatDateTime={formatDateTimeString}
+                  formatDateTime={(datetime: string) => formatDateTimeString(datetime, t.locale.startsWith('en') ? 'en' : 'ko')}
                 />
               ))}
             </View>
@@ -615,6 +673,23 @@ const DiaryListPage = () => {
         onClose={() => setShowSearchModal(false)}
         onSearch={handleSearch}
       />
+
+      {/* 날짜 선택기 */}
+      {showDatePicker && (
+        <DateTimePicker
+          value={selectedDate || new Date()}
+          mode="date"
+          display="default"
+          locale={t.locale.startsWith('en') ? 'en_US' : 'ko_KR'}
+          onChange={(event, date) => {
+            setShowDatePicker(false);
+            // 사용자가 취소한 경우에는 아무것도 하지 않음
+            if (event.type === 'set' && date) {
+              setSelectedDate(date);
+            }
+          }}
+        />
+      )}
     </View>
   );
 };

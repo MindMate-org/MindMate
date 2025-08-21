@@ -14,23 +14,11 @@ export default function CustomTopTabBar({
 }: MaterialTopTabBarProps) {
   const { theme: themeColors, isDark } = useThemeColors();
   const { t } = useI18n();
-  // 디버깅용 로그 (개발 중에만 사용)
-  if (__DEV__) {
-    console.log(
-      'Tab Routes:',
-      state.routes.map((r, index) => ({
-        index,
-        name: r.name,
-        label:
-          descriptors[r.key]?.options?.title || descriptors[r.key]?.options?.tabBarLabel || r.name,
-      })),
-    );
-  }
 
   return (
     <SafeAreaView
       style={{
-        backgroundColor: isDark ? themeColors.surface : '#F0F3FF',
+        backgroundColor: themeColors.background,
       }}
     >
       {/* MIND MATE 타이틀 */}
@@ -73,7 +61,7 @@ export default function CustomTopTabBar({
           borderTopWidth: 1,
           borderBottomWidth: 1,
           borderColor: themeColors.primary,
-          backgroundColor: isDark ? themeColors.surface : '#F0F3FF',
+          backgroundColor: themeColors.background,
           paddingHorizontal: 8,
           paddingVertical: 12,
         }}
@@ -141,6 +129,8 @@ export default function CustomTopTabBar({
                     ? (isDark ? themeColors.primaryText : '#FFFFFF')
                     : (isDark ? themeColors.primary : '#576BCD'),
                 }}
+                numberOfLines={1}
+                adjustsFontSizeToFit
               >
                 {label}
               </Text>

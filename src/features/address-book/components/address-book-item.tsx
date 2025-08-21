@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { EllipsisVertical } from 'lucide-react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { TouchableOpacity, View, Text } from 'react-native';
 
 import ActionMenu from './action-menu';
@@ -12,7 +12,7 @@ import CallButton from './call-button';
 import EditAddressBookTagButton from './edit-address-book-tag-button';
 import MessageButton from './message-button';
 import { useThemeColors } from '../../../components/providers/theme-provider';
-import { useAsyncDataGet } from '../../../hooks/use-async-data-get';
+import { useEnhancedAsyncDataGet } from '../../../hooks/use-enhanced-async-data-get';
 import { AddressBookService } from '../services';
 import { ContactType } from '../types/address-book-type';
 
@@ -21,31 +21,40 @@ const AddressBookItem = ({ contact, refetch }: { contact: ContactType; refetch: 
   const { theme: themeColors, isDark } = useThemeColors();
   const [isActionMenuVisible, setIsActionMenuVisible] = useState(false);
   const getContactTagsUseCallBack = useCallback(
-    () => AddressBookService.fetchGetContactTags(contact.id),
-    [contact.id],
+    () => contact?.id ? AddressBookService.fetchGetContactTags(contact.id) : Promise.resolve([]),
+    [contact?.id],
   );
-  const { data: tags, refetch: refetchTags } = useAsyncDataGet(getContactTagsUseCallBack);
+  const { data: fetchedTags, refetch: refetchTags } = useEnhancedAsyncDataGet(getContactTagsUseCallBack);
+  
+  // Use tags from contact prop if available, otherwise use fetched tags
+  const contactWithTags = contact as any;
+  
+  // Debug logging
+  console.log('AddressBookItem - fetchedTags:', fetchedTags, 'contactTags:', contactWithTags.tags);
+  
+  const tags = Array.isArray(fetchedTags) ? fetchedTags : 
+               Array.isArray(contactWithTags.tags) ? contactWithTags.tags : [];
+               
+  console.log('AddressBookItem - final tags:', tags);
 
   const refetchForEditTags = useCallback(() => {
     refetchTags();
     refetch();
   }, [refetchTags, refetch]);
 
-  useEffect(() => {
-    AddressBookService.fetchGetTags().then((tags) => {
-      console.log(tags);
-    });
-  }, [tags]);
-
   const handleEdit = () => {
-    router.push(`/address-book/edit/${contact.id}`);
+    if (contact?.id) {
+      router.push(`/address-book/edit/${contact.id}`);
+    }
   };
 
   const handleDelete = async () => {
     try {
-      await AddressBookService.fetchDeleteContact(contact.id);
-      setIsActionMenuVisible(false);
-      refetch();
+      if (contact?.id) {
+        await AddressBookService.fetchDeleteContact(contact.id);
+        setIsActionMenuVisible(false);
+        refetch();
+      }
     } catch (error) {
       console.error('연락처 삭제 실패:', error);
     }
@@ -84,7 +93,7 @@ const AddressBookItem = ({ contact, refetch }: { contact: ContactType; refetch: 
             flexWrap: 'wrap',
             gap: 4,
           }}>
-            {tags?.map((tag) => <AddressBookTag key={tag.id}>{tag.name}</AddressBookTag>)}
+            {Array.isArray(tags) && tags.map((tag) => <AddressBookTag key={tag.id}>{tag.name}</AddressBookTag>)}
             <EditAddressBookTagButton refetch={refetchForEditTags} contact={contact} />
           </View>
           <TouchableOpacity
@@ -104,7 +113,7 @@ const AddressBookItem = ({ contact, refetch }: { contact: ContactType; refetch: 
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           {/* 프로필 이미지 */}
           <View style={{ marginRight: 16 }}>
-            <AddressBookImage image={contact.profile_image} id={contact.id.toString()} />
+            <AddressBookImage image={contact.profile_image} id={contact?.id?.toString() || '0'} />
           </View>
 
           {/* 연락처 정보 */}
@@ -145,7 +154,3 @@ const AddressBookItem = ({ contact, refetch }: { contact: ContactType; refetch: 
 };
 
 export default AddressBookItem;
-
-{
-  /* 라벨 들어갈 위치 */
-}

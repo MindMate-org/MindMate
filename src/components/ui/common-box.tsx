@@ -10,9 +10,9 @@ type CommonBoxProps = {
 const colorMap: Record<string, string> = {
   black: '#000000',
   gray: '#6B7280',
-  white: '#FFFFFF',
+  white: '#9CA3AF',
   teal: '#14B8A6',
-  paleYellow: '#FEF3C7',
+  paleYellow: '#F59E0B',
   pink: '#EC4899',
   turquoise: '#06B6D4',
   foggyBlue: '#93C5FD',

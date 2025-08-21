@@ -1,9 +1,12 @@
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, Alert, ActivityIndicator, Text } from 'react-native';
+import { SafeAreaView, ActivityIndicator, Text } from 'react-native';
 
 import { EntryForm, EntryFormDataType } from '../../../src/components/common/entry-form';
+import { CustomAlertManager } from '../../../src/components/ui/custom-alert';
+import { useI18n } from '../../../src/hooks/use-i18n';
 import { Colors } from '../../../src/constants/colors';
+import { useThemeColors } from '../../../src/components/providers/theme-provider';
 import { AlarmSection } from '../../../src/features/schedule/components/alarm-section';
 import {
   fetchGetScheduleById,
@@ -25,6 +28,8 @@ import type {
  */
 const EditSchedulePage = () => {
   const router = useRouter();
+  const { t } = useI18n();
+  const { theme: themeColors } = useThemeColors();
   const { id } = useLocalSearchParams<{ id: string }>();
   const scheduleId = parseInt(id, 10);
 
@@ -66,18 +71,17 @@ const EditSchedulePage = () => {
             fontFamily: 'default',
             fontSize: 16,
             textAlign: 'left',
-            textColor: '#000000',
-            backgroundColor: '#F5F7FF',
+            textColor: themeColors.text,
+            backgroundColor: themeColors.surface,
           },
         });
       } else {
-        Alert.alert('오류', '일정을 찾을 수 없습니다.', [
-          { text: '확인', onPress: () => router.back() },
-        ]);
+        CustomAlertManager.error(t.locale.startsWith('en') ? 'Schedule not found.' : '일정을 찾을 수 없습니다.');
+        router.back();
       }
     } catch (error) {
       console.error('Error loading schedule:', error);
-      Alert.alert('오류', '일정을 불러오는 중 문제가 발생했습니다.');
+      CustomAlertManager.error(t.locale.startsWith('en') ? 'An error occurred while loading the schedule.' : '일정을 불러오는 중 문제가 발생했습니다.');
     } finally {
       setLoading(false);
     }
@@ -112,15 +116,14 @@ const EditSchedulePage = () => {
           });
         }
 
-        Alert.alert('완료', '일정이 수정되었습니다.', [
-          { text: '확인', onPress: () => router.back() },
-        ]);
+        await CustomAlertManager.success(t.locale.startsWith('en') ? 'Schedule has been updated.' : '일정이 수정되었습니다.');
+        router.back();
       } else {
-        Alert.alert('오류', '일정 수정에 실패했습니다.');
+        CustomAlertManager.error(t.locale.startsWith('en') ? 'Failed to update schedule.' : '일정 수정에 실패했습니다.');
       }
     } catch (error) {
       console.error('Error updating schedule:', error);
-      Alert.alert('오류', '일정 수정 중 문제가 발생했습니다.');
+      CustomAlertManager.error(t.locale.startsWith('en') ? 'An error occurred while updating the schedule.' : '일정 수정 중 문제가 발생했습니다.');
     }
   };
 
@@ -130,22 +133,29 @@ const EditSchedulePage = () => {
 
   const handleAlarmPress = () => {
     // TODO: 알림 설정 모달 구현
-    Alert.alert('알림', '알림 설정 기능은 곧 추가될 예정입니다.');
+    CustomAlertManager.info(t.locale.startsWith('en') ? 'Notification settings feature will be added soon.' : '알림 설정 기능은 곧 추가될 예정입니다.');
   };
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" color={Colors.paleCobalt} />
-        <Text className="mt-2 text-paleCobalt">로딩 중...</Text>
+      <SafeAreaView style={{ 
+        flex: 1, 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        backgroundColor: themeColors.background 
+      }}>
+        <ActivityIndicator size="large" color={themeColors.primary} />
+        <Text style={{ 
+          marginTop: 8, 
+          color: themeColors.text 
+        }}>{t.locale.startsWith('en') ? 'Loading...' : '로딩 중...'}</Text>
       </SafeAreaView>
     );
   }
 
   if (!initialData) {
-    Alert.alert('오류', '일정 정보를 찾을 수 없습니다.', [
-      { text: '확인', onPress: () => router.back() },
-    ]);
+    CustomAlertManager.error(t.locale.startsWith('en') ? 'Schedule information not found.' : '일정 정보를 찾을 수 없습니다.');
+    router.back();
     return null;
   }
 
@@ -161,7 +171,7 @@ const EditSchedulePage = () => {
 
   return (
     <EntryForm
-      title="일정 수정하기"
+      title={t.locale.startsWith('en') ? 'Edit Schedule' : '일정 수정하기'}
       initialData={initialData}
       onSubmit={handleSubmit}
       onCancel={handleCancel}

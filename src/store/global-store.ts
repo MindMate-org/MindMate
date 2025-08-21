@@ -20,6 +20,9 @@ export interface GlobalStateType {
   language: AppLanguageType;
   isOnboarding: boolean;
 
+  // 사용자 정보
+  userName: string;
+
   // 앱 상태
   isLoading: boolean;
   notifications: Array<{
@@ -33,12 +36,14 @@ export interface GlobalStateType {
   setTheme: (theme: AppThemeType) => void;
   setLanguage: (language: AppLanguageType) => void;
   setOnboarding: (isOnboarding: boolean) => void;
+  setUserName: (userName: string) => void;
   setGlobalLoading: (loading: boolean) => void;
   addNotification: (
     notification: Omit<GlobalStateType['notifications'][0], 'id' | 'timestamp'>,
   ) => void;
   removeNotification: (id: string) => void;
   clearNotifications: () => void;
+  resetAppState: () => void;
 }
 
 /**
@@ -56,6 +61,7 @@ export const useGlobalStore = create<GlobalStateType>()(
         theme: 'system',
         language: 'ko',
         isOnboarding: true,
+        userName: '',
         isLoading: false,
         notifications: [],
 
@@ -63,6 +69,7 @@ export const useGlobalStore = create<GlobalStateType>()(
         setTheme: (theme) => set({ theme }),
         setLanguage: (language) => set({ language }),
         setOnboarding: (isOnboarding) => set({ isOnboarding }),
+        setUserName: (userName) => set({ userName }),
         setGlobalLoading: (isLoading) => set({ isLoading }),
 
         addNotification: (notification) =>
@@ -83,6 +90,16 @@ export const useGlobalStore = create<GlobalStateType>()(
           })),
 
         clearNotifications: () => set({ notifications: [] }),
+        
+        // 앱 상태 완전 초기화 (모든 데이터 삭제 시 사용)
+        resetAppState: () => set({
+          theme: 'system',
+          language: 'ko',
+          isOnboarding: true,
+          userName: '',
+          isLoading: false,
+          notifications: [],
+        }),
       }),
       {
         name: 'global-store',
@@ -92,6 +109,7 @@ export const useGlobalStore = create<GlobalStateType>()(
           theme: state.theme,
           language: state.language,
           isOnboarding: state.isOnboarding,
+          userName: state.userName,
         }),
       },
     ),
@@ -102,17 +120,29 @@ export const useGlobalStore = create<GlobalStateType>()(
 export const useTheme = () => useGlobalStore((state) => state.theme);
 export const useLanguage = () => useGlobalStore((state) => state.language);
 export const useIsOnboarding = () => useGlobalStore((state) => state.isOnboarding);
+export const useUserName = () => useGlobalStore((state) => state.userName);
 export const useGlobalLoading = () => useGlobalStore((state) => state.isLoading);
 export const useNotifications = () => useGlobalStore((state) => state.notifications);
 
-// 액션 훅
-export const useGlobalActions = () =>
-  useGlobalStore((state) => ({
-    setTheme: state.setTheme,
-    setLanguage: state.setLanguage,
-    setOnboarding: state.setOnboarding,
-    setGlobalLoading: state.setGlobalLoading,
-    addNotification: state.addNotification,
-    removeNotification: state.removeNotification,
-    clearNotifications: state.clearNotifications,
-  }));
+// 개별 액션 훅들 (성능 최적화)
+export const useSetTheme = () => useGlobalStore((state) => state.setTheme);
+export const useSetLanguage = () => useGlobalStore((state) => state.setLanguage);
+export const useSetOnboarding = () => useGlobalStore((state) => state.setOnboarding);
+export const useSetUserName = () => useGlobalStore((state) => state.setUserName);
+export const useSetGlobalLoading = () => useGlobalStore((state) => state.setGlobalLoading);
+export const useAddNotification = () => useGlobalStore((state) => state.addNotification);
+export const useRemoveNotification = () => useGlobalStore((state) => state.removeNotification);
+export const useClearNotifications = () => useGlobalStore((state) => state.clearNotifications);
+export const useResetAppState = () => useGlobalStore((state) => state.resetAppState);
+
+// 레거시 지원을 위한 통합 액션 훅 (사용을 권장하지 않음)
+export const useGlobalActions = () => ({
+  setTheme: useGlobalStore((state) => state.setTheme),
+  setLanguage: useGlobalStore((state) => state.setLanguage),
+  setOnboarding: useGlobalStore((state) => state.setOnboarding),
+  setUserName: useGlobalStore((state) => state.setUserName),
+  setGlobalLoading: useGlobalStore((state) => state.setGlobalLoading),
+  addNotification: useGlobalStore((state) => state.addNotification),
+  removeNotification: useGlobalStore((state) => state.removeNotification),
+  clearNotifications: useGlobalStore((state) => state.clearNotifications),
+});

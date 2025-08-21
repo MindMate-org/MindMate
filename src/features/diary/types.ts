@@ -30,12 +30,13 @@ export type MoodOptionType = {
 };
 
 /**
- * 사용 가능한 모든 기분 옵션들
+ * 사용 가능한 모든 기분 옵션들 (기본 - 하위 호환성)
  *
  * UI에서 기분 선택 목록을 렌더링할 때 사용됩니다.
  * 각 옵션은 이모지, 라벨, 설명을 포함합니다.
  *
  * @readonly
+ * @deprecated Use getMoodOptions() instead for i18n support
  */
 export const MOOD_OPTIONS: MoodOptionType[] = [
   {
@@ -69,6 +70,48 @@ export const MOOD_OPTIONS: MoodOptionType[] = [
     description: '힘들고 어려운 하루',
   },
 ];
+
+/**
+ * 언어별 기분 옵션을 반환하는 함수
+ * @param locale 언어 코드 ('ko' | 'en')
+ * @returns 해당 언어의 기분 옵션 배열
+ */
+export const getMoodOptions = (locale: string = 'ko'): MoodOptionType[] => {
+  const isEnglish = locale.startsWith('en');
+  
+  return [
+    {
+      value: 'very-happy',
+      emoji: '😊',
+      label: isEnglish ? 'Very Happy' : '매우 행복해요',
+      description: isEnglish ? 'Really good and happy day' : '정말 기분이 좋고 행복한 하루',
+    },
+    {
+      value: 'happy',
+      emoji: '🙂',
+      label: isEnglish ? 'Happy' : '행복해요',
+      description: isEnglish ? 'Good and pleasant day' : '기분이 좋고 즐거운 하루',
+    },
+    {
+      value: 'neutral',
+      emoji: '😐',
+      label: isEnglish ? 'Neutral' : '보통이에요',
+      description: isEnglish ? 'Ordinary and normal day' : '평범하고 무난한 하루',
+    },
+    {
+      value: 'sad',
+      emoji: '😞',
+      label: isEnglish ? 'Sad' : '슬퍼요',
+      description: isEnglish ? 'Feeling down and blue' : '마음이 아프고 우울한 기분',
+    },
+    {
+      value: 'very-sad',
+      emoji: '😠',
+      label: isEnglish ? 'Very Sad' : '매우 슬퍼요',
+      description: isEnglish ? 'Difficult and challenging day' : '힘들고 어려운 하루',
+    },
+  ];
+};
 
 /**
  * 일기 텍스트 스타일 설정 타입

@@ -5,7 +5,10 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Text,
+  StatusBar,
 } from 'react-native';
+
+import { useThemeColors } from '../providers/theme-provider';
 
 export type ModalVariant = 'center' | 'bottom' | 'fullscreen';
 export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
@@ -45,68 +48,96 @@ const Modal = ({
   closeOnBackdrop = true,
   animationType = 'fade',
 }: ModalProps) => {
-  const getContainerStyles = () => {
-    switch (variant) {
-      case 'center':
-        return 'flex-1 items-center justify-center bg-black/40';
-      case 'bottom':
-        return 'flex flex-1';
-      case 'fullscreen':
-        return 'flex-1 bg-black/90';
-      default:
-        return 'flex-1 items-center justify-center bg-black/40';
-    }
-  };
-
-  const getModalStyles = () => {
-    if (variant === 'bottom') {
-      return 'h-auto items-center justify-between bg-white';
-    }
-
-    if (variant === 'fullscreen') {
-      return 'flex-1 bg-white';
-    }
-
-    const sizeStyles = {
-      sm: 'min-w-[60%] max-w-[80%]',
-      md: 'min-w-[70%] max-w-[90%]',
-      lg: 'min-w-[80%] max-w-[95%]',
-      xl: 'min-w-[90%] max-w-[98%]',
-      full: 'w-full h-full',
-    };
-
-    return `rounded-lg bg-white p-6 ${sizeStyles[size]}`;
-  };
+  const { theme: themeColors, isDark } = useThemeColors();
 
   const renderBottomModal = () => (
-    <View className={getContainerStyles()}>
+    <View 
+      style={{ 
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'flex-end',
+        paddingTop: StatusBar.currentHeight || 0
+      }}
+    >
       <TouchableWithoutFeedback onPress={closeOnBackdrop ? onClose : undefined}>
-        <View className="flex-1 bg-black/50" />
+        <View style={{ flex: 1 }} />
       </TouchableWithoutFeedback>
-      <View className={getModalStyles()}>{children}</View>
+      <View style={{
+        backgroundColor: themeColors.surface,
+        borderTopLeftRadius: 16,
+        borderTopRightRadius: 16,
+        paddingHorizontal: 16,
+        paddingVertical: 16,
+        paddingBottom: 0,
+        marginBottom: 0,
+        width: '100%',
+        alignSelf: 'center',
+        maxHeight: '80%',
+      }}>
+        {children}
+      </View>
     </View>
   );
 
-  const renderCenterModal = () => (
-    <TouchableWithoutFeedback onPress={closeOnBackdrop ? onClose : undefined}>
-      <View className={getContainerStyles()}>
-        <TouchableWithoutFeedback onPress={() => {}}>
-          <View className={`${getModalStyles()} ${className}`}>
-            {children}
-            {showCloseButton && (
-              <TouchableOpacity onPress={onClose} className="mt-4 self-end">
-                <Text className="text-blue font-bold">닫기</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        </TouchableWithoutFeedback>
-      </View>
-    </TouchableWithoutFeedback>
-  );
+  const renderCenterModal = () => {
+    const sizeStyles = {
+      sm: { minWidth: '60%', maxWidth: '80%' },
+      md: { minWidth: '70%', maxWidth: '90%' },
+      lg: { minWidth: '80%', maxWidth: '95%' },
+      xl: { minWidth: '90%', maxWidth: '98%' },
+      full: { flex: 1 },
+    };
+
+    return (
+      <TouchableWithoutFeedback onPress={closeOnBackdrop ? onClose : undefined}>
+        <View 
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.4)',
+            paddingTop: StatusBar.currentHeight || 0,
+            paddingHorizontal: 16,
+          }}
+        >
+          <TouchableWithoutFeedback onPress={() => {}}>
+            <View style={[
+              {
+                backgroundColor: themeColors.surface,
+                borderRadius: 16,
+                padding: 24,
+                shadowColor: themeColors.shadow,
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: isDark ? 0.4 : 0.2,
+                shadowRadius: 8,
+                elevation: 8,
+              },
+              sizeStyles[size]
+            ]}>
+              {children}
+              {showCloseButton && (
+                <TouchableOpacity onPress={onClose} style={{ marginTop: 16, alignSelf: 'flex-end' }}>
+                  <Text style={{ color: themeColors.primary, fontWeight: 'bold' }}>닫기</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  };
 
   const renderFullscreenModal = () => (
-    <View className={getContainerStyles()}>
-      <View className={`${getModalStyles()} ${className}`}>{children}</View>
+    <View style={{
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    }}>
+      <View style={{
+        flex: 1,
+        backgroundColor: themeColors.background,
+      }}>
+        {children}
+      </View>
     </View>
   );
 
@@ -128,6 +159,7 @@ const Modal = ({
       transparent={variant !== 'fullscreen'}
       animationType={animationType}
       onRequestClose={onClose}
+      statusBarTranslucent={true}
     >
       {renderModalContent()}
     </RNModal>

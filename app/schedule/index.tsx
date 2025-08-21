@@ -2,9 +2,11 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { router, useFocusEffect } from 'expo-router';
 import { Calendar, Check } from 'lucide-react-native';
 import React, { useState, useMemo, useCallback } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, Image, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, Image } from 'react-native';
 
+import { CustomAlertManager } from '../../src/components/ui/custom-alert';
 import { Colors } from '../../src/constants/colors';
+import { useI18n } from '../../src/hooks/use-i18n';
 import { useSchedulesByDate } from '../../src/features/schedule/hooks/use-schedule';
 import { toggleScheduleCompletion } from '../../src/features/schedule/services/schedule-services';
 import type { ScheduleType } from '../../src/features/schedule/types/schedule-types';
@@ -16,6 +18,7 @@ type TaskItemProps = {
 };
 
 const SchedulePage = () => {
+  const { t } = useI18n();
   const today = new Date();
   const [selectedDate, setSelectedDate] = useState(today);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -68,11 +71,11 @@ const SchedulePage = () => {
       if (success) {
         refetch();
       } else {
-        Alert.alert('오류', '일정 상태 변경에 실패했습니다.');
+        CustomAlertManager.error('일정 상태 변경에 실패했습니다.');
       }
     } catch (error) {
       console.error('Error toggling schedule completion:', error);
-      Alert.alert('오류', '일정 상태 변경 중 문제가 발생했습니다.');
+      CustomAlertManager.error('일정 상태 변경 중 문제가 발생했습니다.');
     }
   };
 
@@ -305,6 +308,7 @@ const SchedulePage = () => {
           value={selectedDate}
           mode="date"
           display="default"
+          locale={t.locale.startsWith('en') ? 'en_US' : 'ko_KR'}
           onChange={handleDateChange}
         />
       )}

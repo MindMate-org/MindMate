@@ -1,15 +1,13 @@
 import { useRouter } from 'expo-router';
 import { Calendar as CalendarIcon, Plus } from 'lucide-react-native';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { View, ScrollView, Text, TouchableOpacity, SafeAreaView } from 'react-native';
 
-import Calendar from '../../../src/components/ui/calendar';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { CustomAlertManager } from '../../../src/components/ui/custom-alert';
-import EnhancedCalendar from '../../../src/components/ui/enhanced-calendar';
 import ErrorState from '../../../src/components/ui/error-state';
 import FadeInView from '../../../src/components/ui/fade-in-view';
 import LoadingState from '../../../src/components/ui/loading-state';
-import Modal from '../../../src/components/ui/modal';
 import { useThemeColors } from '../../../src/components/providers/theme-provider';
 import { useI18n } from '../../../src/hooks/use-i18n';
 import RoutineListCard from '../../../src/features/routine/components/routine-list-card';
@@ -22,9 +20,29 @@ const RoutineMain = () => {
   const { theme: themeColors, isDark } = useThemeColors();
   const { t } = useI18n();
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [isCalendarModalVisible, setIsCalendarModalVisible] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
-  // 루틴 조회 훅
+  // 선택된 날짜 기준으로 주의 날짜들 계산
+  const selectedDateString = selectedDate.toDateString();
+  const weekDates = useMemo(() => {
+    const startOfWeek = new Date(selectedDate);
+    const dayOfWeek = selectedDate.getDay();
+    startOfWeek.setDate(selectedDate.getDate() - dayOfWeek);
+
+    return Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(startOfWeek);
+      date.setDate(startOfWeek.getDate() + i);
+      return date;
+    });
+  }, [selectedDate, selectedDateString]);
+
+  const handleDateChange = (event: any, date?: Date) => {
+    setShowDatePicker(false);
+    if (date) {
+      setSelectedDate(date);
+    }
+  };
+  // 시간 문자열 포맷팅 함수
   const { routines, isLoading, error, refetch } = useRoutineQuery({
     date: selectedDate.toISOString().split('T')[0], // YYYY-MM-DD 형식
   });
@@ -49,7 +67,7 @@ const RoutineMain = () => {
   // 루틴 상세 페이지로 이동
   const handleViewRoutine = useCallback(
     (id: string) => {
-      router.push(`/routine/routine-form?id=${id}`);
+      router.push(`/routine/detail/${id}`);
     },
     [router],
   );
@@ -58,40 +76,30 @@ const RoutineMain = () => {
   const handleDeleteRoutine = useCallback(
     async (id: string) => {
       const routine = routines.find(r => r.id === id);
-      const routineName = routine?.name || '루틴';
+      const routineName = routine?.name || t.routine.title;
       
       const confirmed = await CustomAlertManager.confirm(
-        '루틴 삭제',
-        `"${routineName}"을(를) 정말 삭제하시겠습니까?`
+        t.common.delete,
+        `"${routineName}" ${t.routine.deleteConfirm}`
       );
       
       if (confirmed) {
         const success = await deleteRoutine(id);
         if (success) {
           refetch();
-          CustomAlertManager.success('루틴이 삭제되었습니다.');
+          CustomAlertManager.success(t.routine.deleteSuccess);
         } else {
-          CustomAlertManager.error('루틴 삭제에 실패했습니다.');
+          CustomAlertManager.error(t.routine.deleteFailed);
         }
       }
     },
     [deleteRoutine, refetch, routines],
   );
 
-  // 날짜 변경 시 루틴 목록 새로고침
-  const handleDateChange = (date: Date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const day = date.getDate();
-    // KST 00:00:00을 UTC로 맞추기 위해 Date.UTC 사용
-    const kstDate = new Date(Date.UTC(year, month, day, 0, 0, 0));
-    setSelectedDate(kstDate);
+  const handleCalendarPress = () => {
+    setShowDatePicker(true);
   };
 
-  // 달력 아이콘 클릭 시 모달 열기
-  const handleCalendarIconPress = () => {
-    setIsCalendarModalVisible(true);
-  };
 
   // 시간 문자열 포맷팅 함수
   const formatTimeString = useCallback((time: string) => {
@@ -100,11 +108,11 @@ const RoutineMain = () => {
       const hour = parseInt(hours);
       const date = new Date();
       date.setHours(hour, parseInt(minutes), 0, 0);
-      return formatTime(date, '12h');
+      return formatTime(date, '12h', t.locale.startsWith('en') ? 'en' : 'ko');
     } catch {
       return time;
     }
-  }, []);
+  }, [t.locale]);
 
   // 루틴 시간 표시 함수
   const getRoutineTime = useCallback(
@@ -120,13 +128,13 @@ const RoutineMain = () => {
   // 루틴 지속시간 표시 함수
   const getRoutineDuration = useCallback((routine: any) => {
     const subTaskCount = routine.subTasks?.length || 0;
-    return `${subTaskCount}개 작업`;
+    return `${subTaskCount}${t.routine.tasks}`;
   }, []);
 
   // 로딩 상태
   if (isLoading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
         <LoadingState message={t.routine.loading} />
       </SafeAreaView>
     );
@@ -135,7 +143,7 @@ const RoutineMain = () => {
   // 에러 상태
   if (error) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
         <ErrorState message={error} onRetry={refetch} />
       </SafeAreaView>
     );
@@ -144,48 +152,130 @@ const RoutineMain = () => {
   const selectedDateStr = toKSTDateString(selectedDate);
 
   return (
-    <SafeAreaView style={{ position: 'relative', flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
-      {/* 헤더 */}
-      <FadeInView>
-        <View className="flex-row items-center justify-between px-4 pb-4 pt-2">
-          <Text className="text-xl font-bold text-paleCobalt">루틴</Text>
-          <TouchableOpacity
-            onPress={handleCalendarIconPress}
-            className="rounded-full bg-white/10 p-2"
-          >
-            <CalendarIcon size={20} color="#576BCD" />
-          </TouchableOpacity>
-        </View>
-      </FadeInView>
-
+    <SafeAreaView style={{ position: 'relative', flex: 1, backgroundColor: themeColors.background }}>
       {/* 상단 달력 */}
-      <FadeInView delay={200}>
-        <View className="px-4 pb-4">
-          <Calendar
-            selectedDate={selectedDate}
-            onChange={handleDateChange}
-            onCalendarIconPress={handleCalendarIconPress}
-          />
+      <FadeInView delay={0} duration={300}>
+        <View style={{ marginTop: 16, paddingHorizontal: 16, paddingBottom: 16 }}>
+          {/* 날짜 표시 */}
+          <View style={{
+            position: 'relative',
+            marginBottom: 24,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            <Text style={{
+              fontSize: 18,
+              fontWeight: '500',
+              color: themeColors.primary,
+            }}>
+              {selectedDate.toLocaleDateString(t.locale, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </Text>
+            <TouchableOpacity
+              style={{
+                position: 'absolute',
+                right: 0,
+                padding: 8,
+              }}
+              onPress={handleCalendarPress}
+            >
+              <CalendarIcon color={themeColors.primary} />
+            </TouchableOpacity>
+          </View>
+
+          {/* 달력 날짜 */}
+          <View style={{
+            marginBottom: 24,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}>
+            {weekDates.map((date, index) => {
+              const isSelected =
+                selectedDate.getDate() === date.getDate() &&
+                selectedDate.getMonth() === date.getMonth() &&
+                selectedDate.getFullYear() === date.getFullYear();
+              return (
+                <View key={index} style={{ alignItems: 'center' }}>
+                  <TouchableOpacity
+                    onPress={() => setSelectedDate(date)}
+                    style={{
+                      height: 64,
+                      width: 48,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 12,
+                      backgroundColor: isSelected
+                        ? themeColors.primary
+                        : isDark
+                        ? `${themeColors.surface}80`
+                        : 'rgba(255,255,255,0.5)',
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontWeight: '500',
+                        color: isSelected
+                          ? themeColors.primaryText
+                          : themeColors.primary,
+                      }}
+                    >
+                      {t.schedule.days[index]}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        fontWeight: 'bold',
+                        color: isSelected
+                          ? themeColors.primaryText
+                          : themeColors.primary,
+                        marginTop: 4,
+                      }}
+                    >
+                      {date.getDate()}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              );
+            })}
+          </View>
         </View>
       </FadeInView>
 
       {/* 루틴 리스트 */}
       <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
         {routines.length === 0 ? (
-          <FadeInView delay={400}>
+          <FadeInView delay={100} duration={300}>
             <View className="flex-1 items-center justify-center py-20">
-              <CalendarIcon size={48} color="#576BCD" />
-              <Text className="mt-4 text-center text-lg text-paleCobalt">
-                {formatDate(selectedDate)}에 등록된 루틴이 없습니다.
+              <CalendarIcon size={48} color={themeColors.primary} />
+              <Text style={{
+                marginTop: 16,
+                textAlign: 'center',
+                fontSize: 18,
+                color: themeColors.text,
+                fontWeight: '500',
+              }}>
+                {t.locale.startsWith('en') 
+                  ? `${t.routine.noRoutines} ${formatDate(selectedDate, 'en')}.`
+                  : `${formatDate(selectedDate, 'ko')}에 ${t.routine.noRoutines}.`}
               </Text>
-              <Text className="text-gray-600 mt-2 text-center text-sm">
-                + 버튼을 눌러 새로운 루틴을 추가해보세요!
+              <Text style={{
+                marginTop: 8,
+                textAlign: 'center',
+                fontSize: 14,
+                color: themeColors.textSecondary,
+              }}>
+                {t.routine.addNewRoutine}
               </Text>
             </View>
           </FadeInView>
         ) : (
           routines.map((routine, index) => (
-            <FadeInView key={routine.id} delay={400 + index * 100}>
+            <FadeInView key={routine.id} delay={index * 50} duration={300}>
               <RoutineListCard
                 title={routine.name}
                 time={getRoutineTime(routine)}
@@ -228,21 +318,16 @@ const RoutineMain = () => {
         }}>+</Text>
       </TouchableOpacity>
 
-      {/* 월 단위 달력 모달 */}
-      <Modal
-        visible={isCalendarModalVisible}
-        onClose={() => setIsCalendarModalVisible(false)}
-        className="max-w-sm"
-      >
-        <EnhancedCalendar
-          selectedDate={selectedDate}
-          onDateSelect={(date) => {
-            handleDateChange(date);
-            setIsCalendarModalVisible(false);
-          }}
-          onClose={() => setIsCalendarModalVisible(false)}
+      {/* 날짜 선택기 */}
+      {showDatePicker && (
+        <DateTimePicker
+          value={selectedDate}
+          mode="date"
+          display="default"
+          locale={t.locale.startsWith('en') ? 'en_US' : 'ko_KR'}
+          onChange={handleDateChange}
         />
-      </Modal>
+      )}
     </SafeAreaView>
   );
 };

@@ -4,16 +4,19 @@
 
 export type DateFormat = 'full' | 'date' | 'time' | 'short' | 'relative';
 export type TimeFormat = '12h' | '24h';
+export type SupportedLanguage = 'ko' | 'en';
 
 const WEEKDAYS_KO = ['일', '월', '화', '수', '목', '금', '토'];
+const WEEKDAYS_EN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 /**
  * 시간을 포맷팅하는 헬퍼 함수
  * @param date - Date 객체
  * @param format - 시간 형식 (12h | 24h)
+ * @param language - 언어 설정
  * @returns 포맷팅된 시간 문자열
  */
-export const formatTime = (date: Date, format: TimeFormat = '12h'): string => {
+export const formatTime = (date: Date, format: TimeFormat = '12h', language: SupportedLanguage = 'ko'): string => {
   const hours = date.getHours();
   const minutes = date.getMinutes().toString().padStart(2, '0');
 
@@ -21,7 +24,9 @@ export const formatTime = (date: Date, format: TimeFormat = '12h'): string => {
     return `${hours.toString().padStart(2, '0')}:${minutes}`;
   }
 
-  const period = hours >= 12 ? '오후' : '오전';
+  const period = language === 'en' 
+    ? (hours >= 12 ? 'PM' : 'AM')
+    : (hours >= 12 ? '오후' : '오전');
   const displayHours = hours > 12 ? hours - 12 : hours === 0 ? 12 : hours;
   return `${period} ${displayHours}:${minutes}`;
 };
@@ -29,52 +34,60 @@ export const formatTime = (date: Date, format: TimeFormat = '12h'): string => {
 /**
  * 날짜를 포맷팅하는 헬퍼 함수
  * @param date - Date 객체
+ * @param language - 언어 설정
  * @returns 포맷팅된 날짜 문자열
  */
-export const formatDate = (date: Date): string => {
+export const formatDate = (date: Date, language: SupportedLanguage = 'ko'): string => {
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
   const day = date.getDate();
-  const weekday = WEEKDAYS_KO[date.getDay()];
+  const weekdays = language === 'en' ? WEEKDAYS_EN : WEEKDAYS_KO;
+  const weekday = weekdays[date.getDay()];
 
-  return `${year}년 ${month}월 ${day}일 ${weekday}요일`;
+  if (language === 'en') {
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${weekday}, ${monthNames[date.getMonth()]} ${day}, ${year}`;
+  } else {
+    return `${year}년 ${month}월 ${day}일 ${weekday}요일`;
+  }
 };
 
 /**
  * 상대적 시간을 포맷팅하는 헬퍼 함수
  * @param date - Date 객체
+ * @param language - 언어 설정
  * @returns 상대적 시간 문자열 (예: "방금 전", "3시간 전", "2일 전")
  */
-export const formatRelativeTime = (date: Date): string => {
+export const formatRelativeTime = (date: Date, language: SupportedLanguage = 'ko'): string => {
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
   if (diffInSeconds < 60) {
-    return '방금 전';
+    return language === 'en' ? 'Just now' : '방금 전';
   }
 
   const diffInMinutes = Math.floor(diffInSeconds / 60);
   if (diffInMinutes < 60) {
-    return `${diffInMinutes}분 전`;
+    return language === 'en' ? `${diffInMinutes}m ago` : `${diffInMinutes}분 전`;
   }
 
   const diffInHours = Math.floor(diffInMinutes / 60);
   if (diffInHours < 24) {
-    return `${diffInHours}시간 전`;
+    return language === 'en' ? `${diffInHours}h ago` : `${diffInHours}시간 전`;
   }
 
   const diffInDays = Math.floor(diffInHours / 24);
   if (diffInDays < 30) {
-    return `${diffInDays}일 전`;
+    return language === 'en' ? `${diffInDays}d ago` : `${diffInDays}일 전`;
   }
 
   const diffInMonths = Math.floor(diffInDays / 30);
   if (diffInMonths < 12) {
-    return `${diffInMonths}개월 전`;
+    return language === 'en' ? `${diffInMonths}mo ago` : `${diffInMonths}개월 전`;
   }
 
   const diffInYears = Math.floor(diffInMonths / 12);
-  return `${diffInYears}년 전`;
+  return language === 'en' ? `${diffInYears}y ago` : `${diffInYears}년 전`;
 };
 
 /**
@@ -82,38 +95,41 @@ export const formatRelativeTime = (date: Date): string => {
  * @param input - Date 객체, ISO 문자열, 또는 현재 시간 사용 (undefined)
  * @param formatType - 포맷 타입
  * @param timeFormat - 시간 형식 (12h | 24h)
+ * @param language - 언어 설정
  * @returns 포맷팅된 문자열
  */
 export const formatDateTime = (
   input?: Date | string,
   formatType: DateFormat = 'full',
   timeFormat: TimeFormat = '12h',
+  language: SupportedLanguage = 'ko',
 ): string => {
   const date = input ? (typeof input === 'string' ? new Date(input) : input) : new Date();
 
   switch (formatType) {
     case 'full':
-      return `${formatDate(date)} ${formatTime(date, timeFormat)}`;
+      return `${formatDate(date, language)} ${formatTime(date, timeFormat, language)}`;
     case 'date':
-      return formatDate(date);
+      return formatDate(date, language);
     case 'time':
-      return formatTime(date, timeFormat);
+      return formatTime(date, timeFormat, language);
     case 'short':
-      return `${date.getMonth() + 1}.${date.getDate()} ${formatTime(date, timeFormat)}`;
+      return `${date.getMonth() + 1}.${date.getDate()} ${formatTime(date, timeFormat, language)}`;
     case 'relative':
-      return formatRelativeTime(date);
+      return formatRelativeTime(date, language);
     default:
-      return `${formatDate(date)} ${formatTime(date, timeFormat)}`;
+      return `${formatDate(date, language)} ${formatTime(date, timeFormat, language)}`;
   }
 };
 
 /**
  * 날짜 문자열을 포맷팅 (하위 호환성 유지)
  * @param datetime - ISO 날짜 문자열
+ * @param language - 언어 설정
  * @returns 포맷팅된 날짜 시간 문자열
  */
-export const formatDateTimeString = (datetime: string): string => {
-  return formatDateTime(datetime, 'full', '12h');
+export const formatDateTimeString = (datetime: string, language: SupportedLanguage = 'ko'): string => {
+  return formatDateTime(datetime, 'full', '12h', language);
 };
 
 /**

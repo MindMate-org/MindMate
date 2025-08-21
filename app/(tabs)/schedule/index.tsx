@@ -2,10 +2,11 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { router, useFocusEffect } from 'expo-router';
 import { Calendar, Check } from 'lucide-react-native';
 import React, { useState, useMemo, useCallback } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, Image, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, Image } from 'react-native';
 
 import { useThemeColors } from '../../../src/components/providers/theme-provider';
 import { useI18n } from '../../../src/hooks/use-i18n';
+import { CustomAlertManager } from '../../../src/components/ui/custom-alert';
 import { Colors } from '../../../src/constants/colors';
 import { useSchedulesByDate } from '../../../src/features/schedule/hooks/use-schedule';
 import { toggleScheduleCompletion } from '../../../src/features/schedule/services/schedule-services';
@@ -38,6 +39,7 @@ const SchedulePage = () => {
     });
   }, [selectedDate, selectedDateString]);
 
+
   // const days = ['일', '월', '화', '수', '목', '금', '토']; // 제거됨 - t.schedule.days 사용
 
   // 선택된 날짜의 ISO 문자열을 메모이제이션
@@ -45,7 +47,7 @@ const SchedulePage = () => {
     const dateOnly = new Date(selectedDate);
     dateOnly.setHours(0, 0, 0, 0);
     return dateOnly.toISOString();
-  }, [selectedDate, selectedDateString]);
+  }, [selectedDate]);
 
   // 선택된 날짜의 일정들 가져오기
   const { schedules, loading, refetch } = useSchedulesByDate(selectedDateISOString);
@@ -73,11 +75,11 @@ const SchedulePage = () => {
       if (success) {
         refetch();
       } else {
-        Alert.alert(t.common.error, t.schedule.toggleFailed);
+        CustomAlertManager.error(t.schedule.toggleFailed);
       }
     } catch (error) {
       console.error('Error toggling schedule completion:', error);
-      Alert.alert(t.common.error, t.schedule.toggleError);
+      CustomAlertManager.error(t.schedule.toggleError);
     }
   };
 
@@ -88,7 +90,6 @@ const SchedulePage = () => {
   const handleCalendarPress = () => {
     setShowDatePicker(true);
   };
-
   const handleDateChange = (event: any, date?: Date) => {
     setShowDatePicker(false);
     if (date) {
@@ -96,9 +97,10 @@ const SchedulePage = () => {
     }
   };
 
+
   const TaskItem = ({ schedule, onToggle, onPress }: TaskItemProps) => {
     const scheduleTime = new Date(schedule.time);
-    const timeString = scheduleTime.toLocaleTimeString('ko-KR', {
+    const timeString = scheduleTime.toLocaleTimeString(t.locale.startsWith('en') ? 'en-US' : 'ko-KR', {
       hour: '2-digit',
       minute: '2-digit',
     });
@@ -208,10 +210,11 @@ const SchedulePage = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
       <ScrollView style={{ flex: 1 }}>
         {/* 오늘 날짜 헤더 */}
-        <View style={{ marginTop: 24, paddingHorizontal: 16 }}>
+        <View style={{ marginTop: 16, paddingHorizontal: 16 }}>
+          {/* 날짜 표시 */}
           <View style={{
             position: 'relative',
             marginBottom: 24,
@@ -516,6 +519,7 @@ const SchedulePage = () => {
           value={selectedDate}
           mode="date"
           display="default"
+          locale={t.locale.startsWith('en') ? 'en_US' : 'ko_KR'}
           onChange={handleDateChange}
         />
       )}

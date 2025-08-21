@@ -2,9 +2,10 @@ import { Calendar as CalendarIcon } from 'lucide-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 
-import { WEEK_DAYS } from '@/src/constants/date';
+import { getWeekDays, formatDate } from '@/src/constants/date';
 import { getWeekStart, isSameDay } from '@/src/utils/date';
 import { useThemeColors } from '../providers/theme-provider';
+import { useI18n } from '../../hooks/use-i18n';
 
 /**
  * 1주 단위 가로 달력 컴포넌트
@@ -27,6 +28,7 @@ const Calendar = ({
   className = '',
 }: CalendarProps) => {
   const { theme: themeColors, isDark } = useThemeColors();
+  const { t } = useI18n();
   const [viewDate, setViewDate] = useState(getWeekStart(selectedDate));
 
   useEffect(() => {
@@ -39,8 +41,9 @@ const Calendar = ({
     });
   }, [viewDate]);
 
-  // 날짜 포맷: 2025년 7월 4일
-  const dateText = `${selectedDate.getFullYear()}년 ${selectedDate.getMonth() + 1}월 ${selectedDate.getDate()}일`;
+  // 날짜 포맷 - 언어에 따라 동적으로 변경
+  const dateText = formatDate(selectedDate, t.locale);
+  const weekDays = getWeekDays(t.locale);
 
   return (
     <View style={{
@@ -100,7 +103,7 @@ const Calendar = ({
                 fontWeight: '500',
                 color: isSelected ? themeColors.primary : themeColors.textSecondary,
               }}>
-                {WEEK_DAYS[date.getDay()]}
+                {weekDays[date.getDay()]}
               </Text>
               <Text style={{
                 fontSize: 16,

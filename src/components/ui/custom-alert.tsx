@@ -8,10 +8,16 @@ import {
   Dimensions,
   Animated,
   Alert as RNAlert,
+  StatusBar,
+  Platform,
+  Pressable,
 } from 'react-native';
+import { useThemeColors } from '../providers/theme-provider';
 
 import { Colors } from '../../constants/colors';
 import { HapticFeedback } from '../../utils/haptic-feedback';
+import { getTranslations } from '../../lib/i18n';
+import { useLanguage } from '../../store/app-store';
 
 export interface CustomAlertButton {
   text: string;
@@ -32,10 +38,15 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
   visible,
   title,
   message,
-  buttons = [{ text: '확인' }],
+  buttons,
   type = 'info',
   onDismiss,
 }) => {
+  const language = useLanguage();
+  const t = getTranslations(language);
+  const { theme: themeColors, isDark } = useThemeColors();
+
+  const defaultButtons = buttons || [{ text: t.common.ok }];
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
   const scaleAnim = React.useRef(new Animated.Value(0.3)).current;
 
@@ -108,76 +119,141 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
   const getButtonStyle = (style?: string) => {
     switch (style) {
       case 'destructive':
-        return 'bg-red-500';
+        return { backgroundColor: '#EF4444' };
       case 'cancel':
-        return 'bg-gray-200';
+        return { backgroundColor: '#FEF3C7' };
       default:
-        return 'bg-paleCobalt';
+        return { backgroundColor: Colors.paleCobalt };
     }
   };
 
   const getButtonTextStyle = (style?: string) => {
     switch (style) {
       case 'cancel':
-        return 'text-gray-700';
+        return { color: Colors.paleCobalt };
+      case 'destructive':
+        return { color: '#FFFFFF' };
       default:
-        return 'text-white';
+        return { color: '#FFFFFF' };
     }
   };
 
   return (
-    <Modal transparent visible={visible} animationType="none" onRequestClose={onDismiss}>
-      <Animated.View
-        className="flex-1 items-center justify-center"
-        style={{ 
-          opacity: fadeAnim,
-          backgroundColor: 'rgba(0, 0, 0, 0.1)'
+    <Modal
+      transparent
+      visible={visible}
+      animationType="fade"
+      onRequestClose={onDismiss}
+      statusBarTranslucent={true}
+    >
+      <Pressable
+        style={{
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingTop: StatusBar.currentHeight || 0,
         }}
+        onPress={onDismiss}
       >
-        <Animated.View
-          className="mx-6 rounded-2xl bg-white p-6 shadow-lg"
-          style={{
-            transform: [{ scale: scaleAnim }],
-            minWidth: Dimensions.get('window').width * 0.8,
-            maxWidth: Dimensions.get('window').width * 0.9,
-          }}
-        >
-          {/* 헤더 */}
-          <View className="mb-4 flex-row items-center">
-            <View className="mr-3">{getIcon()}</View>
-            <View className="flex-1">
-              {title && (
-                <Text className="text-lg font-bold" style={{ color: getTypeColor() }}>
-                  {title}
-                </Text>
-              )}
-            </View>
-          </View>
-
-          {/* 메시지 */}
-          <Text className="text-gray-700 mb-6 text-base leading-6">{message}</Text>
-
-          {/* 버튼들 */}
-          <View
-            className={`flex-row gap-3 ${buttons.length === 1 ? 'justify-center' : 'justify-end'}`}
+        <Pressable onPress={(e) => e.stopPropagation()} onStartShouldSetResponder={() => true}>
+          <Animated.View
+            style={{
+              marginHorizontal: 24,
+              borderRadius: 16,
+              backgroundColor: themeColors.surface,
+              padding: 24,
+              shadowColor: themeColors.shadow,
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: isDark ? 0.3 : 0.15,
+              shadowRadius: 8,
+              elevation: 8,
+              transform: [{ scale: scaleAnim }],
+              opacity: fadeAnim,
+              minWidth: Dimensions.get('window').width * 0.8,
+              maxWidth: Dimensions.get('window').width * 0.9,
+            }}
           >
-            {buttons.map((button, index) => (
-              <TouchableOpacity
-                key={index}
-                className={`flex-1 rounded-xl px-4 py-3 ${getButtonStyle(button.style)}`}
-                onPress={() => handleButtonPress(button)}
-                activeOpacity={0.8}
+            {/* 헤더 */}
+            <View
+              style={{
+                marginBottom: 16,
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <View style={{ marginRight: 12 }}>{getIcon()}</View>
+              <View style={{ flex: 1 }}>
+                {title && (
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      fontWeight: 'bold',
+                      color: getTypeColor(),
+                    }}
+                  >
+                    {title}
+                  </Text>
+                )}
+              </View>
+            </View>
+
+            {/* 메시지 */}
+            {message && message.trim() && (
+              <Text
+                style={{
+                  color: themeColors.text,
+                  marginBottom: 20,
+                  fontSize: 16,
+                  lineHeight: 24,
+                }}
               >
-                <Text
-                  className={`text-center text-base font-medium ${getButtonTextStyle(button.style)}`}
+                {message.replace(/\\n/g, '\n')}
+              </Text>
+            )}
+
+            {/* 버튼들 - 3개 이상이면 세로로 배치 */}
+            <View
+              style={{
+                flexDirection: defaultButtons.length > 2 ? 'column' : 'row',
+                gap: 12,
+                justifyContent: defaultButtons.length === 1 ? 'center' : 'flex-end',
+                marginBottom: 20,
+              }}
+            >
+              {defaultButtons.map((button, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    {
+                      flex: defaultButtons.length <= 2 ? 1 : 0,
+                      borderRadius: 12,
+                      paddingHorizontal: 16,
+                      paddingVertical: 12,
+                    },
+                    getButtonStyle(button.style),
+                  ]}
+                  onPress={() => handleButtonPress(button)}
+                  activeOpacity={0.8}
                 >
-                  {button.text}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </Animated.View>
-      </Animated.View>
+                  <Text
+                    style={[
+                      {
+                        textAlign: 'center',
+                        fontSize: 14,
+                        fontWeight: '500',
+                      },
+                      getButtonTextStyle(button.style),
+                    ]}
+                  >
+                    {button.text}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </Animated.View>
+        </Pressable>
+      </Pressable>
     </Modal>
   );
 };
@@ -224,7 +300,7 @@ export class CustomAlertManager {
         visible: true,
         title,
         message: message || '',
-        buttons: buttons || [{ text: '확인' }],
+        buttons: buttons || [{ text: CustomAlertManager.getTranslations().common.ok }],
         type,
         onDismiss: () => {
           CustomAlertManager.alertContainer?.hideAlert();
@@ -237,25 +313,56 @@ export class CustomAlertManager {
     });
   }
 
+  // Helper method to get current translations
+  private static getTranslations() {
+    const { useAppStore } = require('../../store/app-store');
+    const language = useAppStore.getState().language;
+    return getTranslations(language);
+  }
+
   // 편의 메소드들
-  static success(message: string, title = '성공'): Promise<void> {
+  static success(message: string, title?: string): Promise<void> {
+    const t = CustomAlertManager.getTranslations();
     HapticFeedback.success();
-    return CustomAlertManager.alert(title, message, [{ text: '확인' }], 'success');
+    return CustomAlertManager.alert(
+      title || (t.locale.startsWith('en') ? 'Success' : '성공'),
+      message,
+      [{ text: t.common.ok }],
+      'success',
+    );
   }
 
-  static error(message: string, title = '오류'): Promise<void> {
+  static error(message: string, title?: string): Promise<void> {
+    const t = CustomAlertManager.getTranslations();
     HapticFeedback.error();
-    return CustomAlertManager.alert(title, message, [{ text: '확인' }], 'error');
+    return CustomAlertManager.alert(
+      title || t.common.error,
+      message,
+      [{ text: t.common.ok }],
+      'error',
+    );
   }
 
-  static warning(message: string, title = '경고'): Promise<void> {
+  static warning(message: string, title?: string): Promise<void> {
+    const t = CustomAlertManager.getTranslations();
     HapticFeedback.warning();
-    return CustomAlertManager.alert(title, message, [{ text: '확인' }], 'warning');
+    return CustomAlertManager.alert(
+      title || (t.locale.startsWith('en') ? 'Warning' : '경고'),
+      message,
+      [{ text: t.common.ok }],
+      'warning',
+    );
   }
 
-  static info(message: string, title = '알림'): Promise<void> {
+  static info(message: string, title?: string): Promise<void> {
+    const t = CustomAlertManager.getTranslations();
     HapticFeedback.light();
-    return CustomAlertManager.alert(title, message, [{ text: '확인' }], 'info');
+    return CustomAlertManager.alert(
+      title || (t.locale.startsWith('en') ? 'Alert' : '알림'),
+      message,
+      [{ text: t.common.ok }],
+      'info',
+    );
   }
 
   static confirm(
@@ -264,24 +371,25 @@ export class CustomAlertManager {
     onConfirm?: () => void,
     onCancel?: () => void,
   ): Promise<boolean> {
+    const t = CustomAlertManager.getTranslations();
     return new Promise((resolve) => {
       CustomAlertManager.alert(
         title,
         message,
         [
           {
-            text: '취소',
+            text: t.common.confirm,
+            onPress: () => {
+              if (onConfirm) onConfirm();
+              resolve(true);
+            },
+          },
+          {
+            text: t.common.cancel,
             style: 'cancel',
             onPress: () => {
               if (onCancel) onCancel();
               resolve(false);
-            },
-          },
-          {
-            text: '확인',
-            onPress: () => {
-              if (onConfirm) onConfirm();
-              resolve(true);
             },
           },
         ],

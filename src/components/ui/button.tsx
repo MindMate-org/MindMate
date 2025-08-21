@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import { TouchableOpacity, Text, ActivityIndicator, StyleProp, ViewStyle } from 'react-native';
 
 import { useThemeColors } from '../providers/theme-provider';
 
@@ -10,6 +10,7 @@ export interface ButtonPropsType {
   children?: React.ReactNode;
   onPress?: () => void;
   className?: string;
+  style?: StyleProp<ViewStyle>;
   variant?: ButtonVariant;
   size?: ButtonSize;
   disabled?: boolean;
@@ -35,6 +36,7 @@ const Button = ({
   children,
   onPress,
   className = '',
+  style,
   variant = 'primary',
   size = 'md',
   disabled = false,
@@ -97,17 +99,20 @@ const Button = ({
       onPress={onPress}
       disabled={disabled || loading}
       activeOpacity={activeOpacity}
-      style={{
-        ...(isFloating ? {
-          backgroundColor: themeColors.primary,
-          shadowColor: themeColors.shadow,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: isDark ? 0.4 : 0.2,
-          shadowRadius: 8,
-          elevation: 8,
-        } : {}),
-        ...(isFloating && size === 'md' ? { transform: [{ scale: disabled ? 0.95 : 1 }] } : {}),
-      }}
+      style={[
+        {
+          ...(isFloating ? {
+            backgroundColor: themeColors.primary,
+            shadowColor: themeColors.shadow,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: isDark ? 0.4 : 0.2,
+            shadowRadius: 8,
+            elevation: 8,
+          } : {}),
+          ...(isFloating && size === 'md' ? { transform: [{ scale: disabled ? 0.95 : 1 }] } : {}),
+        },
+        style
+      ]}
     >
       {loading ? (
         <ActivityIndicator color={variant === 'outline' ? '#576BCD' : 'white'} />

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
+import { useThemeColors } from '../providers/theme-provider';
 
 export type LoadingStateVariant = 'fullscreen' | 'inline' | 'overlay' | 'compact';
 export type LoadingStateSize = 'small' | 'large';
@@ -28,47 +29,86 @@ const LoadingState: React.FC<LoadingStateProps> = ({
   variant = 'inline',
   size = 'large',
   backgroundColor,
-  spinnerColor = '#576BCD',
+  spinnerColor,
   className = '',
 }) => {
-  const getContainerStyles = () => {
-    const baseStyles = 'items-center justify-center';
+  const { theme: themeColors } = useThemeColors();
 
+  const getContainerStyles = () => {
     switch (variant) {
       case 'fullscreen':
-        return `${baseStyles} flex-1 bg-white`;
+        return {
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: backgroundColor || themeColors.background,
+        };
       case 'overlay':
-        return `${baseStyles} absolute inset-0 bg-black/30 z-50`;
+        return {
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: backgroundColor || 'rgba(0, 0, 0, 0.3)',
+          zIndex: 50,
+        };
       case 'compact':
-        return `${baseStyles} p-2`;
+        return {
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 8,
+        };
       case 'inline':
       default:
-        return `${baseStyles} p-4`;
+        return {
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 16,
+        };
     }
   };
 
   const getMessageStyles = () => {
     switch (variant) {
       case 'fullscreen':
-        return 'mt-4 text-base text-gray-600';
+        return {
+          marginTop: 16,
+          fontSize: 16,
+          color: themeColors.textSecondary,
+        };
       case 'overlay':
-        return 'mt-4 text-base text-white font-medium';
+        return {
+          marginTop: 16,
+          fontSize: 16,
+          fontWeight: '500',
+          color: '#FFFFFF',
+        };
       case 'compact':
-        return 'mt-2 text-xs text-gray-500';
+        return {
+          marginTop: 8,
+          fontSize: 12,
+          color: themeColors.textSecondary,
+        };
       case 'inline':
       default:
-        return 'mt-3 text-sm text-gray-600';
+        return {
+          marginTop: 12,
+          fontSize: 14,
+          color: themeColors.textSecondary,
+        };
     }
   };
 
-  const containerBgColor = backgroundColor ? { backgroundColor } : {};
-
   const showMessage = message && variant !== 'compact';
+  const actualSpinnerColor = spinnerColor || themeColors.primary;
 
   return (
-    <View className={`${getContainerStyles()} ${className}`} style={containerBgColor}>
-      <ActivityIndicator size={size} color={spinnerColor} />
-      {showMessage && <Text className={getMessageStyles()}>{message}</Text>}
+    <View style={getContainerStyles() as any}>
+      <ActivityIndicator size={size} color={actualSpinnerColor} />
+      {showMessage && <Text style={getMessageStyles()}>{message}</Text>}
     </View>
   );
 };

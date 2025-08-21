@@ -1,5 +1,5 @@
 import { ChevronLeft, Clock } from 'lucide-react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import {
   View,
@@ -8,11 +8,13 @@ import {
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
-  Alert,
+  BackHandler,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 import { useThemeColors } from '../providers/theme-provider';
-import { Colors } from '../../constants/colors';
+import { useI18n } from '../../hooks/use-i18n';
+import { CustomAlertManager } from '../ui/custom-alert';
 import MediaButtons from '../../features/diary/components/media-buttons';
 import MediaPreview from '../../features/diary/components/media-preview';
 import MoodPicker from '../../features/diary/components/mood-picker';
@@ -69,17 +71,12 @@ export const EntryForm: React.FC<EntryFormProps> = ({
   isLoading = false,
 }) => {
   const { theme: themeColors, isDark } = useThemeColors();
+  const { t } = useI18n();
   const [currentDateTime, setCurrentDateTime] = useState('');
   const [showMoodPickerModal, setShowMoodPickerModal] = useState(false);
   const [showStylePickerModal, setShowStylePickerModal] = useState(false);
 
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<EntryFormDataType>({
+  const { control, handleSubmit, setValue, watch } = useForm<EntryFormDataType>({
     defaultValues: {
       title: initialData?.title || '',
       content: initialData?.content || '',
@@ -107,11 +104,11 @@ export const EntryForm: React.FC<EntryFormProps> = ({
   } = useMediaPicker(watchedMedia, setValue);
 
   useEffect(() => {
-    const updateTime = () => setCurrentDateTime(formatDateTime());
+    const updateTime = () => setCurrentDateTime(formatDateTime(undefined, 'full', '12h', t.locale.startsWith('en') ? 'en' : 'ko'));
     updateTime();
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [t.locale]);
 
   const handleRemoveMedia = (id: string) => {
     setValue(
@@ -122,7 +119,9 @@ export const EntryForm: React.FC<EntryFormProps> = ({
 
   const handleFormSubmit = async (data: EntryFormDataType) => {
     if (audioUploadState.isUploading || mediaUploadState.isUploading) {
-      Alert.alert('업로드 중', '미디어 업로드가 완료될 때까지 기다려주세요.');
+      CustomAlertManager.info(t.locale.startsWith('en') 
+        ? 'Please wait for media upload to complete.' 
+        : '미디어 업로드가 완료될 때까지 기다려주세요.');
       return;
     }
     await onSubmit(data, audioUri ?? undefined);
@@ -130,66 +129,96 @@ export const EntryForm: React.FC<EntryFormProps> = ({
 
   const handleSubmitError = (errors: any) => {
     const errorMessages = [];
-    if (errors.title) errorMessages.push(errors.title.message || '제목을 입력해주세요');
-    if (errors.content) errorMessages.push(errors.content.message || '내용을 입력해주세요');
+    if (errors.title) errorMessages.push(errors.title.message || (t.locale.startsWith('en') ? 'Please enter a title' : '제목을 입력해주세요'));
+    if (errors.content) errorMessages.push(errors.content.message || (t.locale.startsWith('en') ? 'Please enter content' : '내용을 입력해주세요'));
     if (showMoodPicker && errors.mood)
-      errorMessages.push(errors.mood.message || '오늘의 기분을 선택해주세요');
+      errorMessages.push(errors.mood.message || (t.locale.startsWith('en') ? 'Please select your mood' : '오늘의 기분을 선택해주세요'));
 
     if (errorMessages.length > 0) {
-      Alert.alert('입력 확인', errorMessages.join('\\n'));
+      CustomAlertManager.error(errorMessages.join('\\n'));
     }
   };
 
-  const handleCancel = () => {
-    Alert.alert('확인', '작성을 취소하시겠습니까?', [
-      { text: '아니오', style: 'cancel' },
-      { text: '예', onPress: onCancel },
-    ]);
+  const handleCancelWithConfirm = async () => {
+    const confirmed = await CustomAlertManager.confirm(
+      t.locale.startsWith('en') ? 'Confirm' : '확인',
+      t.locale.startsWith('en') ? 'Do you want to cancel writing?' : '작성을 취소하시겠습니까?'
+    );
+    if (confirmed) {
+      onCancel();
+    }
   };
 
+  // 안드로이드 하드웨어 뒤로가기 버튼 처리
+  const handleBackPress = useCallback(() => {
+    handleCancelWithConfirm();
+    return true; // 기본 뒤로가기 동작 방지
+  }, []);
+
+  // 화면이 포커스될 때 BackHandler 등록/해제
+  useFocusEffect(
+    useCallback(() => {
+      const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+      return () => subscription.remove();
+    }, [handleBackPress])
+  );
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
-      <ScrollView style={{ flex: 1 }}>
-        {/* 헤더 */}
-        <View style={{
+    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
+      {/* 헤더 */}
+      <View
+        style={{
           marginTop: 32,
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
-          borderBottomWidth: 2,
-          borderBottomColor: themeColors.accent,
-          backgroundColor: themeColors.background,
+          borderBottomWidth: 1,
+          borderBottomColor: themeColors.primary,
+          backgroundColor: themeColors.surface,
           paddingHorizontal: 16,
           paddingVertical: 16,
-        }}>
-          <TouchableOpacity onPress={onCancel}>
-            <ChevronLeft size={24} color={themeColors.primary} />
-          </TouchableOpacity>
-          <Text style={{
+        }}
+      >
+        <TouchableOpacity onPress={handleCancelWithConfirm}>
+          <ChevronLeft size={24} color={themeColors.primary} />
+        </TouchableOpacity>
+        <Text
+          style={{
             fontSize: 18,
             fontWeight: 'bold',
             color: themeColors.primary,
-          }}>{title}</Text>
-          <View style={{ width: 24 }} />
-        </View>
+          }}
+        >
+          {title}
+        </Text>
+        <View style={{ width: 24 }} />
+      </View>
 
+      <ScrollView 
+        style={{ 
+          flex: 1,
+          backgroundColor: watchedStyle.backgroundColor || (isDark ? themeColors.surface : '#FFFFFF')
+        }}
+      >
         {/* 통합된 폼 컨테이너 */}
         <View
-          style={{ 
+          style={{
             flex: 1,
-            backgroundColor: watchedStyle.backgroundColor || (isDark ? themeColors.surface : '#FFFFFF'),
+            backgroundColor:
+              watchedStyle.backgroundColor || (isDark ? themeColors.surface : '#FFFFFF'),
+            paddingBottom: 90, // 하단 고정 버튼을 위한 여백
           }}
         >
           {/* 제목 입력 */}
           <Controller
             control={control}
             name="title"
-            rules={{ required: '제목을 입력해주세요' }}
+            rules={{ required: t.locale.startsWith('en') ? 'Please enter a title' : '제목을 입력해주세요' }}
             render={({ field: { onChange, value } }) => (
               <TextInput
                 value={value}
                 onChangeText={onChange}
-                placeholder="제목을 입력해주세요."
+                placeholder={t.locale.startsWith('en') ? 'Please enter a title.' : '제목을 입력해주세요.'}
                 placeholderTextColor={themeColors.textSecondary}
                 style={{
                   marginBottom: 16,
@@ -214,12 +243,12 @@ export const EntryForm: React.FC<EntryFormProps> = ({
               <Controller
                 control={control}
                 name="content"
-                rules={{ required: '내용을 입력해주세요' }}
+                rules={{ required: t.locale.startsWith('en') ? 'Please enter content' : '내용을 입력해주세요' }}
                 render={({ field: { onChange, value } }) => (
                   <TextInput
                     value={value}
                     onChangeText={onChange}
-                    placeholder="내용을 입력해 주세요."
+                    placeholder={t.locale.startsWith('en') ? 'Please enter content.' : '내용을 입력해 주세요.'}
                     placeholderTextColor={themeColors.textSecondary}
                     multiline
                     textAlignVertical="top"
@@ -255,23 +284,31 @@ export const EntryForm: React.FC<EntryFormProps> = ({
           />
 
           {/* 날짜 및 기분 */}
-          <View style={{
-            paddingHorizontal: 16,
-            paddingVertical: 16,
-            borderTopWidth: 1,
-            borderTopColor: '#576BCD',
-          }}>
-            <View style={{
-              marginBottom: showMoodPicker ? 16 : 0,
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 8,
-            }}>
+          <View
+            style={{
+              paddingHorizontal: 16,
+              paddingVertical: 16,
+              borderTopWidth: 1,
+              borderTopColor: '#576BCD',
+            }}
+          >
+            <View
+              style={{
+                marginBottom: showMoodPicker ? 16 : 0,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 8,
+              }}
+            >
               <Clock size={20} color={themeColors.primary} />
-              <Text style={{
-                fontSize: 14,
-                color: themeColors.text,
-              }}>{currentDateTime}</Text>
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: themeColors.text,
+                }}
+              >
+                {currentDateTime}
+              </Text>
             </View>
 
             {showMoodPicker && (
@@ -294,69 +331,84 @@ export const EntryForm: React.FC<EntryFormProps> = ({
 
           {/* 알림 섹션 (일정에서만 표시) */}
           {showAlarmSection && (
-            <View style={{
-              borderTopWidth: 1,
-              borderTopColor: '#576BCD',
-            }}>
+            <View
+              style={{
+                borderTopWidth: 1,
+                borderTopColor: '#576BCD',
+              }}
+            >
               {alarmSection}
             </View>
           )}
-
-          {/* 하단 버튼 */}
-          <View style={{
-            paddingHorizontal: 16,
-            paddingVertical: 16,
-            paddingBottom: 32, // 갤럭시 네비게이션 바와 겹치지 않게
-            borderTopWidth: 1,
-            borderTopColor: '#576BCD',
-          }}>
-          <View style={{ flexDirection: 'row', gap: 16 }}>
-            <TouchableOpacity
-              onPress={handleSubmit(handleFormSubmit, handleSubmitError)}
-              style={{
-                flex: 1,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 8,
-                paddingVertical: 16,
-                backgroundColor:
-                  audioUploadState.isUploading || mediaUploadState.isUploading || isLoading
-                    ? themeColors.textSecondary
-                    : '#576BCD',
-              }}
-              disabled={audioUploadState.isUploading || mediaUploadState.isUploading || isLoading}
-            >
-              <Text style={{
-                fontSize: 16,
-                fontWeight: 'bold',
-                color: '#FFFFFF',
-              }}>
-                {audioUploadState.isUploading || mediaUploadState.isUploading || isLoading
-                  ? '업로드 중...'
-                  : '등록하기'}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleCancel}
-              style={{
-                flex: 1,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 8,
-                backgroundColor: isDark ? themeColors.textSecondary : '#FFE5BC',
-                paddingVertical: 16,
-              }}
-            >
-              <Text style={{
-                fontSize: 16,
-                fontWeight: 'bold',
-                color: isDark ? themeColors.background : '#576BCD',
-              }}>취소</Text>
-            </TouchableOpacity>
-          </View>
-          </View>
         </View>
       </ScrollView>
+
+      {/* 하단 고정 버튼 */}
+      <View
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: themeColors.surface,
+          borderTopWidth: 1,
+          borderTopColor: themeColors.primary,
+          paddingHorizontal: 16,
+          paddingVertical: 16,
+          paddingBottom: 50, // 갤럭시 네비게이션 바와 적절한 간격 확보
+        }}
+      >
+        <View style={{ flexDirection: 'row', gap: 16 }}>
+          <TouchableOpacity
+            onPress={handleSubmit(handleFormSubmit, handleSubmitError)}
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 8,
+              paddingVertical: 16,
+              backgroundColor:
+                audioUploadState.isUploading || mediaUploadState.isUploading || isLoading
+                  ? themeColors.textSecondary
+                  : themeColors.primary,
+            }}
+            disabled={audioUploadState.isUploading || mediaUploadState.isUploading || isLoading}
+          >
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: 'bold',
+                color: themeColors.primaryText,
+              }}
+            >
+              {audioUploadState.isUploading || mediaUploadState.isUploading || isLoading
+                ? (t.locale.startsWith('en') ? 'Uploading...' : '업로드 중...')
+                : (t.locale.startsWith('en') ? 'Submit' : '등록하기')}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleCancelWithConfirm}
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 8,
+              backgroundColor: '#FEF3C7',
+              paddingVertical: 16,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: 'bold',
+                color: '#576BCD',
+              }}
+            >
+              {t.locale.startsWith('en') ? 'Cancel' : '취소'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
 
       {showMoodPicker && (
         <MoodPicker

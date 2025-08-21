@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,11 +8,15 @@ import {
   TouchableOpacity,
   Image,
   ActivityIndicator,
-  Alert,
   SafeAreaView,
+  BackHandler,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import { ArrowLeft } from 'lucide-react-native';
 
 import { useThemeColors } from '../../src/components/providers/theme-provider';
+import { useI18n } from '../../src/hooks/use-i18n';
+import { CustomAlertManager } from '../../src/components/ui/custom-alert';
 
 import {
   useUpdateRoutine,
@@ -23,6 +27,7 @@ import { useRoutineDetailQuery } from '../../src/features/routine/hooks/use-rout
 const RoutineForm = () => {
   const router = useRouter();
   const { theme: themeColors, isDark } = useThemeColors();
+  const { t } = useI18n();
   const { id } = useLocalSearchParams();
   const [subTaskChecks, setSubTaskChecks] = useState<boolean[]>([]);
 
@@ -58,18 +63,42 @@ const RoutineForm = () => {
   };
 
   // 루틴 완료 처리
-  const handleCompleteRoutine = () => {
-    Alert.alert('루틴 완료', '모든 하위 작업이 완료되었습니다! 루틴을 완료 처리하시겠습니까?', [
-      { text: '취소', style: 'cancel' },
-      {
-        text: '완료',
-        onPress: () => {
-          // TODO: 루틴 완료 처리 로직 (루틴 실행 기록 저장)
-          Alert.alert('축하합니다!', '루틴을 성공적으로 완료했습니다.');
-        },
-      },
-    ]);
+  const handleCompleteRoutine = async () => {
+    const confirmed = await CustomAlertManager.confirm(
+      '루틴 완료',
+      '모든 하위 작업이 완료되었습니다! 루틴을 완료 처리하시겠습니까?'
+    );
+    
+    if (confirmed) {
+      // TODO: 루틴 완료 처리 로직 (루틴 실행 기록 저장)
+      CustomAlertManager.success('루틴을 성공적으로 완료했습니다.');
+    }
   };
+
+  // 뒤로가기 처리
+  const handleBack = async () => {
+    const confirmed = await CustomAlertManager.confirm(
+      t.locale.startsWith('en') ? 'Confirm' : '확인',
+      t.locale.startsWith('en') ? 'Do you want to exit the routine?' : '루틴을 나가시겠습니까?'
+    );
+    if (confirmed) {
+      router.back();
+    }
+  };
+
+  // 안드로이드 하드웨어 뒤로가기 버튼 처리
+  const handleBackPress = useCallback(() => {
+    handleBack();
+    return true;
+  }, []);
+
+  // 화면이 포커스될 때 BackHandler 등록/해제
+  useFocusEffect(
+    useCallback(() => {
+      const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+      return () => subscription.remove();
+    }, [handleBackPress])
+  );
 
   // 로딩 상태
   if (isLoading) {
@@ -78,7 +107,7 @@ const RoutineForm = () => {
         flex: 1, 
         alignItems: 'center', 
         justifyContent: 'center', 
-        backgroundColor: isDark ? themeColors.background : '#F0F3FF' 
+        backgroundColor: themeColors.background 
       }}>
         <ActivityIndicator size="large" color={themeColors.primary} />
         <Text style={{ 
@@ -96,7 +125,7 @@ const RoutineForm = () => {
         flex: 1, 
         alignItems: 'center', 
         justifyContent: 'center', 
-        backgroundColor: isDark ? themeColors.background : '#F0F3FF',
+        backgroundColor: themeColors.background,
         paddingHorizontal: 16 
       }}>
         <Text style={{ 
@@ -113,7 +142,7 @@ const RoutineForm = () => {
           }} 
           onPress={refetch}
         >
-          <Text style={{ color: themeColors.primaryText }}>다시 시도</Text>
+          <Text style={{ color: themeColors.primaryText }}>{t.common.retry}</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
@@ -126,7 +155,7 @@ const RoutineForm = () => {
         flex: 1, 
         alignItems: 'center', 
         justifyContent: 'center', 
-        backgroundColor: isDark ? themeColors.background : '#F0F3FF' 
+        backgroundColor: themeColors.background 
       }}>
         <Text style={{ color: themeColors.textSecondary }}>루틴을 찾을 수 없습니다.</Text>
       </SafeAreaView>
@@ -162,10 +191,30 @@ const RoutineForm = () => {
   return (
     <SafeAreaView style={{ 
       flex: 1, 
-      backgroundColor: isDark ? themeColors.background : '#F0F3FF' 
+      backgroundColor: themeColors.background 
     }}>
-      {/* 상단 여백 */}
-      <View style={{ height: 32 }} />
+      {/* 헤더 */}
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: themeColors.background,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        marginTop: 32,
+      }}>
+        <TouchableOpacity 
+          onPress={handleBack} 
+          style={{ flexDirection: 'row', alignItems: 'center' }}
+        >
+          <ArrowLeft size={24} color={themeColors.primary} />
+          <Text style={{
+            marginLeft: 8,
+            fontSize: 18,
+            fontWeight: '500',
+            color: themeColors.primary,
+          }}>{routine?.name || t.routine.title}</Text>
+        </TouchableOpacity>
+      </View>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ alignItems: 'center', paddingBottom: 32 }}
@@ -213,7 +262,11 @@ const RoutineForm = () => {
                   ? `${routine.createdAt.slice(0, 10)} ~ ${routine.deadline}`
                   : ''}
               </Text>
-              <Text className="mb-1 text-[14px] text-[#7B7FD6]">{routine.repeatCycle} 30분</Text>
+              <Text style={{
+                marginBottom: 4,
+                fontSize: 14,
+                color: themeColors.primary,
+              }}>{routine.repeatCycle} 30분</Text>
             </View>
             {routine.imageUrl && (
               <Image
@@ -225,38 +278,101 @@ const RoutineForm = () => {
           </View>
 
           {/* 상세 */}
-          <Text className="mb-1 mt-2 text-[15px] font-bold text-[#7B7FD6]">상세</Text>
-          <View className="mb-3 rounded-xl bg-[#F7F8FD] px-4 py-3 shadow-sm">
-            <Text className="text-[15px] text-[#222]">{routine.details || '설명이 없습니다.'}</Text>
+          <Text style={{
+            marginBottom: 4,
+            marginTop: 8,
+            fontSize: 15,
+            fontWeight: 'bold',
+            color: themeColors.primary,
+          }}>상세</Text>
+          <View style={{
+            marginBottom: 12,
+            borderRadius: 12,
+            backgroundColor: themeColors.backgroundSecondary,
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            shadowColor: themeColors.shadow,
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: isDark ? 0.2 : 0.1,
+            shadowRadius: 2,
+            elevation: 2,
+          }}>
+            <Text style={{
+              fontSize: 15,
+              color: themeColors.text,
+            }}>{routine.details || '설명이 없습니다.'}</Text>
           </View>
 
           {/* 알림 */}
-          <View className="mb-4 flex-row items-center rounded-xl bg-[#F7F8FD] px-4 py-3 shadow-sm">
+          <View style={{
+            marginBottom: 16,
+            flexDirection: 'row',
+            alignItems: 'center',
+            borderRadius: 12,
+            backgroundColor: themeColors.backgroundSecondary,
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            shadowColor: themeColors.shadow,
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: isDark ? 0.2 : 0.1,
+            shadowRadius: 2,
+            elevation: 2,
+          }}>
             <Ionicons
               name="alarm-outline"
               size={20}
-              color={routine.alarmTime ? '#FF4848' : '#B0B8CC'}
+              color={routine.alarmTime ? '#FF4848' : themeColors.textSecondary}
               style={{ marginRight: 8 }}
             />
-            <Text className="text-[16px] text-[#222]">
+            <Text style={{
+              fontSize: 16,
+              color: themeColors.text,
+            }}>
               {routine.alarmTime ? routine.alarmTime.replace(':', ' : ') : '알림 없음'}
             </Text>
           </View>
 
           {/* 하위 작업 */}
-          <Text className="mb-2 text-[15px] font-bold text-[#7B7FD6]">하위 작업</Text>
-          <View className="gap-2">
+          <Text style={{
+            marginBottom: 8,
+            fontSize: 15,
+            fontWeight: 'bold',
+            color: themeColors.primary,
+          }}>하위 작업</Text>
+          <View style={{ gap: 8 }}>
             {routine.subTasks.map((task, index) => (
-              <View key={task.id} className="mb-2 flex-row items-center">
-                <View className="flex-1 flex-row items-center justify-between rounded-xl bg-[#7B7FD6] px-4 py-3">
-                  <Text className="text-[16px] font-bold text-white">{task.title}</Text>
+              <View key={task.id} style={{
+                marginBottom: 8,
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+                <View style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  borderRadius: 12,
+                  backgroundColor: themeColors.backgroundSecondary,
+                  paddingHorizontal: 16,
+                  paddingVertical: 12,
+                  shadowColor: themeColors.shadow,
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: isDark ? 0.2 : 0.1,
+                  shadowRadius: 2,
+                  elevation: 2,
+                }}>
+                  <Text style={{
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                    color: themeColors.text,
+                  }}>{task.title}</Text>
                   <TouchableOpacity
                     onPress={() => handleSubTaskToggle(index, !subTaskChecks[index])}
                   >
                     <Ionicons
                       name={subTaskChecks[index] ? 'checkbox' : 'square-outline'}
                       size={22}
-                      color={subTaskChecks[index] ? '#576BCD' : '#B0B8CC'}
+                      color={subTaskChecks[index] ? themeColors.primary : themeColors.textSecondary}
                     />
                   </TouchableOpacity>
                 </View>

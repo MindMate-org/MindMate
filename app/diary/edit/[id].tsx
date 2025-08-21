@@ -1,9 +1,11 @@
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, Alert, ActivityIndicator } from 'react-native';
+import { SafeAreaView, ActivityIndicator } from 'react-native';
 
 import { EntryForm, EntryFormDataType } from '../../../src/components/common/entry-form';
+import { CustomAlertManager } from '../../../src/components/ui/custom-alert';
 import { useThemeColors } from '../../../src/components/providers/theme-provider';
+import { useI18n } from '../../../src/hooks/use-i18n';
 import { Colors } from '../../../src/constants/colors';
 import { DiaryService } from '../../../src/features/diary/services';
 import { DiaryMediaType as FormMediaType } from '../../../src/features/diary/types';
@@ -21,6 +23,7 @@ const DiaryEditPage = () => {
   const router = useRouter();
   const { id } = useLocalSearchParams();
   const { theme: themeColors, isDark } = useThemeColors();
+  const { t } = useI18n();
   const [isLoading, setIsLoading] = useState(true);
   const [diary, setDiary] = useState<DiaryDetailType | null>(null);
   const [existingMedia, setExistingMedia] = useState<DiaryMediaType>([]);
@@ -68,8 +71,8 @@ const DiaryEditPage = () => {
         });
       }
     } catch (error) {
-      console.error('일기 불러오기 실패:', error);
-      Alert.alert('오류', '일기를 불러오는데 실패했습니다.');
+      console.error('Failed to load diary:', error);
+      CustomAlertManager.error(t.diary.loadFailed);
     } finally {
       setIsLoading(false);
     }
@@ -78,13 +81,13 @@ const DiaryEditPage = () => {
   const handleSubmit = async (data: EntryFormDataType, audioUri?: string) => {
     try {
       if (!diary || !id || typeof id !== 'string') {
-        Alert.alert('오류', '일기 정보를 찾을 수 없습니다.');
+        CustomAlertManager.error(t.diary.invalidId);
         return;
       }
 
       const numericId = parseInt(id, 10);
       if (isNaN(numericId)) {
-        Alert.alert('오류', '잘못된 일기 ID입니다.');
+        CustomAlertManager.error(t.diary.invalidId);
         return;
       }
 
@@ -116,12 +119,11 @@ const DiaryEditPage = () => {
         });
       }
 
-      Alert.alert('성공', '일기가 수정되었습니다.', [
-        { text: '확인', onPress: () => router.replace('/(tabs)/diary') },
-      ]);
+      await CustomAlertManager.success(t.locale.startsWith('en') ? 'Diary updated successfully.' : '일기가 수정되었습니다.');
+      router.replace('/(tabs)/diary');
     } catch (error) {
-      console.error('일기 수정 실패:', error);
-      Alert.alert('오류', '일기 수정 중 오류가 발생했습니다.');
+      console.error('Diary update failed:', error);
+      CustomAlertManager.error(t.locale.startsWith('en') ? 'An error occurred while updating the diary.' : '일기 수정 중 오류가 발생했습니다.');
     }
   };
 
@@ -138,15 +140,14 @@ const DiaryEditPage = () => {
   }
 
   if (!initialData) {
-    Alert.alert('오류', '일기를 찾을 수 없습니다.', [
-      { text: '확인', onPress: () => router.back() },
-    ]);
+    CustomAlertManager.error(t.diary.invalidId);
+    router.back();
     return null;
   }
 
   return (
     <EntryForm
-      title="일기 수정하기"
+      title={t.diary.edit}
       initialData={initialData}
       onSubmit={handleSubmit}
       onCancel={handleCancel}

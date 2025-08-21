@@ -2,11 +2,11 @@
  * 다국어 지원 훅
  */
 
-import { useGlobalStore } from '../store/global-store';
+import { useLanguage } from '../store/app-store';
 import { getTranslations } from '../lib/i18n';
 
 export const useI18n = () => {
-  const language = useGlobalStore((state) => state.language);
+  const language = useLanguage();
   
   const t = getTranslations(language);
   

@@ -9,7 +9,8 @@ import FadeInView from '../../../components/ui/fade-in-view';
 import LoadingState from '../../../components/ui/loading-state';
 import { useThemeColors } from '../../../components/providers/theme-provider';
 import { Colors } from '../../../constants/colors';
-import { formatDateTimeString } from '../../../lib/date-utils';
+import { useI18n } from '../../../hooks/use-i18n';
+import { formatDateTimeString, formatDate as formatDateUtil } from '../../../lib/date-utils';
 import { MediaSlider } from '../../diary/components/media-slider';
 import type { MediaTableType } from '../../diary/db/diary-db-types';
 import {
@@ -30,6 +31,7 @@ export interface ScheduleDetailPageProps {
 const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
   const router = useRouter();
   const { id } = useLocalSearchParams();
+  const { t } = useI18n();
   const { theme: themeColors, isDark } = useThemeColors();
   const [schedule, setSchedule] = useState<ScheduleType | null>(null);
   const [media, setMedia] = useState<MediaTableType[]>([]);
@@ -43,7 +45,7 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
       if (!isNaN(numericId)) {
         fetchScheduleDetail(numericId);
       } else {
-        setError('잘못된 일정 ID입니다.');
+        setError(t.schedule.invalidId);
         setIsLoading(false);
       }
     }
@@ -65,7 +67,7 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
       setMedia(mediaData);
     } catch (error) {
       console.error('일정 상세 정보 조회 실패:', error);
-      setError('일정 정보를 불러오는 데 실패했습니다.');
+      setError(t.schedule.loadFailed);
     } finally {
       setIsLoading(false);
     }
@@ -77,18 +79,18 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
   const handleDelete = () => {
     if (!schedule) return;
 
-    CustomAlertManager.confirm('일정 삭제', '정말로 이 일정을 삭제하시겠습니까?', async () => {
+    CustomAlertManager.confirm(t.common.delete, t.schedule.deleteConfirm, async () => {
       try {
         const success = await fetchDeleteSchedule(schedule.id);
         if (success) {
-          await CustomAlertManager.success('일정이 삭제되었습니다.');
+          await CustomAlertManager.success(t.schedule.deleteSuccess);
           router.back();
         } else {
-          CustomAlertManager.error('일정 삭제에 실패했습니다.');
+          CustomAlertManager.error(t.schedule.deleteFailed);
         }
       } catch (error) {
         console.error('일정 삭제 실패:', error);
-        CustomAlertManager.error('일정 삭제에 실패했습니다.');
+        CustomAlertManager.error(t.schedule.deleteFailed);
       }
     });
   };
@@ -103,27 +105,20 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
 
   const handleBack = useCallback(() => router.back(), [router]);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const days = ['일', '월', '화', '수', '목', '금', '토'];
-    const dayName = days[date.getDay()];
-
-    return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')} (${dayName})`;
-  };
 
   if (isLoading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
-        <LoadingState message="일정을 불러오는 중..." />
+      <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
+        <LoadingState message={t.schedule.loadingSchedule} />
       </SafeAreaView>
     );
   }
 
   if (error || !schedule) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
         <ErrorState
-          message={error || '일정을 찾을 수 없습니다.'}
+          message={error || t.schedule.cannotFind}
           onRetry={() => fetchScheduleDetail(parseInt(id as string, 10))}
         />
       </SafeAreaView>
@@ -131,7 +126,7 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? themeColors.background : '#F0F3FF' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
       {/* 헤더 */}
       <FadeInView>
         <View style={{
@@ -141,6 +136,7 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
           backgroundColor: themeColors.surface,
           paddingHorizontal: 16,
           paddingVertical: 16,
+          marginTop: 32,
           borderBottomWidth: 1,
           borderBottomColor: themeColors.border,
         }}>
@@ -151,7 +147,7 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
             fontSize: 18,
             fontWeight: 'bold',
             color: themeColors.text,
-          }}>일정 상세</Text>
+          }}>{t.schedule.scheduleDetail}</Text>
           <TouchableOpacity
             onPress={() => setShowMenu(!showMenu)}
             style={{
@@ -201,7 +197,7 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
               fontSize: 14,
               fontWeight: '500',
               color: themeColors.text,
-            }}>편집</Text>
+            }}>{t.common.edit}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={{
@@ -222,7 +218,7 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
               fontSize: 14,
               fontWeight: '500',
               color: themeColors.error,
-            }}>삭제</Text>
+            }}>{t.common.delete}</Text>
           </TouchableOpacity>
         </FadeInView>
       )}
@@ -244,7 +240,7 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
               <View>
                 <Text style={{ color: themeColors.textSecondary, fontSize: 14 }}>
-                  {formatDateTimeString(schedule.time)}
+                  {formatDateTimeString(schedule.time, t.locale.startsWith('en') ? 'en' : 'ko')}
                 </Text>
                 <View style={{
                   flexDirection: 'row',
@@ -261,7 +257,7 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
                     fontSize: 12,
                     fontWeight: '600',
                   }}>
-                    {schedule.is_completed === 1 ? '✓ 완료됨' : '⏳ 대기 중'}
+                    {schedule.is_completed === 1 ? t.schedule.completedStatus : t.schedule.pendingStatus}
                   </Text>
                 </View>
               </View>
@@ -299,7 +295,7 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
               lineHeight: 24,
               marginBottom: 24,
             }}>
-              {schedule.contents || '내용이 없습니다.'}
+              {schedule.contents || t.schedule.noContent}
             </Text>
 
             {/* 위치 및 동행 정보 */}
@@ -354,7 +350,7 @@ const ScheduleDetailPage: React.FC<ScheduleDetailPageProps> = () => {
                     fontSize: 14,
                     fontWeight: '600',
                     color: themeColors.textSecondary,
-                  }}>첨부된 미디어</Text>
+                  }}>{t.schedule.attachedMedia}</Text>
                 </View>
                 <MediaSlider
                   media={media.map((m) => ({

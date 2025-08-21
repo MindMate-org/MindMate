@@ -4,7 +4,8 @@
 
 import { useRouter } from 'expo-router';
 import { useCallback } from 'react';
-import { Alert } from 'react-native';
+
+import { CustomAlertManager } from '../components/ui/custom-alert';
 
 /**
  * 공통 액션 훅
@@ -29,7 +30,7 @@ export const useCommonActions = () => {
       confirmText: string = '확인',
       cancelText: string = '취소',
     ) => {
-      Alert.alert(title, message, [
+      CustomAlertManager.alert(title, message, [
         {
           text: cancelText,
           style: 'cancel',
@@ -51,7 +52,7 @@ export const useCommonActions = () => {
    * @param onOk - 확인 버튼 클릭 시 실행될 함수
    */
   const showAlert = useCallback((title: string, message: string, onOk?: () => void) => {
-    Alert.alert(title, message, [
+    CustomAlertManager.alert(title, message, [
       {
         text: '확인',
         onPress: onOk,
