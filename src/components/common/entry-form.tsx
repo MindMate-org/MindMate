@@ -260,7 +260,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({
 
           {/* 내용 입력 + 미디어 버튼 */}
           <View style={{ width: '100%', flexDirection: 'row' }}>
-            <View style={{ flex: 1, padding: 16, paddingRight: 16 }}>
+            <View style={{ flex: 1, paddingLeft: 16, paddingRight: 16 }}>
               <Controller
                 control={control}
                 name="content"
@@ -314,7 +314,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({
           <View
             style={{
               paddingHorizontal: 16,
-              paddingVertical: 16,
+              paddingVertical: 8,
               borderTopWidth: 1,
               borderTopColor: '#576BCD',
             }}

@@ -156,12 +156,28 @@ const SearchForm = () => {
 
   // 이미지 추가 함수
   const handleAddImage = async () => {
-    const newImage = (await pickMedia()) as MediaType | undefined;
-    if (!newImage) return;
+    const newImages = (await pickMedia('multiple')) as MediaType[] | undefined;
+    if (!newImages || newImages.length === 0) return;
+
+    const remainingSlots = 5 - images.length;
+    const imagesToAdd = newImages.slice(0, remainingSlots);
+
     setImages((prev) => [
       ...prev,
-      { uri: newImage.uri, type: newImage.type, id: Date.now().toString() },
+      ...imagesToAdd.map((img, index) => ({
+        uri: img.uri,
+        type: img.type,
+        id: (Date.now() + index).toString(),
+      })),
     ]);
+
+    if (newImages.length > remainingSlots) {
+      CustomAlertManager.info(
+        t.locale.startsWith('en')
+          ? `Only ${remainingSlots} photos were added (maximum 5 allowed)`
+          : `최대 5개까지만 추가할 수 있어 ${remainingSlots}개만 추가되었습니다`,
+      );
+    }
   };
 
   // 이미지 삭제
@@ -375,8 +391,8 @@ const SearchForm = () => {
                   mediaList={images}
                   onAddMedia={handleAddImage}
                   onRemoveMedia={handleRemoveImage}
-                  maxCount={3}
-                  label={t.locale.startsWith('en') ? 'Add Photo' : '사진 추가'}
+                  maxCount={5}
+                  label={t.locale.startsWith('en') ? 'Add Photo (up to 5)' : '사진 추가 (최대 5개)'}
                   className="mb-4"
                 />
               </View>

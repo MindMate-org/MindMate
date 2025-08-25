@@ -58,8 +58,8 @@ export const AlarmSection: React.FC<AlarmSectionProps> = ({
     <View
       style={{
         paddingHorizontal: 16,
-        paddingVertical: 16,
-        gap: 16,
+        paddingBottom: 32,
+        gap: 8,
       }}
     >
       {/* 장소 */}
@@ -76,15 +76,19 @@ export const AlarmSection: React.FC<AlarmSectionProps> = ({
             flex: 1,
             fontSize: 16,
             color: themeColors.text,
+            paddingVertical: 8, // 터치 영역 확대
+            minHeight: 30, // 최소 높이 확보
           }}
           placeholder={
             t.locale.startsWith('en')
-              ? '467 Maponaru-gil, Mapo-gu, Seoul'
-              : '서울시 마포구 마포나루길 467'
+              ? 'Please enter the desired location.'
+              : '일정 장소를 입력해주세요.'
           }
           placeholderTextColor={themeColors.textSecondary}
           value={location}
           onChangeText={onLocationChange}
+          multiline={false}
+          textAlignVertical="center"
         />
       </View>
 
@@ -125,11 +129,15 @@ export const AlarmSection: React.FC<AlarmSectionProps> = ({
             flex: 1,
             fontSize: 16,
             color: themeColors.text,
+            paddingVertical: 8, // 터치 영역 확대
+            minHeight: 40, // 최소 높이 확보
           }}
           placeholder={t.locale.startsWith('en') ? 'Enter participants' : '참가자 입력'}
           placeholderTextColor={themeColors.textSecondary}
           value={companion}
           onChangeText={onCompanionChange}
+          multiline={false}
+          textAlignVertical="center"
         />
       </View>
     </View>

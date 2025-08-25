@@ -21,7 +21,9 @@ import { useDataClear } from './test-data-clear';
 import { useThemeColors } from '../../src/components/providers/theme-provider';
 import { CustomAlertManager } from '../../src/components/ui/custom-alert';
 import PrivacyPolicyModal from '../../src/components/ui/privacy-policy-modal';
+import { AddressBookService } from '../../src/features/address-book/services';
 import { useI18n } from '../../src/hooks/use-i18n';
+import { db } from '../../src/hooks/use-initialize-database';
 import { notificationService } from '../../src/lib/notification-service';
 import { useTheme, useLanguage, useSetTheme, useSetLanguage } from '../../src/store/app-store';
 
@@ -48,7 +50,6 @@ const SettingsPage = () => {
     CustomAlertManager.confirm(t.settings.dataExport, t.settings.dataExportConfirm, async () => {
       try {
         // 데이터베이스에서 모든 데이터 가져오기
-        const { db } = await import('../../src/hooks/use-initialize-database');
 
         const [diaries, schedules, routines, contacts, searchItems, media, tags] =
           await Promise.all([
@@ -401,9 +402,6 @@ const SettingsPage = () => {
                 onPress={async () => {
                   try {
                     // 내 정보가 있는지 확인
-                    const { AddressBookService } = await import(
-                      '../../src/features/address-book/services'
-                    );
                     const myContact = await AddressBookService.fetchGetMyContact();
 
                     if (myContact) {

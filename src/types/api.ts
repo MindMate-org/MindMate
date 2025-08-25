@@ -12,12 +12,12 @@ import { z } from 'zod';
 
 export const ApiResponseSchema = z.object({
   success: z.boolean(),
-  data: z.any().optional(),
+  data: z.unknown().optional(),
   error: z
     .object({
       code: z.string(),
       message: z.string(),
-      details: z.any().optional(),
+      details: z.unknown().optional(),
     })
     .optional(),
   metadata: z
@@ -28,13 +28,13 @@ export const ApiResponseSchema = z.object({
     .optional(),
 });
 
-export type ApiResponse<T = any> = {
+export type ApiResponse<T = unknown> = {
   success: boolean;
   data?: T;
   error?: {
     code: string;
     message: string;
-    details?: any;
+    details?: unknown;
   };
   metadata?: {
     timestamp: string;
@@ -128,9 +128,7 @@ export const ContactTagSchema = BaseEntitySchema.extend({
 
 export const ContactSchema = BaseEntitySchema.extend({
   name: z.string().min(1, '이름은 필수입니다').max(100),
-  phone_number: z
-    .string()
-    .regex(/^[+]?[0-9\-\s()]{10,20}$/, '올바른 전화번호 형식을 입력하세요'),
+  phone_number: z.string().regex(/^[+]?[0-9\-\s()]{10,20}$/, '올바른 전화번호 형식을 입력하세요'),
   email: z.string().email('올바른 이메일 형식을 입력하세요').optional(),
   address: z.string().max(500).optional(),
   memo: z.string().max(1000).optional(),
@@ -238,7 +236,7 @@ export const PaginationSchema = z.object({
 });
 
 export const PaginatedResponseSchema = z.object({
-  data: z.array(z.any()),
+  data: z.array(z.unknown()),
   pagination: z.object({
     page: z.number().int().positive(),
     limit: z.number().int().positive(),
@@ -250,7 +248,7 @@ export const PaginatedResponseSchema = z.object({
 });
 
 export type PaginationParams = z.infer<typeof PaginationSchema>;
-export type PaginatedResponse<T = any> = {
+export type PaginatedResponse<T = unknown> = {
   data: T[];
   pagination: {
     page: number;
@@ -274,7 +272,7 @@ export type SortParams = z.infer<typeof SortSchema>;
 export const FilterSchema = z.object({
   field: z.string(),
   operator: z.enum(['eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'like', 'in']),
-  value: z.any(),
+  value: z.unknown(),
 });
 
 export type FilterParams = z.infer<typeof FilterSchema>;

@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 
 import { CustomAlertManager } from '../../src/components/ui/custom-alert';
+import { db } from '../../src/hooks/use-initialize-database';
 import { useResetAppState } from '../../src/store/global-store';
 
 export const useDataClear = () => {
@@ -21,7 +22,6 @@ export const useDataClear = () => {
       console.log('✓ AsyncStorage cleared');
 
       // 3. 데이터베이스 초기화
-      const { db } = await import('../../src/hooks/use-initialize-database');
 
       const tables = [
         'contact_tag',

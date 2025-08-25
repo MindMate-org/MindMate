@@ -657,8 +657,8 @@ const ko: Translations = {
     deleteAllDataFinal: '정말로 모든 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.',
     deleteAllDataSuccess: '모든 데이터가 삭제되었습니다.',
     deleteAllDataError: '데이터 초기화 중 문제가 발생했습니다.',
-    notificationsPending: '알림 설정 기능이 준비 중입니다.',
-    notificationSubtitle: '푸시 알림 설정',
+    notificationsPending: '일정 및 루틴별 알림 관리',
+    notificationSubtitle: '일정/루틴 알림 및 권한 설정',
   },
 
   style: {
@@ -992,8 +992,8 @@ const en: Translations = {
     deleteAllDataFinal: 'Are you sure you want to delete all data? This action cannot be undone.',
     deleteAllDataSuccess: 'All data has been deleted.',
     deleteAllDataError: 'An error occurred while clearing data.',
-    notificationsPending: 'Notification settings feature is under development.',
-    notificationSubtitle: 'Push notification settings',
+    notificationsPending: 'Schedule and Routine notification management',
+    notificationSubtitle: 'Schedule/Routine alerts and permissions',
   },
 
   style: {

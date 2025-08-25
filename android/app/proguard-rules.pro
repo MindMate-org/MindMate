@@ -11,23 +11,4 @@
 -keep class com.swmansion.reanimated.** { *; }
 -keep class com.facebook.react.turbomodule.** { *; }
 
-# Expo specific rules
--keep class expo.modules.** { *; }
--keep class expo.interfaces.** { *; }
-
-# React Native specific rules
--keep class com.facebook.react.** { *; }
--keep class com.facebook.hermes.reactexecutor.** { *; }
--dontwarn com.facebook.react.**
-
-# SQLite rules (for expo-sqlite)
--keep class org.sqlite.** { *; }
--keep class org.sqlite.database.** { *; }
-
-# Keep JS bundle and source maps
--keep class **.BuildConfig { *; }
-
-# Lucide React Native icons
--keep class com.horcrux.svg.** { *; }
-
 # Add any project specific keep options here:

@@ -145,6 +145,8 @@ export type DiaryMediaType = {
   uri: string;
   /** 음성/비디오의 재생 시간 (초 단위, 선택사항) */
   duration?: number;
+  /** 오디오 파일명 (선택사항) */
+  name?: string;
 };
 
 /**

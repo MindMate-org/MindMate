@@ -29,6 +29,17 @@ export const useMediaPicker = (watchedMedia: DiaryMediaType[], setValue: UseForm
       return;
     }
 
+    // 권한 확인
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      CustomAlertManager.error(
+        t.locale.startsWith('en')
+          ? 'Please allow gallery access in system settings.'
+          : '시스템 설정에서 갤러리 접근 권한을 허용해 주세요.',
+      );
+      return;
+    }
+
     const options = t.locale.startsWith('en')
       ? ['Take with camera', 'Select from album (5)', 'Cancel']
       : ['카메라로 촬영', '앨범에서 선택(5개)', '취소'];
@@ -111,6 +122,17 @@ export const useMediaPicker = (watchedMedia: DiaryMediaType[], setValue: UseForm
       return;
     }
 
+    // 권한 확인
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      CustomAlertManager.error(
+        t.locale.startsWith('en')
+          ? 'Please allow gallery access in system settings.'
+          : '시스템 설정에서 갤러리 접근 권한을 허용해 주세요.',
+      );
+      return;
+    }
+
     const options = t.locale.startsWith('en')
       ? ['Take with camera', 'Select from album (3)', 'Cancel']
       : ['카메라로 촬영', '앨범에서 선택(3개)', '취소'];
@@ -188,9 +210,32 @@ export const useMediaPicker = (watchedMedia: DiaryMediaType[], setValue: UseForm
     );
   };
 
+  /**
+   * 오디오 녹음/선택
+   */
+  const handleAudioPicker = async () => {
+    if (uploadState.isUploading) {
+      CustomAlertManager.info(
+        t.locale.startsWith('en')
+          ? 'Please wait for media upload to complete.'
+          : '미디어 업로드가 완료될 때까지 기다려주세요.',
+        t.locale.startsWith('en') ? 'Uploading' : '업로드 중',
+      );
+      return;
+    }
+
+    // 기본적으로 바로 녹음 상태로 전환 (기존 방식)
+    CustomAlertManager.info(
+      t.locale.startsWith('en')
+        ? 'Voice recording feature will be available soon.'
+        : '음성 녹음 기능은 곧 제공될 예정입니다.',
+    );
+  };
+
   return {
     handleImagePicker,
     handleVideoPicker,
+    handleAudioPicker,
     uploadState,
   };
 };

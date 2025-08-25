@@ -101,7 +101,9 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
 
     CustomAlertManager.confirm(
       t.locale.startsWith('en') ? 'Delete Diary' : '일기 삭제',
-      t.locale.startsWith('en') ? 'Are you sure you want to delete this diary?' : '정말로 이 일기를 삭제하시겠습니까?',
+      t.locale.startsWith('en')
+        ? 'Are you sure you want to delete this diary?'
+        : '정말로 이 일기를 삭제하시겠습니까?',
       async () => {
         try {
           await DiaryService.deleteDiary(diary.id);
@@ -312,7 +314,7 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
         <FadeInView delay={100} style={{ marginHorizontal: 16, marginTop: 16 }}>
           <View
             style={{
-              backgroundColor: themeColors.surface,
+              backgroundColor: diary.background_color || themeColors.surface,
               borderRadius: 12,
               padding: 16,
               marginBottom: 16,
@@ -333,7 +335,7 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
               <View>
                 <Text
                   style={{
-                    color: themeColors.textSecondary,
+                    color: diary.text_color || themeColors.textSecondary,
                     fontSize: 14,
                   }}
                 >
@@ -378,7 +380,10 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
               style={{
                 marginBottom: 24,
                 color: diary.text_color || themeColors.text,
-                fontFamily: diary.font === 'default' ? undefined : diary.font || undefined,
+                fontFamily:
+                  diary.font === 'default' || diary.font === 'System'
+                    ? 'System'
+                    : diary.font || 'System',
                 textAlign: diary.text_align as 'left' | 'center' | 'right',
                 fontSize: Math.max((diary.font_size || 16) + 8, 24),
                 fontWeight: 'bold',
@@ -394,7 +399,10 @@ const DiaryDetailPage: React.FC<DiaryDetailPageProps> = () => {
                 marginBottom: 24,
                 color: diary.text_color || themeColors.text,
                 fontSize: diary.font_size || 16,
-                fontFamily: diary.font === 'default' ? undefined : diary.font || undefined,
+                fontFamily:
+                  diary.font === 'default' || diary.font === 'System'
+                    ? 'System'
+                    : diary.font || 'System',
                 textAlign: diary.text_align as 'left' | 'center' | 'right',
                 lineHeight: (diary.font_size || 16) * 1.6,
               }}

@@ -17,12 +17,28 @@ import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-nati
 import { useThemeColors } from '../../../src/components/providers/theme-provider';
 import { DiaryListItem } from '../../../src/features/diary/components/diary-list-item';
 import SearchModal from '../../../src/features/diary/components/search-modal';
+import type { DiaryTableType } from '../../../src/features/diary/db/diary-db-types';
 import { DiaryService } from '../../../src/features/diary/services';
 import { groupDiariesByPeriod } from '../../../src/features/diary/utils/diary-grouping';
 import { useI18n } from '../../../src/hooks/use-i18n';
 import { formatDateTimeString } from '../../../src/lib/date-utils';
+import { devError } from '../../../src/lib/dev-logger';
 
 type SortOrderType = 'asc' | 'desc';
+
+type SearchFilters = {
+  keyword?: string;
+  startDate?: string;
+  endDate?: string;
+  mood?: string | null;
+  hasMedia?: boolean | null;
+};
+
+type DiaryWithMedia = DiaryTableType & {
+  media_uri: string | null;
+  media_type: string | null;
+  thumbnailUri?: string;
+};
 
 /**
  * 일기 목록 페이지 컴포넌트
@@ -48,10 +64,10 @@ type SortOrderType = 'asc' | 'desc';
 const DiaryListPage = () => {
   const { theme: themeColors, isDark } = useThemeColors();
   const { t } = useI18n();
-  const [diaries, setDiaries] = useState<any[]>([]);
+  const [diaries, setDiaries] = useState<DiaryWithMedia[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [filteredDiaries, setFilteredDiaries] = useState<any[]>([]);
+  const [filteredDiaries, setFilteredDiaries] = useState<DiaryWithMedia[]>([]);
   const [sortOrder, setSortOrder] = useState<SortOrderType>('desc');
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [isSearchActive, setIsSearchActive] = useState(false);
@@ -69,11 +85,9 @@ const DiaryListPage = () => {
         setFilteredDiaries(result);
       }
     } catch (err) {
-      console.error('일기 불러오기 실패:', err);
+      devError('일기 불러오기 실패:', err);
+      devError('일기 조회 에러가 반복 발생:', err);
       setErrorCount((prev) => prev + 1);
-
-      // 에러가 3번 이상 발생하면 사용자에게 알림
-      console.warn('일기 조회 에러가 반복 발생:', err);
 
       // 에러 발생 시 빈 배열로 설정
       setDiaries([]);
@@ -98,20 +112,20 @@ const DiaryListPage = () => {
     setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'));
   };
 
-  const handleSearch = useCallback(async (filters: any) => {
+  const handleSearch = useCallback(async (filters: SearchFilters) => {
     try {
       setIsLoading(true);
       const searchResult = await DiaryService.searchDiaries({
         keyword: filters.keyword,
         startDate: filters.startDate,
         endDate: filters.endDate,
-        mood: filters.mood,
-        hasMedia: filters.hasMedia,
+        mood: filters.mood || undefined,
+        hasMedia: filters.hasMedia || undefined,
       });
       setFilteredDiaries(searchResult);
       setIsSearchActive(true);
     } catch (error) {
-      console.error('검색 실패:', error);
+      devError('검색 실패:', error);
     } finally {
       setIsLoading(false);
     }
@@ -709,7 +723,7 @@ const DiaryListPage = () => {
                   </Pressable>
                 )}
               </View>
-              {grouped[section].map((item: any) => (
+              {grouped[section].map((item: DiaryWithMedia) => (
                 <DiaryListItem
                   key={item.id}
                   item={item}

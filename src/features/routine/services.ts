@@ -261,7 +261,7 @@ export const fetchCreateRoutine = async (payload: CreateRoutinePayload): Promise
 
     // 생성된 루틴 조회
     const createdRoutine = await fetchGetRoutineById(routineId.toString());
-    
+
     // 알림 시간이 설정되어 있다면 알림 예약
     if (createdRoutine.alarmTime) {
       await scheduleRoutineNotifications(createdRoutine);
@@ -364,7 +364,7 @@ export const fetchUpdateRoutine = async (payload: UpdateRoutinePayload): Promise
 
     // 수정된 루틴 조회
     const updatedRoutine = await fetchGetRoutineById(payload.id);
-    
+
     // 알림 시간이 설정되어 있다면 알림 재예약
     if (updatedRoutine.alarmTime) {
       await scheduleRoutineNotifications(updatedRoutine);
@@ -483,11 +483,11 @@ const scheduleRoutineNotifications = async (routine: RoutineType): Promise<void>
             routine.id,
             'routine',
             isEnglish ? 'Routine Reminder' : '루틴 알림',
-            isEnglish 
+            isEnglish
               ? `Time to start your "${routine.name}" routine!`
               : `"${routine.name}" 루틴을 시작할 시간입니다!`,
             notificationDate,
-            false // 개별 알림으로 처리
+            false, // 개별 알림으로 처리
           );
         }
       }

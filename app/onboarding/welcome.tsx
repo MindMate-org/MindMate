@@ -176,7 +176,7 @@ const WelcomeScreen = () => {
           </View>
 
           {/* 시작하기 버튼 */}
-          <View style={{ width: '100%' }}>
+          <View style={{ width: '100%', paddingBottom: 30 }}>
             <TouchableOpacity
               onPress={handleStartPress}
               style={{
@@ -189,6 +189,7 @@ const WelcomeScreen = () => {
                 shadowOpacity: isDark ? 0.4 : 0.2,
                 shadowRadius: 8,
                 elevation: 6,
+                marginBottom: 20, // 갤럭시 네비게이션 바와의 간격 확보
               }}
               activeOpacity={0.8}
             >

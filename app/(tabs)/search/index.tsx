@@ -37,7 +37,7 @@ const HomeScreen = () => {
     useCallback(() => {
       getSearchItems();
       setSelectCategory(t.common.categories.all);
-    }, [t]),
+    }, [t.common.categories.all]),
   );
 
   useEffect(() => {
@@ -59,9 +59,12 @@ const HomeScreen = () => {
 
       return matchesCategory && matchesSearch;
     });
-  }, [items, selectCategory, search]);
+  }, [items, selectCategory, search, t.common.categories.all]);
 
-  const { icon: Icon } = getCategoryData(selectCategory, t.locale.startsWith('en') ? 'en' : 'ko');
+  const { icon: Icon } = useMemo(
+    () => getCategoryData(selectCategory, t.locale.startsWith('en') ? 'en' : 'ko'),
+    [selectCategory, t.locale],
+  );
 
   const resetSearch = () => {
     setInput('');

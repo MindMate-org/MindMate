@@ -12,6 +12,7 @@ import LoadingState from '../../../src/components/ui/loading-state';
 import RoutineListCard from '../../../src/features/routine/components/routine-list-card';
 import { useDeleteRoutine } from '../../../src/features/routine/hooks/use-routine-mutation';
 import { useRoutineQuery } from '../../../src/features/routine/hooks/use-routine-query';
+import type { RoutineType } from '../../../src/features/routine/types';
 import { useI18n } from '../../../src/hooks/use-i18n';
 import { toKSTDateString, formatTime, formatDate } from '../../../src/lib/date-utils';
 
@@ -23,7 +24,6 @@ const RoutineMain = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   // 선택된 날짜 기준으로 주의 날짜들 계산
-  const selectedDateString = selectedDate.toDateString();
   const weekDates = useMemo(() => {
     const startOfWeek = new Date(selectedDate);
     const dayOfWeek = selectedDate.getDay();
@@ -34,7 +34,7 @@ const RoutineMain = () => {
       date.setDate(startOfWeek.getDate() + i);
       return date;
     });
-  }, [selectedDate, selectedDateString]);
+  }, [selectedDate]);
 
   const handleDateChange = (event: any, date?: Date) => {
     setShowDatePicker(false);
@@ -93,7 +93,16 @@ const RoutineMain = () => {
         }
       }
     },
-    [deleteRoutine, refetch, routines],
+    [
+      deleteRoutine,
+      refetch,
+      routines,
+      t.common.delete,
+      t.routine.title,
+      t.routine.deleteConfirm,
+      t.routine.deleteSuccess,
+      t.routine.deleteFailed,
+    ],
   );
 
   const handleCalendarPress = () => {
@@ -118,7 +127,7 @@ const RoutineMain = () => {
 
   // 루틴 시간 표시 함수
   const getRoutineTime = useCallback(
-    (routine: any) => {
+    (routine: RoutineType) => {
       if (routine.alarmTime) {
         return formatTimeString(routine.alarmTime);
       }
@@ -128,10 +137,13 @@ const RoutineMain = () => {
   );
 
   // 루틴 지속시간 표시 함수
-  const getRoutineDuration = useCallback((routine: any) => {
-    const subTaskCount = routine.subTasks?.length || 0;
-    return `${subTaskCount}${t.routine.tasks}`;
-  }, []);
+  const getRoutineDuration = useCallback(
+    (routine: RoutineType) => {
+      const subTaskCount = routine.subTasks?.length || 0;
+      return `${subTaskCount}${t.routine.tasks}`;
+    },
+    [t.routine.tasks],
+  );
 
   // 로딩 상태
   if (isLoading) {

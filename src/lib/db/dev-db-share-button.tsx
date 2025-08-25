@@ -8,7 +8,9 @@ const shareDb = async () => {
     const copyUri = FileSystem.documentDirectory + 'export_db.db';
     await FileSystem.copyAsync({ from: dbUri, to: copyUri });
     await Sharing.shareAsync(copyUri);
-  } catch (err) {}
+  } catch (err) {
+    console.error('데이터베이스 내보내기 실패:', err);
+  }
 };
 
 export const DevDbShareButton = () => {

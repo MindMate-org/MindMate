@@ -10,6 +10,7 @@ import { useSchedulesByDate } from '../../../src/features/schedule/hooks/use-sch
 import { toggleScheduleCompletion } from '../../../src/features/schedule/services/schedule-services';
 import type { ScheduleType } from '../../../src/features/schedule/types/schedule-types';
 import { useI18n } from '../../../src/hooks/use-i18n';
+import { devError } from '../../../src/lib/dev-logger';
 
 type TaskItemProps = {
   schedule: ScheduleType;
@@ -25,7 +26,6 @@ const SchedulePage = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   // 선택된 날짜 기준으로 주의 날짜들 계산
-  const selectedDateString = selectedDate.toDateString();
   const weekDates = useMemo(() => {
     const startOfWeek = new Date(selectedDate);
     const dayOfWeek = selectedDate.getDay();
@@ -36,7 +36,7 @@ const SchedulePage = () => {
       date.setDate(startOfWeek.getDate() + i);
       return date;
     });
-  }, [selectedDate, selectedDateString]);
+  }, [selectedDate]);
 
   // const days = ['일', '월', '화', '수', '목', '금', '토']; // 제거됨 - t.schedule.days 사용
 
@@ -57,8 +57,7 @@ const SchedulePage = () => {
     }, [refetch]),
   );
 
-  // 선택된 날짜 객체 (표시용)
-  const selectedDateObject = selectedDate;
+  // Note: selectedDateObject removed as it was just duplicating selectedDate
 
   const completedSchedules = schedules.filter((s) => s.is_completed === 1);
   const incompleteSchedules = schedules.filter((s) => s.is_completed === 0);
@@ -76,7 +75,7 @@ const SchedulePage = () => {
         CustomAlertManager.error(t.schedule.toggleFailed);
       }
     } catch (error) {
-      console.error('Error toggling schedule completion:', error);
+      devError('Error toggling schedule completion:', error);
       CustomAlertManager.error(t.schedule.toggleError);
     }
   };
@@ -88,7 +87,7 @@ const SchedulePage = () => {
   const handleCalendarPress = () => {
     setShowDatePicker(true);
   };
-  const handleDateChange = (event: any, date?: Date) => {
+  const handleDateChange = (event: unknown, date?: Date) => {
     setShowDatePicker(false);
     if (date) {
       setSelectedDate(date);
@@ -249,7 +248,7 @@ const SchedulePage = () => {
                 color: themeColors.primary,
               }}
             >
-              {selectedDateObject.toLocaleDateString(t.locale, {
+              {selectedDate.toLocaleDateString(t.locale, {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',

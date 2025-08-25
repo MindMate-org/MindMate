@@ -10,6 +10,8 @@ import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { devtools, persist, createJSONStorage } from 'zustand/middleware';
 
+import { devError } from '../lib/dev-logger';
+
 // ============================================================================
 // 통합된 앱 상태 타입 정의 (기존 global-store + 새로운 기능들)
 // ============================================================================
@@ -106,8 +108,8 @@ export interface AppState {
   clearNotifications: () => void;
 
   // 피처 플래그 액션들
-  updateFeatureFlag: (flag: keyof AppFeatureFlags, value: any) => void;
-  getFeatureFlag: (flag: keyof AppFeatureFlags) => any;
+  updateFeatureFlag: <K extends keyof AppFeatureFlags>(flag: K, value: AppFeatureFlags[K]) => void;
+  getFeatureFlag: <K extends keyof AppFeatureFlags>(flag: K) => AppFeatureFlags[K];
   isFeatureEnabled: (flag: keyof AppFeatureFlags) => boolean;
 
   // 성능 추적 액션들
@@ -238,7 +240,10 @@ export const useAppStore = create<AppState>()(
           clearNotifications: () => set({ notifications: [] }),
 
           // 피처 플래그 액션 구현
-          updateFeatureFlag: (flag, value) =>
+          updateFeatureFlag: <K extends keyof AppFeatureFlags>(
+            flag: K,
+            value: AppFeatureFlags[K],
+          ) =>
             set((state) => ({
               featureFlags: {
                 ...state.featureFlags,
@@ -246,7 +251,7 @@ export const useAppStore = create<AppState>()(
               },
             })),
 
-          getFeatureFlag: (flag) => get().featureFlags[flag],
+          getFeatureFlag: <K extends keyof AppFeatureFlags>(flag: K) => get().featureFlags[flag],
 
           isFeatureEnabled: (flag) => Boolean(get().featureFlags[flag]),
 
@@ -413,7 +418,7 @@ export const useGlobalActions = () => useAppStore(globalActionsSelector);
  * 앱 초기화
  */
 export const initializeApp = async () => {
-  const { setRehydrated, startSession, updateFeatureFlag } = useAppStore.getState();
+  const { setRehydrated, startSession } = useAppStore.getState();
 
   try {
     // 디바이스 정보 설정
@@ -444,6 +449,7 @@ export const initializeApp = async () => {
     // 리하이드레이션 완료
     setRehydrated(true);
   } catch (error) {
+    devError('앱 초기화 실패:', error);
     setRehydrated(true); // 실패해도 앱은 실행되어야 함
   }
 };
@@ -464,7 +470,9 @@ const loadFeatureFlags = async () => {
         },
       }));
     }
-  } catch (error) {}
+  } catch (error) {
+    devError('피처 플래그 로드 실패:', error);
+  }
 };
 
 /**
@@ -478,7 +486,9 @@ export const saveFeatureFlags = async (flags: Partial<AppFeatureFlags>) => {
     await AsyncStorage.setItem('featureFlags', JSON.stringify(updatedFlags));
 
     useAppStore.setState({ featureFlags: updatedFlags });
-  } catch (error) {}
+  } catch (error) {
+    devError('피처 플래그 저장 실패:', error);
+  }
 };
 
 /**

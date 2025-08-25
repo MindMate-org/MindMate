@@ -40,9 +40,10 @@ export const fetchInsertMedia = async (
 
 /**
  * 미디어 선택 함수
- * @returns - {uri : string, type : "image" | "video" | "livePhoto" | "pairedVideo" | undefined}
+ * @param mode - 'single' | 'multiple' 선택 모드
+ * @returns - 단일: {uri : string, type : "image" | "video" | "livePhoto" | "pairedVideo" | undefined}, 다중: 배열
  */
-export const pickMedia = async () => {
+export const pickMedia = async (mode: 'single' | 'multiple' = 'single') => {
   const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
   const { language } = useGlobalStore.getState();
   const t = getTranslations(language);
@@ -50,7 +51,13 @@ export const pickMedia = async () => {
 
   const options = [
     isEnglish ? 'Take Photo' : '카메라로 촬영',
-    isEnglish ? 'Choose from Gallery' : '갤러리에서 선택',
+    mode === 'multiple'
+      ? isEnglish
+        ? 'Choose Multiple from Gallery (up to 5)'
+        : '갤러리에서 다중 선택 (최대 5개)'
+      : isEnglish
+        ? 'Choose from Gallery'
+        : '갤러리에서 선택',
     isEnglish ? 'Cancel' : '취소',
   ];
 
@@ -97,12 +104,22 @@ export const pickMedia = async () => {
                 // allowsEditing: true,
                 // aspect: [4, 3],
                 quality: 1,
+                allowsMultipleSelection: mode === 'multiple',
+                selectionLimit: mode === 'multiple' ? 5 : 1,
               });
               if (!result.canceled) {
-                const uri = result.assets[0].uri;
-                const type = result.assets[0].type;
-                const newImage = { uri, type };
-                return resolve(newImage);
+                if (mode === 'multiple') {
+                  const newImages = result.assets.map((asset) => ({
+                    uri: asset.uri,
+                    type: asset.type,
+                  }));
+                  return resolve(newImages);
+                } else {
+                  const uri = result.assets[0].uri;
+                  const type = result.assets[0].type;
+                  const newImage = { uri, type };
+                  return resolve(newImage);
+                }
               }
             } catch (error) {
               CustomAlertManager.error(isEnglish ? 'Image upload error' : '이미지 업로드 에러');

@@ -69,8 +69,8 @@ const RoutineDetail = () => {
   const [showAlarmTimePicker, setShowAlarmTimePicker] = useState(false);
   const [showRepeatInput, setShowRepeatInput] = useState(false);
   const [tempRepeatInfo, setTempRepeatInfo] = useState<string>('');
-  // 추가: 알림 설정
-  const [notificationEnabled, setNotificationEnabled] = useState(true);
+  // 추가: 알림 설정 (기본 꺼짐)
+  const [notificationEnabled, setNotificationEnabled] = useState(false);
 
   // 루틴 조회 훅 (수정 모드일 때만)
   const { routine, isLoading, error } = useRoutineDetailQuery(isEdit ? (id as string) : null);
@@ -691,6 +691,8 @@ const RoutineDetail = () => {
               date={alarmTime}
               onConfirm={(date: Date) => {
                 setAlarmTime(date);
+                setIsAlarmEnabled(true);
+                setNotificationEnabled(true);
                 setShowAlarmTimePicker(false);
               }}
               onCancel={() => setShowAlarmTimePicker(false)}

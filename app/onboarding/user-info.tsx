@@ -429,7 +429,7 @@ const UserInfoScreen = () => {
             </View>
 
             {/* 버튼들 */}
-            <View style={{ gap: 12 }}>
+            <View style={{ gap: 12, paddingBottom: 40 }}>
               <TouchableOpacity
                 onPress={handleSubmit}
                 disabled={isLoading}
@@ -439,6 +439,7 @@ const UserInfoScreen = () => {
                   paddingVertical: 18,
                   alignItems: 'center',
                   opacity: isLoading ? 0.7 : 1,
+                  marginBottom: 8, // 갤럭시 네비게이션 바와의 간격 확보
                 }}
                 activeOpacity={0.8}
               >
@@ -463,11 +464,11 @@ const UserInfoScreen = () => {
                 onPress={handleSkip}
                 disabled={isLoading}
                 style={{
+                  backgroundColor: '#FEF3C7', // 커스텀 알러트 취소 버튼과 동일한 배경색
                   borderRadius: 16,
                   paddingVertical: 18,
                   alignItems: 'center',
-                  borderWidth: 1,
-                  borderColor: themeColors.border,
+                  marginBottom: 20, // 갤럭시 네비게이션 바와의 간격 확보
                 }}
                 activeOpacity={0.8}
               >
@@ -475,7 +476,7 @@ const UserInfoScreen = () => {
                   style={{
                     fontSize: 16,
                     fontWeight: '500',
-                    color: themeColors.textSecondary,
+                    color: '#576BCD', // 커스텀 알러트 취소 버튼과 동일한 텍스트 색상 (Colors.paleCobalt)
                   }}
                 >
                   {t.locale.startsWith('en') ? 'Skip for now' : '나중에 하기'}

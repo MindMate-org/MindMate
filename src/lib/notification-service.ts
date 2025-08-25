@@ -7,6 +7,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 
+import { devError, devLog } from './dev-logger';
+
 // 알림 타입 정의
 export interface NotificationData {
   id: string;
@@ -70,6 +72,7 @@ class NotificationService {
       this.isInitialized = true;
       return true;
     } catch (error) {
+      devError('알림 서비스 초기화 실패:', error);
       return false;
     }
   }
@@ -98,6 +101,7 @@ class NotificationService {
       // 과거 시간인지 확인
       const now = new Date();
       if (scheduledTime <= now) {
+        devError(`❌ 과거 시간 알림 요청: ${scheduledTime.toLocaleString('ko-KR')} (현재: ${now.toLocaleString('ko-KR')})`);
         return false;
       }
 
@@ -106,11 +110,12 @@ class NotificationService {
 
       // 중복 체크
       if (this.scheduledNotifications.has(notificationId)) {
+        devError(`❌ 중복 알림 ID: ${notificationId}`);
         return false;
       }
 
       // 알림 스케줄링
-      const result = await Notifications.scheduleNotificationAsync({
+      await Notifications.scheduleNotificationAsync({
         identifier: notificationId,
         content: {
           title,
@@ -123,16 +128,17 @@ class NotificationService {
             repeatPattern,
           },
         },
-        trigger: { date: scheduledTime } as any,
+        trigger: { date: scheduledTime } as Notifications.NotificationTriggerInput,
       });
 
       // 성공적으로 스케줄된 경우 추가
       this.scheduledNotifications.add(notificationId);
       await this.saveScheduledNotifications();
 
-      console.log(`✅ 알림 설정 완료: ${title} - ${scheduledTime.toLocaleString('ko-KR')}`);
+      devLog(`✅ 알림 설정 완료: ${title} - ${scheduledTime.toLocaleString('ko-KR')} (ID: ${notificationId})`);
       return true;
     } catch (error) {
+      devError('알림 설정 실패:', error);
       return false;
     }
   }
@@ -147,7 +153,7 @@ class NotificationService {
 
       // 해당 아이템의 알림 찾기
       const targetNotifications = scheduledNotifications.filter((notification) => {
-        const data = notification.content.data;
+        const data = notification.content.data as { itemId?: string; type?: string } | undefined;
         return data?.itemId === itemId && data?.type === type;
       });
 
@@ -159,11 +165,9 @@ class NotificationService {
 
       await this.saveScheduledNotifications();
 
-      if (targetNotifications.length > 0) {
-      }
-
       return true;
     } catch (error) {
+      devError('알림 취소 실패:', error);
       return false;
     }
   }
@@ -178,6 +182,7 @@ class NotificationService {
       await this.saveScheduledNotifications();
       return true;
     } catch (error) {
+      devError('모든 알림 취소 실패:', error);
       return false;
     }
   }
@@ -194,7 +199,7 @@ class NotificationService {
       }
 
       return scheduledNotifications.filter((notification) => {
-        const data = notification.content.data;
+        const data = notification.content.data as { itemId?: string; type?: string } | undefined;
         if (itemId && type) {
           return data?.itemId === itemId && data?.type === type;
         } else if (itemId) {
@@ -205,6 +210,7 @@ class NotificationService {
         return false;
       });
     } catch (error) {
+      devError('알림 조회 실패:', error);
       return [];
     }
   }
@@ -242,7 +248,9 @@ class NotificationService {
     try {
       const notificationsArray = Array.from(this.scheduledNotifications);
       await AsyncStorage.setItem('scheduledNotifications', JSON.stringify(notificationsArray));
-    } catch (error) {}
+    } catch (error) {
+      devError('스케줄된 알림 저장 실패:', error);
+    }
   }
 
   /**
@@ -255,7 +263,9 @@ class NotificationService {
         const notificationsArray = JSON.parse(saved);
         this.scheduledNotifications = new Set(notificationsArray);
       }
-    } catch (error) {}
+    } catch (error) {
+      devError('스케줄된 알림 로드 실패:', error);
+    }
   }
 
   /**
@@ -264,14 +274,16 @@ class NotificationService {
   async debugPrintScheduledNotifications(): Promise<void> {
     try {
       const notifications = await Notifications.getAllScheduledNotificationsAsync();
-      notifications.forEach((notification, index) => {
-        const trigger = notification.trigger as any;
+      notifications.forEach((notification) => {
+        const trigger = notification.trigger as { date?: Date };
         const scheduledTime = trigger.date ? new Date(trigger.date) : '미정';
-        console.log(
+        devLog(
           `   시간: ${scheduledTime instanceof Date ? scheduledTime.toLocaleString('ko-KR') : scheduledTime}`,
         );
       });
-    } catch (error) {}
+    } catch (error) {
+      devError('디버그 알림 출력 실패:', error);
+    }
   }
 }
 

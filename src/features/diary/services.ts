@@ -46,14 +46,10 @@ export class DiaryService {
    * @throws {Error} 데이터베이스 조회 실패 시
    */
   static async fetchGetDiaries(): Promise<DiaryTableType[]> {
-    try {
-      const result = await db.getAllAsync<DiaryTableType>(
-        `SELECT * FROM diaries WHERE deleted_at IS NULL ORDER BY created_at DESC`,
-      );
-      return result || [];
-    } catch (error) {
-      throw error;
-    }
+    const result = await db.getAllAsync<DiaryTableType>(
+      `SELECT * FROM diaries WHERE deleted_at IS NULL ORDER BY created_at DESC`,
+    );
+    return result || [];
   }
 
   /**
@@ -79,15 +75,11 @@ export class DiaryService {
    * ```
    */
   static async getDiaryById(id: number): Promise<DiaryTableType | null> {
-    try {
-      const result = await db.getFirstAsync<DiaryTableType>(
-        `SELECT * FROM diaries WHERE id = ? AND deleted_at IS NULL`,
-        [id],
-      );
-      return result || null;
-    } catch (error) {
-      throw error;
-    }
+    const result = await db.getFirstAsync<DiaryTableType>(
+      `SELECT * FROM diaries WHERE id = ? AND deleted_at IS NULL`,
+      [id],
+    );
+    return result || null;
   }
 
   /**
@@ -127,91 +119,87 @@ export class DiaryService {
   static async searchDiaries(
     filter: DiarySearchDbFilterType,
   ): Promise<(DiaryTableType & { media_uri: string | null; media_type: string | null })[]> {
-    try {
-      let query = `SELECT DISTINCT d.*, 
-                  COALESCE(img.file_path, vid.file_path) as media_uri,
-                  COALESCE(img.media_type, vid.media_type) as media_type
-           FROM diaries d
-           LEFT JOIN (
-             SELECT owner_id, file_path, media_type, MIN(id) as min_id
-             FROM media
-             WHERE owner_type = 'diary' AND media_type = 'image'
-             GROUP BY owner_id
-           ) img ON img.owner_id = d.id
-           LEFT JOIN (
-             SELECT owner_id, file_path, media_type, MIN(id) as min_id
-             FROM media
-             WHERE owner_type = 'diary' AND media_type = 'video'
-             GROUP BY owner_id
-           ) vid ON vid.owner_id = d.id AND img.owner_id IS NULL`;
+    let query = `SELECT DISTINCT d.*, 
+                COALESCE(img.file_path, vid.file_path) as media_uri,
+                COALESCE(img.media_type, vid.media_type) as media_type
+         FROM diaries d
+         LEFT JOIN (
+           SELECT owner_id, file_path, media_type, MIN(id) as min_id
+           FROM media
+           WHERE owner_type = 'diary' AND media_type = 'image'
+           GROUP BY owner_id
+         ) img ON img.owner_id = d.id
+         LEFT JOIN (
+           SELECT owner_id, file_path, media_type, MIN(id) as min_id
+           FROM media
+           WHERE owner_type = 'diary' AND media_type = 'video'
+           GROUP BY owner_id
+         ) vid ON vid.owner_id = d.id AND img.owner_id IS NULL`;
 
-      const conditions: string[] = [];
-      const params: any[] = [];
+    const conditions: string[] = [];
+    const params: any[] = [];
 
-      // 미디어 포함 여부 필터를 위한 추가 조인
-      let hasMediaJoin = '';
-      if (filter.hasMedia !== undefined) {
-        hasMediaJoin = ` LEFT JOIN media m_filter ON m_filter.owner_type = 'diary' AND m_filter.owner_id = d.id`;
-        query += hasMediaJoin;
-      }
-
-      // 날짜 범위 필터
-      if (filter.startDate) {
-        conditions.push(`d.created_at >= ?`);
-        params.push(filter.startDate);
-      }
-      if (filter.endDate) {
-        conditions.push(`d.created_at <= ?`);
-        params.push(filter.endDate);
-      }
-
-      // 기분 필터
-      if (filter.mood) {
-        conditions.push(`d.mood = ?`);
-        params.push(filter.mood);
-      }
-
-      // 키워드 검색
-      if (filter.keyword) {
-        conditions.push(`(d.title LIKE ? OR d.body LIKE ?)`);
-        params.push(`%${filter.keyword}%`, `%${filter.keyword}%`);
-      }
-
-      // 미디어 포함 필터
-      if (filter.hasMedia === true) {
-        conditions.push(`m_filter.id IS NOT NULL`);
-      } else if (filter.hasMedia === false) {
-        conditions.push(`m_filter.id IS NULL`);
-      }
-
-      // 삭제되지 않은 일기만 검색
-      conditions.push('d.deleted_at IS NULL');
-
-      // WHERE 절 추가
-      query += ` WHERE ${conditions.join(' AND ')}`;
-
-      // 정렬
-      const orderBy = filter.orderBy || 'created_at';
-      const orderDirection = filter.orderDirection || 'DESC';
-      query += ` ORDER BY d.${orderBy} ${orderDirection}`;
-
-      // 페이지네이션
-      if (filter.limit) {
-        query += ` LIMIT ?`;
-        params.push(filter.limit);
-        if (filter.offset) {
-          query += ` OFFSET ?`;
-          params.push(filter.offset);
-        }
-      }
-
-      const result = await db.getAllAsync<
-        DiaryTableType & { media_uri: string | null; media_type: string | null }
-      >(query, params);
-      return result || [];
-    } catch (error) {
-      throw error;
+    // 미디어 포함 여부 필터를 위한 추가 조인
+    let hasMediaJoin = '';
+    if (filter.hasMedia !== undefined) {
+      hasMediaJoin = ` LEFT JOIN media m_filter ON m_filter.owner_type = 'diary' AND m_filter.owner_id = d.id`;
+      query += hasMediaJoin;
     }
+
+    // 날짜 범위 필터
+    if (filter.startDate) {
+      conditions.push(`d.created_at >= ?`);
+      params.push(filter.startDate);
+    }
+    if (filter.endDate) {
+      conditions.push(`d.created_at <= ?`);
+      params.push(filter.endDate);
+    }
+
+    // 기분 필터
+    if (filter.mood) {
+      conditions.push(`d.mood = ?`);
+      params.push(filter.mood);
+    }
+
+    // 키워드 검색
+    if (filter.keyword) {
+      conditions.push(`(d.title LIKE ? OR d.body LIKE ?)`);
+      params.push(`%${filter.keyword}%`, `%${filter.keyword}%`);
+    }
+
+    // 미디어 포함 필터
+    if (filter.hasMedia === true) {
+      conditions.push(`m_filter.id IS NOT NULL`);
+    } else if (filter.hasMedia === false) {
+      conditions.push(`m_filter.id IS NULL`);
+    }
+
+    // 삭제되지 않은 일기만 검색
+    conditions.push('d.deleted_at IS NULL');
+
+    // WHERE 절 추가
+    query += ` WHERE ${conditions.join(' AND ')}`;
+
+    // 정렬
+    const orderBy = filter.orderBy || 'created_at';
+    const orderDirection = filter.orderDirection || 'DESC';
+    query += ` ORDER BY d.${orderBy} ${orderDirection}`;
+
+    // 페이지네이션
+    if (filter.limit) {
+      query += ` LIMIT ?`;
+      params.push(filter.limit);
+      if (filter.offset) {
+        query += ` OFFSET ?`;
+        params.push(filter.offset);
+      }
+    }
+
+    const result = await db.getAllAsync<
+      DiaryTableType & { media_uri: string | null; media_type: string | null }
+    >(query, params);
+    return result || [];
   }
 
   /**
@@ -241,39 +229,35 @@ export class DiaryService {
    * * ```
    */
   static async createDiary(input: DiaryCreateDbPayloadType): Promise<number> {
-    try {
-      const now = new Date().toISOString();
+    const now = new Date().toISOString();
 
-      if (!db) {
-        throw new Error('데이터베이스가 초기화되지 않았습니다');
-      }
-
-      const result = await db.runAsync(
-        `INSERT INTO diaries (
-          title, body, font, font_size, text_align, text_color, 
-          background_color, audio_uri, mood, created_at, updated_at, deleted_at, is_favorite
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-          input.title,
-          input.body,
-          input.font || 'default',
-          input.fontSize || 16,
-          input.textAlign || 'left',
-          input.textColor || null,
-          input.backgroundColor || null,
-          input.audioUri || null,
-          input.mood || null,
-          now,
-          now,
-          null, // deleted_at
-          0, // is_favorite
-        ],
-      );
-
-      return result.lastInsertRowId;
-    } catch (error) {
-      throw error;
+    if (!db) {
+      throw new Error('데이터베이스가 초기화되지 않았습니다');
     }
+
+    const result = await db.runAsync(
+      `INSERT INTO diaries (
+        title, body, font, font_size, text_align, text_color, 
+        background_color, audio_uri, mood, created_at, updated_at, deleted_at, is_favorite
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        input.title,
+        input.body,
+        input.font || 'default',
+        input.fontSize || 16,
+        input.textAlign || 'left',
+        input.textColor || null,
+        input.backgroundColor || null,
+        input.audioUri || null,
+        input.mood || null,
+        now,
+        now,
+        null, // deleted_at
+        0, // is_favorite
+      ],
+    );
+
+    return result.lastInsertRowId;
   }
 
   /**
@@ -379,58 +363,54 @@ export class DiaryService {
    * ```
    */
   static async updateDiary(input: DiaryUpdateDbPayloadType): Promise<void> {
-    try {
-      const now = new Date().toISOString();
-      const updateFields: string[] = [];
-      const params: any[] = [];
+    const now = new Date().toISOString();
+    const updateFields: string[] = [];
+    const params: any[] = [];
 
-      // 업데이트할 필드 동적 생성
-      if (input.title !== undefined) {
-        updateFields.push('title = ?');
-        params.push(input.title);
-      }
-      if (input.body !== undefined) {
-        updateFields.push('body = ?');
-        params.push(input.body);
-      }
-      if (input.font !== undefined) {
-        updateFields.push('font = ?');
-        params.push(input.font);
-      }
-      if (input.fontSize !== undefined) {
-        updateFields.push('font_size = ?');
-        params.push(input.fontSize);
-      }
-      if (input.textAlign !== undefined) {
-        updateFields.push('text_align = ?');
-        params.push(input.textAlign);
-      }
-      if (input.textColor !== undefined) {
-        updateFields.push('text_color = ?');
-        params.push(input.textColor);
-      }
-      if (input.backgroundColor !== undefined) {
-        updateFields.push('background_color = ?');
-        params.push(input.backgroundColor);
-      }
-      if (input.audioUri !== undefined) {
-        updateFields.push('audio_uri = ?');
-        params.push(input.audioUri);
-      }
-      if (input.mood !== undefined) {
-        updateFields.push('mood = ?');
-        params.push(input.mood);
-      }
-
-      updateFields.push('updated_at = ?');
-      params.push(now);
-
-      params.push(input.id);
-
-      await db.runAsync(`UPDATE diaries SET ${updateFields.join(', ')} WHERE id = ?`, params);
-    } catch (error) {
-      throw error;
+    // 업데이트할 필드 동적 생성
+    if (input.title !== undefined) {
+      updateFields.push('title = ?');
+      params.push(input.title);
     }
+    if (input.body !== undefined) {
+      updateFields.push('body = ?');
+      params.push(input.body);
+    }
+    if (input.font !== undefined) {
+      updateFields.push('font = ?');
+      params.push(input.font);
+    }
+    if (input.fontSize !== undefined) {
+      updateFields.push('font_size = ?');
+      params.push(input.fontSize);
+    }
+    if (input.textAlign !== undefined) {
+      updateFields.push('text_align = ?');
+      params.push(input.textAlign);
+    }
+    if (input.textColor !== undefined) {
+      updateFields.push('text_color = ?');
+      params.push(input.textColor);
+    }
+    if (input.backgroundColor !== undefined) {
+      updateFields.push('background_color = ?');
+      params.push(input.backgroundColor);
+    }
+    if (input.audioUri !== undefined) {
+      updateFields.push('audio_uri = ?');
+      params.push(input.audioUri);
+    }
+    if (input.mood !== undefined) {
+      updateFields.push('mood = ?');
+      params.push(input.mood);
+    }
+
+    updateFields.push('updated_at = ?');
+    params.push(now);
+
+    params.push(input.id);
+
+    await db.runAsync(`UPDATE diaries SET ${updateFields.join(', ')} WHERE id = ?`, params);
   }
 
   /**
@@ -449,12 +429,8 @@ export class DiaryService {
    * * ```
    */
   static async deleteDiary(id: number): Promise<void> {
-    try {
-      const now = new Date().toISOString();
-      await db.runAsync(`UPDATE diaries SET deleted_at = ? WHERE id = ?`, [now, id]);
-    } catch (error) {
-      throw error;
-    }
+    const now = new Date().toISOString();
+    await db.runAsync(`UPDATE diaries SET deleted_at = ? WHERE id = ?`, [now, id]);
   }
 
   /**
@@ -468,12 +444,8 @@ export class DiaryService {
    * @throws {Error} 데이터베이스 삭제 실패 시
    */
   static async permanentDeleteDiary(id: number): Promise<void> {
-    try {
-      // media 테이블의 관련 데이터도 CASCADE로 자동 삭제됨
-      await db.runAsync(`DELETE FROM diaries WHERE id = ?`, [id]);
-    } catch (error) {
-      throw error;
-    }
+    // media 테이블의 관련 데이터도 CASCADE로 자동 삭제됨
+    await db.runAsync(`DELETE FROM diaries WHERE id = ?`, [id]);
   }
 
   /**
@@ -491,11 +463,7 @@ export class DiaryService {
    * * ```
    */
   static async restoreDiary(id: number): Promise<void> {
-    try {
-      await db.runAsync(`UPDATE diaries SET deleted_at = NULL WHERE id = ?`, [id]);
-    } catch (error) {
-      throw error;
-    }
+    await db.runAsync(`UPDATE diaries SET deleted_at = NULL WHERE id = ?`, [id]);
   }
 
   /**
@@ -513,14 +481,10 @@ export class DiaryService {
    * * ```
    */
   static async getDeletedDiaries(): Promise<DiaryTableType[]> {
-    try {
-      const result = await db.getAllAsync<DiaryTableType>(
-        `SELECT * FROM diaries WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC`,
-      );
-      return result || [];
-    } catch (error) {
-      throw error;
-    }
+    const result = await db.getAllAsync<DiaryTableType>(
+      `SELECT * FROM diaries WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC`,
+    );
+    return result || [];
   }
 
   /**
@@ -536,38 +500,34 @@ export class DiaryService {
   static async getDeletedDiariesWithMedia(): Promise<
     (DiaryTableType & { media_uri: string | null; media_type: string | null })[]
   > {
-    try {
-      if (!db) {
-        throw new Error('데이터베이스가 초기화되지 않았습니다');
-      }
-
-      const result = await db.getAllAsync<
-        DiaryTableType & { media_uri: string | null; media_type: string | null }
-      >(
-        `SELECT d.*, 
-                COALESCE(img.file_path, vid.file_path) as media_uri,
-                COALESCE(img.media_type, vid.media_type) as media_type
-         FROM diaries d
-         LEFT JOIN (
-           SELECT owner_id, file_path, media_type, MIN(id) as min_id
-           FROM media
-           WHERE owner_type = 'diary' AND media_type = 'image'
-           GROUP BY owner_id
-         ) img ON img.owner_id = d.id
-         LEFT JOIN (
-           SELECT owner_id, file_path, media_type, MIN(id) as min_id
-           FROM media
-           WHERE owner_type = 'diary' AND media_type = 'video'
-           GROUP BY owner_id
-         ) vid ON vid.owner_id = d.id AND img.owner_id IS NULL
-         WHERE d.deleted_at IS NOT NULL
-         ORDER BY d.deleted_at DESC`,
-      );
-
-      return result || [];
-    } catch (error) {
-      throw error;
+    if (!db) {
+      throw new Error('데이터베이스가 초기화되지 않았습니다');
     }
+
+    const result = await db.getAllAsync<
+      DiaryTableType & { media_uri: string | null; media_type: string | null }
+    >(
+      `SELECT d.*, 
+              COALESCE(img.file_path, vid.file_path) as media_uri,
+              COALESCE(img.media_type, vid.media_type) as media_type
+       FROM diaries d
+       LEFT JOIN (
+         SELECT owner_id, file_path, media_type, MIN(id) as min_id
+         FROM media
+         WHERE owner_type = 'diary' AND media_type = 'image'
+         GROUP BY owner_id
+       ) img ON img.owner_id = d.id
+       LEFT JOIN (
+         SELECT owner_id, file_path, media_type, MIN(id) as min_id
+         FROM media
+         WHERE owner_type = 'diary' AND media_type = 'video'
+         GROUP BY owner_id
+       ) vid ON vid.owner_id = d.id AND img.owner_id IS NULL
+       WHERE d.deleted_at IS NOT NULL
+       ORDER BY d.deleted_at DESC`,
+    );
+
+    return result || [];
   }
 
   /**
@@ -585,25 +545,21 @@ export class DiaryService {
    * * ```
    */
   static async toggleFavorite(id: number): Promise<boolean> {
-    try {
-      // 현재 상태 조회
-      const current = await db.getFirstAsync<{ is_favorite: number }>(
-        `SELECT is_favorite FROM diaries WHERE id = ?`,
-        [id],
-      );
+    // 현재 상태 조회
+    const current = await db.getFirstAsync<{ is_favorite: number }>(
+      `SELECT is_favorite FROM diaries WHERE id = ?`,
+      [id],
+    );
 
-      if (!current) {
-        throw new Error('일기를 찾을 수 없습니다');
-      }
-
-      // 상태 토글
-      const newFavoriteState = current.is_favorite ? 0 : 1;
-      await db.runAsync(`UPDATE diaries SET is_favorite = ? WHERE id = ?`, [newFavoriteState, id]);
-
-      return newFavoriteState === 1;
-    } catch (error) {
-      throw error;
+    if (!current) {
+      throw new Error('일기를 찾을 수 없습니다');
     }
+
+    // 상태 토글
+    const newFavoriteState = current.is_favorite ? 0 : 1;
+    await db.runAsync(`UPDATE diaries SET is_favorite = ? WHERE id = ?`, [newFavoriteState, id]);
+
+    return newFavoriteState === 1;
   }
 
   /**
@@ -621,14 +577,10 @@ export class DiaryService {
    * * ```
    */
   static async getFavoriteDiaries(): Promise<DiaryTableType[]> {
-    try {
-      const result = await db.getAllAsync<DiaryTableType>(
-        `SELECT * FROM diaries WHERE is_favorite = 1 AND deleted_at IS NULL ORDER BY updated_at DESC, created_at DESC`,
-      );
-      return result || [];
-    } catch (error) {
-      throw error;
-    }
+    const result = await db.getAllAsync<DiaryTableType>(
+      `SELECT * FROM diaries WHERE is_favorite = 1 AND deleted_at IS NULL ORDER BY updated_at DESC, created_at DESC`,
+    );
+    return result || [];
   }
 
   /**
@@ -644,23 +596,19 @@ export class DiaryService {
    * * ```
    */
   static async getMediaByDiaryId(diaryId: number): Promise<MediaTableType[]> {
-    try {
-      const result = await db.getAllAsync<MediaTableType>(
-        `SELECT 
-          id, 
-          owner_type, 
-          owner_id, 
-          media_type, 
-          file_path, 
-          created_at
-        FROM media 
-        WHERE owner_type = 'diary' AND owner_id = ?`,
-        [diaryId],
-      );
-      return result || [];
-    } catch (error) {
-      throw error;
-    }
+    const result = await db.getAllAsync<MediaTableType>(
+      `SELECT 
+        id, 
+        owner_type, 
+        owner_id, 
+        media_type, 
+        file_path, 
+        created_at
+      FROM media 
+      WHERE owner_type = 'diary' AND owner_id = ?`,
+      [diaryId],
+    );
+    return result || [];
   }
 
   /**
@@ -678,15 +626,11 @@ export class DiaryService {
    * ```
    */
   static async getDiaryWithMedia(id: number): Promise<DiaryWithMediaType | null> {
-    try {
-      const diary = await this.getDiaryById(id);
-      if (!diary) return null;
+    const diary = await this.getDiaryById(id);
+    if (!diary) return null;
 
-      const media = await this.getMediaByDiaryId(id);
-      return { ...diary, media };
-    } catch (error) {
-      throw error;
-    }
+    const media = await this.getMediaByDiaryId(id);
+    return { ...diary, media };
   }
 
   /**
@@ -711,16 +655,12 @@ export class DiaryService {
    * ```
    */
   static async addMedia(input: MediaCreateDbPayloadType): Promise<number> {
-    try {
-      const result = await db.runAsync(
-        `INSERT INTO media (owner_type, owner_id, media_type, file_path) 
-         VALUES (?, ?, ?, ?)`,
-        [input.owner_type, input.owner_id, input.media_type, input.file_path],
-      );
-      return result.lastInsertRowId;
-    } catch (error) {
-      throw error;
-    }
+    const result = await db.runAsync(
+      `INSERT INTO media (owner_type, owner_id, media_type, file_path) 
+       VALUES (?, ?, ?, ?)`,
+      [input.owner_type, input.owner_id, input.media_type, input.file_path],
+    );
+    return result.lastInsertRowId;
   }
 
   /**
@@ -738,11 +678,7 @@ export class DiaryService {
    * * ```
    */
   static async deleteMedia(id: number): Promise<void> {
-    try {
-      await db.runAsync(`DELETE FROM media WHERE id = ?`, [id]);
-    } catch (error) {
-      throw error;
-    }
+    await db.runAsync(`DELETE FROM media WHERE id = ?`, [id]);
   }
 
   /**
@@ -762,37 +698,33 @@ export class DiaryService {
     byMood: Record<string, number>;
     withMedia: number;
   }> {
-    try {
-      // 전체 일기 수 (삭제되지 않은 것만)
-      const totalResult = await db.getFirstAsync<{ count: number }>(
-        `SELECT COUNT(*) as count FROM diaries WHERE deleted_at IS NULL`,
-      );
+    // 전체 일기 수 (삭제되지 않은 것만)
+    const totalResult = await db.getFirstAsync<{ count: number }>(
+      `SELECT COUNT(*) as count FROM diaries WHERE deleted_at IS NULL`,
+    );
 
-      // 기분별 통계 (삭제되지 않은 것만)
-      const moodResult = await db.getAllAsync<{ mood: string; count: number }>(
-        `SELECT mood, COUNT(*) as count FROM diaries WHERE mood IS NOT NULL AND deleted_at IS NULL GROUP BY mood`,
-      );
+    // 기분별 통계 (삭제되지 않은 것만)
+    const moodResult = await db.getAllAsync<{ mood: string; count: number }>(
+      `SELECT mood, COUNT(*) as count FROM diaries WHERE mood IS NOT NULL AND deleted_at IS NULL GROUP BY mood`,
+    );
 
-      // 미디어 포함 일기 수 (삭제되지 않은 것만)
-      const mediaResult = await db.getFirstAsync<{ count: number }>(
-        `SELECT COUNT(DISTINCT m.owner_id) as count 
+    // 미디어 포함 일기 수 (삭제되지 않은 것만)
+    const mediaResult = await db.getFirstAsync<{ count: number }>(
+      `SELECT COUNT(DISTINCT m.owner_id) as count 
          FROM media m 
          JOIN diaries d ON m.owner_id = d.id 
          WHERE m.owner_type = 'diary' AND d.deleted_at IS NULL`,
-      );
+    );
 
-      const byMood: Record<string, number> = {};
-      moodResult?.forEach((row) => {
-        byMood[row.mood] = row.count;
-      });
+    const byMood: Record<string, number> = {};
+    moodResult?.forEach((row) => {
+      byMood[row.mood] = row.count;
+    });
 
-      return {
-        total: totalResult?.count || 0,
-        byMood,
-        withMedia: mediaResult?.count || 0,
-      };
-    } catch (error) {
-      throw error;
-    }
+    return {
+      total: totalResult?.count || 0,
+      byMood,
+      withMedia: mediaResult?.count || 0,
+    };
   }
 }
